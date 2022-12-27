@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -42,7 +43,9 @@ public class MainActivity extends AppCompatActivity {
     ActivityResultLauncher cameraLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                binding.thumbnailImageView.setImageBitmap((Bitmap) result.getData().getExtras().get("data"));
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    binding.thumbnailImageView.setImageBitmap((Bitmap) result.getData().getExtras().get("data"));
+                }
             });
 
 
