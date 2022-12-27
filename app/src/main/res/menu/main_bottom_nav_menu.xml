@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/homeItem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/ic_home_white"
+        android:onClick="homeMenuItemClicked"
+        android:title="@string/home" />
+    <item
+        android:id="@+id/statsItem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/ic_stats_white"
+        android:onClick="statsMenuItemClicked"
+        android:title="@string/stats" />
+    <item android:id="@+id/placeHolderItem"
+        android:title=""
+        android:enabled="false"/>
+    <item
+        android:id="@+id/mapsItem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/ic_map_white"
+        android:onClick="mapsMenuItemClicked"
+        android:title="@string/maps" />
+    <item
+        android:id="@+id/moreItem"
+        android:icon="@drawable/ic_more_white"
+        android:onClick="moreMenuItemClicked"
+        android:title="@string/more" />
+</menu>

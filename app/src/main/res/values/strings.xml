@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">MyEmotions</string>
     <string name="my_emotions">MY EMOTIONS</string>
+    <string name="smileylauncher">SmileyLauncher</string>
+    <string name="home">Home</string>
+    <string name="stats">Stats</string>
+    <string name="more">More</string>
+    <string name="maps">Maps</string>
 </resources>

@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="my_emotions">MY EMOTIONS</string>
+    <string name="smileylauncher">SmileyLauncher</string>
+    <string name="home">Home</string>
+    <string name="stats">Stats</string>
+    <string name="more">More</string>
+    <string name="maps">Maps</string>
 </resources>
