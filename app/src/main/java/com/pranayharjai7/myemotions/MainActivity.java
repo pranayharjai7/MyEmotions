@@ -17,22 +17,25 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.pranayharjai7.myemotions.LoginAndRegister.LoginActivity;
 import com.pranayharjai7.myemotions.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int ALL_PERMISSIONS_CODE = 101;
     private ActivityMainBinding binding;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        binding.mainBottomNavigationView.setBackground(null);
 
+        binding.mainBottomNavigationView.setBackground(null);
         permissions();
+        mAuth = FirebaseAuth.getInstance();
     }
 
     public void plusFloatingActionButtonClicked(View view) {
@@ -72,6 +75,12 @@ public class MainActivity extends AppCompatActivity {
     public void moreMenuItemClicked(MenuItem item) {
         if (!item.isChecked()) {
             item.setChecked(true);
+            //TODO
+            mAuth.signOut();
+            Toast.makeText(this, "Logged Out!", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
         }
     }
 

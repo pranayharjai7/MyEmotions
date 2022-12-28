@@ -102,9 +102,11 @@
 
             <EditText
                 android:id="@+id/emailAddressLoginEditText"
-                android:layout_width="250dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
                 android:layout_marginTop="50dp"
+                android:layout_marginEnd="10dp"
                 android:autofillHints=""
                 android:background="@drawable/edit_text_bg"
                 android:ems="10"
@@ -113,6 +115,7 @@
                 android:minHeight="48dp"
                 android:paddingStart="50dp"
                 android:paddingEnd="10dp"
+                android:textColor="@android:color/black"
                 android:textColorHint="#78909C"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -121,9 +124,11 @@
 
             <EditText
                 android:id="@+id/passwordLoginEditText"
-                android:layout_width="250dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
                 android:layout_marginTop="50dp"
+                android:layout_marginEnd="10dp"
                 android:autofillHints=""
                 android:background="@drawable/edit_text_bg"
                 android:ems="10"
@@ -132,6 +137,7 @@
                 android:minHeight="48dp"
                 android:paddingStart="50dp"
                 android:paddingEnd="10dp"
+                android:textColor="@android:color/black"
                 android:textColorHint="#78909C"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -206,9 +212,11 @@
 
             <EditText
                 android:id="@+id/usernameRegisterEditText"
-                android:layout_width="250dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
                 android:layout_marginTop="30dp"
+                android:layout_marginEnd="10dp"
                 android:autofillHints=""
                 android:background="@drawable/edit_text_bg"
                 android:ems="10"
@@ -217,6 +225,7 @@
                 android:minHeight="48dp"
                 android:paddingStart="50dp"
                 android:paddingEnd="10dp"
+                android:textColor="@android:color/black"
                 android:textColorHint="#78909C"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -224,9 +233,11 @@
 
             <EditText
                 android:id="@+id/emailAddressRegisterEditText"
-                android:layout_width="250dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
                 android:layout_marginTop="30dp"
+                android:layout_marginEnd="10dp"
                 android:autofillHints=""
                 android:background="@drawable/edit_text_bg"
                 android:ems="10"
@@ -235,6 +246,7 @@
                 android:minHeight="48dp"
                 android:paddingStart="50dp"
                 android:paddingEnd="10dp"
+                android:textColor="@android:color/black"
                 android:textColorHint="#78909C"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -243,9 +255,11 @@
 
             <EditText
                 android:id="@+id/passwordRegisterEditText"
-                android:layout_width="250dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
                 android:layout_marginTop="30dp"
+                android:layout_marginEnd="10dp"
                 android:autofillHints=""
                 android:background="@drawable/edit_text_bg"
                 android:ems="10"
@@ -254,6 +268,7 @@
                 android:minHeight="48dp"
                 android:paddingStart="50dp"
                 android:paddingEnd="10dp"
+                android:textColor="@android:color/black"
                 android:textColorHint="#78909C"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -368,5 +383,17 @@
         app:layout_constraintTop_toTopOf="@+id/facebookLoginButton"
         app:srcCompat="@drawable/google"
         tools:ignore="ImageContrastCheck" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/facebookLoginButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/innerLayout" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
