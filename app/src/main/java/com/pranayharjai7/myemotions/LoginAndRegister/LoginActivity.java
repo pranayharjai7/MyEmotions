@@ -35,6 +35,17 @@ public class LoginActivity extends AppCompatActivity {
         loginMenuButtonClicked(binding.loginMenuButton);
     }
 
+    public void googleLoginButtonClicked(View view) {
+    }
+
+    public void facebookLoginButtonClicked(View view) {
+    }
+
+    public void twitterLoginButtonClicked(View view) {
+    }
+
+
+
     public void loginMenuButtonClicked(View view) {
         changeMenu(view,binding.signupMenuButton);
 

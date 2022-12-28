@@ -145,6 +145,7 @@
                 android:layout_marginTop="30dp"
                 android:layout_marginEnd="20dp"
                 android:text="@string/forgot_password"
+                android:textColor="#78909C"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/passwordLoginEditText" />
@@ -316,5 +317,56 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/facebookLoginButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:contentDescription="@string/facebookloginbutton"
+        android:focusable="true"
+        android:onClick="facebookLoginButtonClicked"
+        app:backgroundTint="#0DBE9F"
+        app:elevation="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/bgImage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/innerLayout"
+        app:srcCompat="@drawable/facebook"
+        tools:ignore="ImageContrastCheck" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/twitterLoginButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:clickable="true"
+        android:contentDescription="@string/twitterloginbutton"
+        android:focusable="true"
+        android:onClick="twitterLoginButtonClicked"
+        app:backgroundTint="#0DBE9F"
+        app:elevation="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/facebookLoginButton"
+        app:layout_constraintStart_toEndOf="@+id/facebookLoginButton"
+        app:layout_constraintTop_toTopOf="@+id/facebookLoginButton"
+        app:srcCompat="@drawable/twitter"
+        tools:ignore="ImageContrastCheck" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/googleLoginButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="50dp"
+        android:clickable="true"
+        android:contentDescription="@string/googleloginbutton"
+        android:focusable="true"
+        android:onClick="googleLoginButtonClicked"
+        app:backgroundTint="#0DBE9F"
+        app:elevation="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/facebookLoginButton"
+        app:layout_constraintEnd_toStartOf="@+id/facebookLoginButton"
+        app:layout_constraintTop_toTopOf="@+id/facebookLoginButton"
+        app:srcCompat="@drawable/google"
+        tools:ignore="ImageContrastCheck" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

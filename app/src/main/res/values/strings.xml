@@ -16,4 +16,7 @@
     <string name="emailicon">emailIcon</string>
     <string name="passwordicon">passwordIcon</string>
     <string name="usernameicon">usernameIcon</string>
+    <string name="facebookloginbutton">FacebookLoginButton</string>
+    <string name="googleloginbutton">googleLoginButton</string>
+    <string name="twitterloginbutton">twitterLoginButton</string>
 </resources>
