@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import com.pranayharjai7.myemotions.LoginAndRegister.LoginActivity;
 import com.pranayharjai7.myemotions.databinding.ActivityLauncherBinding;
 
 public class LauncherActivity extends AppCompatActivity {
@@ -17,7 +18,7 @@ public class LauncherActivity extends AppCompatActivity {
         binding = ActivityLauncherBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
 
         Runnable runnable = () -> {
             startActivity(intent);

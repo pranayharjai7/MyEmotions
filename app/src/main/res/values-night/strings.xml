@@ -6,4 +6,14 @@
     <string name="stats">Stats</string>
     <string name="more">More</string>
     <string name="maps">Maps</string>
+    <string name="background_image">Background Image</string>
+    <string name="signup">SIGNUP</string>
+    <string name="login">LOGIN</string>
+    <string name="email_address">Email Address</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="user_name">User Name</string>
+    <string name="emailicon">emailIcon</string>
+    <string name="passwordicon">passwordIcon</string>
+    <string name="usernameicon">usernameIcon</string>
 </resources>
