@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
             });
 
 
-
     public void homeMenuItemClicked(MenuItem item) {
         if (!item.isChecked()) {
             item.setChecked(true);
@@ -83,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
     }
-
 
 
     private void permissions() {

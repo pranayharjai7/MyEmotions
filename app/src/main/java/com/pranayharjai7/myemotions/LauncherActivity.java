@@ -12,6 +12,7 @@ import com.pranayharjai7.myemotions.databinding.ActivityLauncherBinding;
 public class LauncherActivity extends AppCompatActivity {
 
     private ActivityLauncherBinding binding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
