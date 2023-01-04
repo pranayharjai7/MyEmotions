@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "180348823571",
+    "project_id": "myemotions-007",
+    "storage_bucket": "myemotions-007.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:180348823571:android:8a8db4e05ea6339d8d77e6",
+        "android_client_info": {
+          "package_name": "com.pranayharjai7.myemotions"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "180348823571-n12mm4108ulmgfphclr3fqc2isctoc2r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDb4vgU-A4IysOz9JnNzNFftR4kX5Tc1Gg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "180348823571-n12mm4108ulmgfphclr3fqc2isctoc2r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
