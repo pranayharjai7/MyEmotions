@@ -1,24 +1,27 @@
 package com.pranayharjai7.myemotions;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.pranayharjai7.myemotions.LoginAndRegister.LoginActivity;
+import com.pranayharjai7.myemotions.Utils.AnimationUtils;
+import com.pranayharjai7.myemotions.Utils.ImageUtils;
 import com.pranayharjai7.myemotions.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
     private static final int ALL_PERMISSIONS_CODE = 101;
     private ActivityMainBinding binding;
     private FirebaseAuth mAuth;
+    private boolean isAllFabVisible;
+    private Bitmap sampledImage = null;
+    RecognizeEmotions recognizeEmotions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,28 +40,72 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         binding.mainBottomNavigationView.setBackground(null);
+        isAllFabVisible = binding.cameraButton.getVisibility() == View.VISIBLE;
         permissions();
         mAuth = FirebaseAuth.getInstance();
+
+        recognizeEmotions = new RecognizeEmotions(getApplicationContext());
     }
 
-    public void plusFloatingActionButtonClicked(View view) {
+
+    public void mainConstraintLayoutClicked(View view) {
+        if (isAllFabVisible) {
+            AnimationUtils.animateCloseRecordEmotionButton(binding);
+            isAllFabVisible = !isAllFabVisible;
+        }
+    }
+
+    public void recordEmotionButtonClicked(View view) {
+        if (isAllFabVisible) {
+            AnimationUtils.animateCloseRecordEmotionButton(binding);
+        } else {
+            AnimationUtils.animateOpenRecordEmotionButton(binding);
+        }
+        isAllFabVisible = !isAllFabVisible;
+    }
+
+    public void cameraButtonClicked(View view) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         cameraLauncher.launch(intent);
+        recordEmotionButtonClicked(view);
     }
 
-    ActivityResultLauncher cameraLauncher = registerForActivityResult(
+    public void galleryButtonClicked(View view) {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        galleryLauncher.launch(intent);
+        recordEmotionButtonClicked(view);
+    }
+
+    private ActivityResultLauncher cameraLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
-                    binding.thumbnailImageView.setImageBitmap((Bitmap) result.getData().getExtras().get("data"));
+                    sampledImage = (Bitmap) result.getData().getExtras().get("data");
+                    if (sampledImage != null) {
+                        Bitmap picWithEmotions = recognizeEmotions.recognizeEmotions(sampledImage);
+                        binding.thumbnailImageView.setImageBitmap(picWithEmotions);
+                    }
                 }
             });
 
+    private ActivityResultLauncher galleryLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Uri selectedImageUri = result.getData().getData();
+                    sampledImage = ImageUtils.getImage(selectedImageUri, getContentResolver());
+                    if (sampledImage != null) {
+                        Bitmap picWithEmotions = recognizeEmotions.recognizeEmotions(sampledImage);
+                        binding.thumbnailImageView.setImageBitmap(picWithEmotions);
+                    }
+                }
+            });
 
     public void homeMenuItemClicked(MenuItem item) {
         if (!item.isChecked()) {
             item.setChecked(true);
-            Toast.makeText(this, "Hello", Toast.LENGTH_SHORT).show();
         }
     }
 
