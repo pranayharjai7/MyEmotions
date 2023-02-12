@@ -37,33 +37,14 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void login() {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
     public void loginButtonClicked(View view) {
 
         String email = binding.emailAddressLoginEditText.getText().toString();
         String password = binding.passwordLoginEditText.getText().toString();
 
-        if (!checkLogin(email, password)) {
-            return;
+        if (checkLogin(email, password)) {
+           loginUserWithFirebase(email, password);
         }
-
-        binding.progressBar.setVisibility(View.VISIBLE);
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(this, "Logged in!", Toast.LENGTH_SHORT).show();
-                        login();
-                        binding.progressBar.setVisibility(View.GONE);
-                    } else {
-                        Toast.makeText(this, "Failed to Login!! Please Check Again!", Toast.LENGTH_SHORT).show();
-                        binding.progressBar.setVisibility(View.GONE);
-                    }
-                });
     }
 
     public void googleLoginButtonClicked(View view) {
@@ -85,24 +66,64 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Going to Main activity after logging in user.
+     */
+    private void login() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    /**
+     * Login using email and password in Firebase Authentication.
+     * @param email
+     * @param password
+     */
+    private void loginUserWithFirebase(String email, String password) {
+        binding.progressBar.setVisibility(View.VISIBLE);
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(this, "Logged in!", Toast.LENGTH_SHORT).show();
+                        login();
+                    } else {
+                        Toast.makeText(this, "Failed to Login!! Please Check Again!", Toast.LENGTH_SHORT).show();
+                    }
+                    binding.progressBar.setVisibility(View.GONE);
+                });
+    }
+
+    /**
+     * Register user using email and password in Firebase Authentication.
+     * @param username
+     * @param email
+     * @param password
+     */
     private void registerUserWithFirebase(String username, String email, String password) {
         binding.progressBar.setVisibility(View.VISIBLE);
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+                        //To add username to profile
                         task.getResult().getUser()
                                 .updateProfile(new UserProfileChangeRequest.Builder().setDisplayName(username).build());
                         Toast.makeText(this, "User Registered successfully!", Toast.LENGTH_SHORT).show();
-                        mAuth.signOut();
+                        mAuth.signOut(); //By default, registered user gets signed in
                         loginMenuButtonClicked(binding.loginMenuButton);
-                        binding.progressBar.setVisibility(View.GONE);
                     } else {
                         Toast.makeText(this, "Failed to Register,Try Again!", Toast.LENGTH_SHORT).show();
-                        binding.progressBar.setVisibility(View.GONE);
                     }
+                    binding.progressBar.setVisibility(View.GONE);
                 });
     }
 
+    /**
+     * To check if login parameters are correct or not.
+     * @param email
+     * @param password
+     * @return
+     */
     private boolean checkLogin(String email, String password) {
 
         if (email.isEmpty()) {
@@ -120,6 +141,13 @@ public class LoginActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * To check if registration parameters are correct or not.
+     * @param username
+     * @param email
+     * @param password
+     * @return
+     */
     private boolean checkRegistration(String username, String email, String password) {
         if (username.isEmpty()) {
             binding.usernameRegisterEditText.setError("UserName is Required!");
@@ -155,11 +183,19 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * TO change menu to Login.
+     * @param view
+     */
     public void loginMenuButtonClicked(View view) {
         changeMenu(view, binding.signupMenuButton);
 
     }
 
+    /**
+     * To change menu to Register.
+     * @param view
+     */
     public void signupMenuButtonClicked(View view) {
         changeMenu(view, binding.loginMenuButton);
     }

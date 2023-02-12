@@ -14,6 +14,7 @@ import com.pranayharjai7.myemotions.mtcnn.Box;
 import com.pranayharjai7.myemotions.mtcnn.EmotionPyTorchClassifier;
 import com.pranayharjai7.myemotions.mtcnn.MTCNN;
 
+import java.io.IOException;
 import java.util.Vector;
 
 public class RecognizeEmotions {
@@ -31,13 +32,12 @@ public class RecognizeEmotions {
     private void init() {
         try {
             emotionClassifierPyTorch = new EmotionPyTorchClassifier(applicationContext);
-        } catch (final Exception e) {
+        } catch (IOException e) {
             Log.e("abc", "Exception initializing EmotionPyTorchClassifier!", e);
         }
         try {
-            emotionClassifierPyTorch = new EmotionPyTorchClassifier(applicationContext);
             mtcnnFaceDetector = new MTCNN(applicationContext);
-        } catch (final Exception e) {
+        } catch (IOException e) {
             Log.e("abc", "Exception initializing MTCNNModel!" + e);
         }
     }
@@ -56,7 +56,6 @@ public class RecognizeEmotions {
             resizedBitmap = Bitmap.createScaledBitmap(bmp, (int) (bmp.getWidth() / scale), (int) (bmp.getHeight() / scale), false);
             bmp = resizedBitmap;
         }
-        long startTime = SystemClock.uptimeMillis();
         Vector<Box> bboxes = mtcnnFaceDetector.detectFaces(resizedBitmap, minFaceSize);//(int)(bmp.getWidth()*MIN_FACE_SIZE));
 
         Bitmap tempBmp = Bitmap.createBitmap(bmp.getWidth(), bmp.getHeight(), Bitmap.Config.ARGB_8888);

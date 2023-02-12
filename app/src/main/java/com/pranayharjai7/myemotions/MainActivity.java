@@ -134,6 +134,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * To get camera and read/write external storage permissions.
+     */
     private void permissions() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
                 && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED

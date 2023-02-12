@@ -62,7 +62,7 @@ public class EmotionPyTorchClassifier {
         BufferedReader br = null;
         labels = new ArrayList<>();
         try {
-            br = new BufferedReader(new InputStreamReader(context.getAssets().open("affectnet_labels.txt")));
+            br = new BufferedReader(new InputStreamReader(context.getAssets().open("emotionsLabel.txt")));
             String line;
             int line_ind = 0;
             while ((line = br.readLine()) != null) {
