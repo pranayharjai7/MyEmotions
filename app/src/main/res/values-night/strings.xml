@@ -19,4 +19,10 @@
     <string name="facebookloginbutton">FacebookLoginButton</string>
     <string name="googleloginbutton">googleLoginButton</string>
     <string name="twitterloginbutton">twitterLoginButton</string>
+    <string name="plus_button_to_open_gallery_or_camera">Plus Button to Open gallery or Camera</string>
+    <string name="selected_image_viewer">Selected Image Viewer</string>
+    <string name="camera_button">camera button</string>
+    <string name="open_gallery_button">open gallery button</string>
+    <string name="gallery">Gallery</string>
+    <string name="camera">Camera</string>
 </resources>
