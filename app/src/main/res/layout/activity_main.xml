@@ -13,19 +13,17 @@
         android:layout_height="match_parent"
         android:onClick="mainConstraintLayoutClicked">
 
-        <ImageView
-            android:id="@+id/thumbnailImageView"
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fragmentContainerView"
+            android:name="com.pranayharjai7.myemotions.Fragments.MainActivityFragments.HomeFragment"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:contentDescription="@string/selected_image_viewer"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
-            tools:ignore="ImageContrastCheck,RedundantDescriptionCheck"
-            tools:srcCompat="@tools:sample/avatars" />
+            tools:layout="@layout/fragment_home" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.bottomappbar.BottomAppBar

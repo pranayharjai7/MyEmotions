@@ -17,17 +17,25 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.HomeFragment;
+import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.StatsFragment;
 import com.pranayharjai7.myemotions.LoginAndRegister.LoginActivity;
 import com.pranayharjai7.myemotions.Utils.AnimationUtils;
 import com.pranayharjai7.myemotions.Utils.ImageUtils;
+import com.pranayharjai7.myemotions.ViewModels.HomeViewModel;
 import com.pranayharjai7.myemotions.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int ALL_PERMISSIONS_CODE = 101;
     private ActivityMainBinding binding;
+    private FragmentManager fragmentManager = getSupportFragmentManager();
+    private HomeViewModel homeViewModel;
     private FirebaseAuth mAuth;
     private boolean isAllFabVisible;
     private Bitmap sampledImage = null;
@@ -38,15 +46,25 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        binding.mainBottomNavigationView.setBackground(null);
-        isAllFabVisible = binding.cameraButton.getVisibility() == View.VISIBLE;
+        init(savedInstanceState);
         permissions();
-        mAuth = FirebaseAuth.getInstance();
-
-        recognizeEmotions = new RecognizeEmotions(getApplicationContext());
     }
 
+    private void init(Bundle savedInstanceState){
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        binding.mainBottomNavigationView.setBackground(null);
+        isAllFabVisible = binding.cameraButton.getVisibility() == View.VISIBLE;
+        mAuth = FirebaseAuth.getInstance();
+        recognizeEmotions = new RecognizeEmotions(getApplicationContext());
+
+        if (savedInstanceState == null) {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainerView, HomeFragment.class, null)
+                    .setReorderingAllowed(true)
+                    //.addToBackStack("HOME")
+                    .commit();
+        }
+    }
 
     public void mainConstraintLayoutClicked(View view) {
         if (isAllFabVisible) {
@@ -85,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                     sampledImage = (Bitmap) result.getData().getExtras().get("data");
                     if (sampledImage != null) {
                         Bitmap picWithEmotions = recognizeEmotions.recognizeEmotions(sampledImage);
-                        binding.thumbnailImageView.setImageBitmap(picWithEmotions);
+                        homeViewModel.setEmotionPic(picWithEmotions);
                     }
                 }
             });
@@ -98,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
                     sampledImage = ImageUtils.getImage(selectedImageUri, getContentResolver());
                     if (sampledImage != null) {
                         Bitmap picWithEmotions = recognizeEmotions.recognizeEmotions(sampledImage);
-                        binding.thumbnailImageView.setImageBitmap(picWithEmotions);
+                        homeViewModel.setEmotionPic(picWithEmotions);
                     }
                 }
             });
@@ -106,12 +124,14 @@ public class MainActivity extends AppCompatActivity {
     public void homeMenuItemClicked(MenuItem item) {
         if (!item.isChecked()) {
             item.setChecked(true);
+            replaceFragment("HOME");
         }
     }
 
     public void statsMenuItemClicked(MenuItem item) {
         if (!item.isChecked()) {
             item.setChecked(true);
+            replaceFragment("STATS");
         }
     }
 
@@ -133,6 +153,33 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void replaceFragment(String fragment) {
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setCustomAnimations(
+                R.anim.fade_in,  // enter
+                R.anim.fade_out,  // exit
+                R.anim.fade_in,   // popEnter
+                R.anim.fade_out  // popExit
+        );
+
+        switch (fragment) {
+            case "HOME": {
+                transaction.replace(R.id.fragmentContainerView, HomeFragment.class, null);
+                break;
+            }
+            case "STATS": {
+                transaction.replace(R.id.fragmentContainerView, StatsFragment.class, null);
+                break;
+            }
+            default: {
+                transaction.replace(R.id.fragmentContainerView, HomeFragment.class, null);
+            }
+        }
+
+        transaction.setReorderingAllowed(true)
+                //.addToBackStack(fragment)
+                .commit();
+    }
 
     /**
      * To get camera and read/write external storage permissions.
