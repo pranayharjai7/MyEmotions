@@ -5,11 +5,11 @@ plugins {
 
 android {
     namespace 'com.pranayharjai7.myemotions'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.pranayharjai7.myemotions"
-        minSdk 24
+        minSdk 26
         targetSdk 32
         versionCode 1
         versionName "1.0"
@@ -39,6 +39,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.firebase:firebase-auth:21.1.0'
+    implementation "androidx.room:room-runtime:2.5.0"
 
     implementation 'org.pytorch:pytorch_android_lite:1.12.2'
     implementation 'org.pytorch:pytorch_android_torchvision_lite:1.12.2'
@@ -48,4 +49,6 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.4'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
+
+    annotationProcessor "androidx.room:room-compiler:2.5.0"
 }

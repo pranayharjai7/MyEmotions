@@ -1,8 +1,10 @@
 package com.pranayharjai7.myemotions;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
@@ -26,9 +28,10 @@ public class LauncherActivity extends AppCompatActivity {
             finish();
         };
 
-        binding.LauncherImage.postDelayed(runnable, 1000);
+        binding.LauncherImage.postDelayed(runnable, 500);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void launcherConstraintLayoutClicked(View view) {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);

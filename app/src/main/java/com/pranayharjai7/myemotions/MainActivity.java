@@ -2,10 +2,12 @@ package com.pranayharjai7.myemotions;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.MenuItem;
@@ -15,13 +17,18 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.room.Room;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.pranayharjai7.myemotions.Database.LocalDatabase.Expression;
+import com.pranayharjai7.myemotions.Database.LocalDatabase.ExpressionDatabase;
 import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.HomeFragment;
 import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.StatsFragment;
 import com.pranayharjai7.myemotions.LoginAndRegister.LoginActivity;
@@ -30,12 +37,16 @@ import com.pranayharjai7.myemotions.Utils.ImageUtils;
 import com.pranayharjai7.myemotions.ViewModels.HomeViewModel;
 import com.pranayharjai7.myemotions.databinding.ActivityMainBinding;
 
+import java.time.LocalDateTime;
+
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class MainActivity extends AppCompatActivity {
 
     private static final int ALL_PERMISSIONS_CODE = 101;
     private ActivityMainBinding binding;
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private HomeViewModel homeViewModel;
+    private ExpressionDatabase expressionDatabase;
     private FirebaseAuth mAuth;
     private boolean isAllFabVisible;
     private Bitmap sampledImage = null;
@@ -50,19 +61,23 @@ public class MainActivity extends AppCompatActivity {
         permissions();
     }
 
-    private void init(Bundle savedInstanceState){
+    /**
+     * Initializing variables
+     *
+     * @param savedInstanceState
+     */
+    private void init(Bundle savedInstanceState) {
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         binding.mainBottomNavigationView.setBackground(null);
         isAllFabVisible = binding.cameraButton.getVisibility() == View.VISIBLE;
         mAuth = FirebaseAuth.getInstance();
         recognizeEmotions = new RecognizeEmotions(getApplicationContext());
+        expressionDatabase = Room.databaseBuilder(this, ExpressionDatabase.class, "Expression_db")
+                .fallbackToDestructiveMigration()
+                .build();
 
         if (savedInstanceState == null) {
-            fragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainerView, HomeFragment.class, null)
-                    .setReorderingAllowed(true)
-                    //.addToBackStack("HOME")
-                    .commit();
+            replaceFragment("HOME");
         }
     }
 
@@ -103,6 +118,9 @@ public class MainActivity extends AppCompatActivity {
                     sampledImage = (Bitmap) result.getData().getExtras().get("data");
                     if (sampledImage != null) {
                         Bitmap picWithEmotions = recognizeEmotions.recognizeEmotions(sampledImage);
+                        String expression = recognizeEmotions.getResultEmotion();
+                        recognizeEmotions.setResultEmotion(null);
+                        saveInLocalDatabase(expression);
                         homeViewModel.setEmotionPic(picWithEmotions);
                     }
                 }
@@ -116,6 +134,9 @@ public class MainActivity extends AppCompatActivity {
                     sampledImage = ImageUtils.getImage(selectedImageUri, getContentResolver());
                     if (sampledImage != null) {
                         Bitmap picWithEmotions = recognizeEmotions.recognizeEmotions(sampledImage);
+                        String expression = recognizeEmotions.getResultEmotion();
+                        recognizeEmotions.setResultEmotion(null);
+                        saveInLocalDatabase(expression);
                         homeViewModel.setEmotionPic(picWithEmotions);
                     }
                 }
@@ -182,6 +203,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * Save emotion data in room database.
+     *
+     * @param expression
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void saveInLocalDatabase(String expression) {
+        new Thread(() -> {
+            Expression expression1 = new Expression();
+            expression1.setExpression(expression);
+            expression1.setDateTime(LocalDateTime.now().toString());
+            expressionDatabase.expressionDAO().insertNewExpression(expression1);
+        }).start();
+
+        replaceFragment("HOME");
+    }
+
+    /**
      * To get camera and read/write external storage permissions.
      */
     private void permissions() {
@@ -211,5 +249,20 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    public void clearAllButtonClicked(View view) {
+        new AlertDialog.Builder(this)
+                .setCancelable(true)
+                .setTitle("Warning!")
+                .setMessage("All the history will be cleared.\nDo you want to continue?")
+                .setPositiveButton("YES", (dialog, i) -> {
+                    new Thread(() -> expressionDatabase.expressionDAO().clearData()).start();
+                    replaceFragment("HOME");
+                    Toast.makeText(MainActivity.this,"The History has been cleared!",Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("NO",(dialogInterface, i) -> {
+                    dialogInterface.dismiss();
+                }).show();
     }
 }

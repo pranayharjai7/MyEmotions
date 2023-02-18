@@ -23,6 +23,7 @@ public class RecognizeEmotions {
     private EmotionPyTorchClassifier emotionClassifierPyTorch = null;
     private static int minFaceSize = 32;
     private Context applicationContext;
+    private String resultEmotion;
 
     public RecognizeEmotions(Context applicationContext) {
         this.applicationContext = applicationContext;
@@ -90,11 +91,19 @@ public class RecognizeEmotions {
                         Math.min(h, h * bbox.bottom / resizedBitmap.getHeight())
                 );
                 Bitmap faceBitmap = Bitmap.createBitmap(bmp, bboxOrig.left, bboxOrig.top, bboxOrig.width(), bboxOrig.height());
-                String resultEmotion = emotionClassifierPyTorch.recognize(faceBitmap);
+                resultEmotion = emotionClassifierPyTorch.recognize(faceBitmap);
                 c.drawText(resultEmotion, Math.max(0, bbox.left), Math.max(0, bbox.top - 20), p_text);
                 Toast.makeText(applicationContext, resultEmotion, Toast.LENGTH_SHORT).show();
             }
         }
         return tempBmp;
+    }
+
+    public String getResultEmotion() {
+        return resultEmotion;
+    }
+
+    public void setResultEmotion(String resultEmotion) {
+        this.resultEmotion = resultEmotion;
     }
 }
