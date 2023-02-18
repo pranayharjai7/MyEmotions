@@ -22,7 +22,7 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     private HomeViewModel homeViewModel;
     private ExpressionDatabase expressionDatabase;
-    private String clear = new String();
+    private String clear = "";
 
     public HomeFragment() {
         super(R.layout.fragment_home);

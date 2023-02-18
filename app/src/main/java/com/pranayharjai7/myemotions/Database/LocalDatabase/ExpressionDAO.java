@@ -11,11 +11,11 @@ import java.util.List;
 public interface ExpressionDAO {
 
     @Insert
-    public void insertNewExpression(Expression expression);
+    void insertNewExpression(Expression expression);
 
     @Query("SELECT * FROM Expression")
-    public LiveData<List<Expression>> getAllExpression();
+    LiveData<List<Expression>> getAllExpression();
 
     @Query("DELETE FROM Expression")
-    public void clearData();
+    void clearData();
 }

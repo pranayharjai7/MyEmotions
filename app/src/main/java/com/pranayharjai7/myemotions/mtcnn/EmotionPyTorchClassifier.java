@@ -30,7 +30,7 @@ public class EmotionPyTorchClassifier {
 
     private static final String MODEL_FILE = "enet_b0_8_va_mtl.ptl";//"enet_b0_8_best_vgaf.ptl";//"enet_b2_8.ptl";
     private List<String> labels;
-    private Module module = null;
+    private Module module;
     //private int width=260, height=260;
     private int width = 224, height = 224;
 
@@ -59,7 +59,7 @@ public class EmotionPyTorchClassifier {
     }
 
     private void loadLabels(final Context context) {
-        BufferedReader br = null;
+        BufferedReader br;
         labels = new ArrayList<>();
         try {
             br = new BufferedReader(new InputStreamReader(context.getAssets().open("emotionsLabel.txt")));
@@ -82,21 +82,20 @@ public class EmotionPyTorchClassifier {
         Pair<Long, float[]> res = classifyImage(bitmap);
         final float[] scores = res.second;
         int numEmotions = Math.min(labels.size(), scores.length);
-        Integer index[] = new Integer[numEmotions];
+        Integer[] index = new Integer[numEmotions];
         for (int i = 0; i < numEmotions; i++) {
             index[i] = i;
         }
-        Arrays.sort(index, new Comparator<Integer>() {
-            @Override
-            public int compare(Integer idx1, Integer idx2) {
-                return Float.compare(scores[idx2], scores[idx1]);
-            }
-        });
+        Arrays.sort(index, (idx1, idx2) -> Float.compare(scores[idx2], scores[idx1]));
         int K = 3;
         StringBuilder str = new StringBuilder();
         str.append("Timecost (ms):").append(res.first).append("\nResult:\n");
         for (int i = 0; i < K; ++i) {
-            str.append(labels.get(index[i]) + " " + index[i] + " " + scores[index[i]] + "\n");
+            str.append(labels.get(index[i]))
+                    .append(" ")
+                    .append(index[i])
+                    .append(" ")
+                    .append(scores[index[i]]).append("\n");
         }
         Log.i(TAG, "PyTorch result: " + str);
         return labels.get(index[0]);

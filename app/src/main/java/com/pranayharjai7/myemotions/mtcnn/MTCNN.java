@@ -137,7 +137,7 @@ public class MTCNN {
         pInterpreter.runForMultipleInputsOutputs(new Object[]{pNetIn}, outputs);
     }
 
-    private int generateBoxes(float[][][][] prob1, float[][][][] conv4_2_BiasAdd, float scale, Vector<Box> boxes) {
+    private void generateBoxes(float[][][][] prob1, float[][][][] conv4_2_BiasAdd, float scale, Vector<Box> boxes) {
         int h = prob1[0].length;
         int w = prob1[0][0].length;
 
@@ -163,7 +163,6 @@ public class MTCNN {
                 }
             }
         }
-        return 0;
     }
 
     private void nms(Vector<Box> boxes, float threshold, String method) {

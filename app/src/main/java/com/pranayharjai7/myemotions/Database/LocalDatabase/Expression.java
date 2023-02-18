@@ -1,18 +1,12 @@
 package com.pranayharjai7.myemotions.Database.LocalDatabase;
 
-import android.graphics.Bitmap;
-
-import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-
-import java.time.LocalDateTime;
 
 @Entity(tableName = "Expression")
 public class Expression {
 
     @PrimaryKey(autoGenerate = true)
-    @NonNull
     private int key;
     private String dateTime;
     private String Expression;

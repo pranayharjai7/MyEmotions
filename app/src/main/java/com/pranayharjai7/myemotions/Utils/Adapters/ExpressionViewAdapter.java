@@ -39,7 +39,7 @@ public class ExpressionViewAdapter extends RecyclerView.Adapter<ExpressionViewAd
         return expressions.size();
     }
 
-    public class ExpressionViewHolder extends RecyclerView.ViewHolder{
+    public static class ExpressionViewHolder extends RecyclerView.ViewHolder{
         ExpressionCardLayoutBinding binding;
 
         public ExpressionViewHolder(@NonNull View itemView) {
