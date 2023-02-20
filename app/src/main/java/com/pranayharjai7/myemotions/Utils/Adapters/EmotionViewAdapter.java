@@ -17,7 +17,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.pranayharjai7.myemotions.Database.LocalDatabase.Emotion;
+import com.pranayharjai7.myemotions.Database.Emotion;
 import com.pranayharjai7.myemotions.R;
 import com.pranayharjai7.myemotions.databinding.EmotionCardLayoutBinding;
 

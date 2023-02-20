@@ -23,8 +23,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.room.Room;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.pranayharjai7.myemotions.Database.LocalDatabase.Emotion;
-import com.pranayharjai7.myemotions.Database.LocalDatabase.EmotionDatabase;
+import com.pranayharjai7.myemotions.Database.Emotion;
+import com.pranayharjai7.myemotions.Database.DAO.EmotionDatabase;
 import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.HomeFragment;
 import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.StatsFragment;
 import com.pranayharjai7.myemotions.LoginAndRegister.LoginActivity;
@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
                     if (sampledImage != null) {
                         Bitmap picWithEmotions = recognizeEmotions.recognizeEmotions(sampledImage);
                         String emotion = recognizeEmotions.getResultEmotion();
-                        if(emotion != null) {
+                        if (emotion != null) {
                             saveInLocalDatabase(emotion);
                         }
                         recognizeEmotions.setResultEmotion(null);
@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
                     if (sampledImage != null) {
                         Bitmap picWithEmotions = recognizeEmotions.recognizeEmotions(sampledImage);
                         String emotion = recognizeEmotions.getResultEmotion();
-                        if(emotion != null) {
+                        if (emotion != null) {
                             saveInLocalDatabase(emotion);
                         }
                         recognizeEmotions.setResultEmotion(null);
@@ -224,13 +224,13 @@ public class MainActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
                 || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
                 || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(new String[]{
-                            Manifest.permission.CAMERA,
-                            Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            Manifest.permission.INTERNET
-                    }, ALL_PERMISSIONS_CODE);
-                }
+            requestPermissions(new String[]{
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.INTERNET
+            }, ALL_PERMISSIONS_CODE);
+        }
 
     }
 

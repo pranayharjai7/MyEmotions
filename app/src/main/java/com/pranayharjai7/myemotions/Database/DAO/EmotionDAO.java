@@ -1,9 +1,11 @@
-package com.pranayharjai7.myemotions.Database.LocalDatabase;
+package com.pranayharjai7.myemotions.Database.DAO;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
+
+import com.pranayharjai7.myemotions.Database.Emotion;
 
 import java.util.List;
 

@@ -16,7 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.room.Room;
 
-import com.pranayharjai7.myemotions.Database.LocalDatabase.EmotionDatabase;
+import com.pranayharjai7.myemotions.Database.DAO.EmotionDatabase;
 import com.pranayharjai7.myemotions.R;
 import com.pranayharjai7.myemotions.Utils.Adapters.EmotionViewAdapter;
 import com.pranayharjai7.myemotions.ViewModels.HomeViewModel;
