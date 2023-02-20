@@ -114,8 +114,10 @@ public class MainActivity extends AppCompatActivity {
                     if (sampledImage != null) {
                         Bitmap picWithEmotions = recognizeEmotions.recognizeEmotions(sampledImage);
                         String emotion = recognizeEmotions.getResultEmotion();
+                        if(emotion != null) {
+                            saveInLocalDatabase(emotion);
+                        }
                         recognizeEmotions.setResultEmotion(null);
-                        saveInLocalDatabase(emotion);
                         homeViewModel.setEmotionPic(picWithEmotions);
                     }
                 }
@@ -130,8 +132,10 @@ public class MainActivity extends AppCompatActivity {
                     if (sampledImage != null) {
                         Bitmap picWithEmotions = recognizeEmotions.recognizeEmotions(sampledImage);
                         String emotion = recognizeEmotions.getResultEmotion();
+                        if(emotion != null) {
+                            saveInLocalDatabase(emotion);
+                        }
                         recognizeEmotions.setResultEmotion(null);
-                        saveInLocalDatabase(emotion);
                         homeViewModel.setEmotionPic(picWithEmotions);
                     }
                 }
