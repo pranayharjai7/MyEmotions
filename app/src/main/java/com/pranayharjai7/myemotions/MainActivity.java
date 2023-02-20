@@ -15,7 +15,6 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
@@ -24,8 +23,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.room.Room;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.pranayharjai7.myemotions.Database.LocalDatabase.Expression;
-import com.pranayharjai7.myemotions.Database.LocalDatabase.ExpressionDatabase;
+import com.pranayharjai7.myemotions.Database.LocalDatabase.Emotion;
+import com.pranayharjai7.myemotions.Database.LocalDatabase.EmotionDatabase;
 import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.HomeFragment;
 import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.StatsFragment;
 import com.pranayharjai7.myemotions.LoginAndRegister.LoginActivity;
@@ -42,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private HomeViewModel homeViewModel;
-    private ExpressionDatabase expressionDatabase;
+    private EmotionDatabase emotionDatabase;
     private FirebaseAuth mAuth;
     private boolean isAllFabVisible;
     private Bitmap sampledImage = null;
@@ -68,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         isAllFabVisible = binding.cameraButton.getVisibility() == View.VISIBLE;
         mAuth = FirebaseAuth.getInstance();
         recognizeEmotions = new RecognizeEmotions(getApplicationContext());
-        expressionDatabase = Room.databaseBuilder(this, ExpressionDatabase.class, "Expression_db")
+        emotionDatabase = Room.databaseBuilder(this, EmotionDatabase.class, "Emotion_db")
                 .fallbackToDestructiveMigration()
                 .build();
 
@@ -114,9 +113,9 @@ public class MainActivity extends AppCompatActivity {
                     sampledImage = (Bitmap) result.getData().getExtras().get("data");
                     if (sampledImage != null) {
                         Bitmap picWithEmotions = recognizeEmotions.recognizeEmotions(sampledImage);
-                        String expression = recognizeEmotions.getResultEmotion();
+                        String emotion = recognizeEmotions.getResultEmotion();
                         recognizeEmotions.setResultEmotion(null);
-                        saveInLocalDatabase(expression);
+                        saveInLocalDatabase(emotion);
                         homeViewModel.setEmotionPic(picWithEmotions);
                     }
                 }
@@ -130,9 +129,9 @@ public class MainActivity extends AppCompatActivity {
                     sampledImage = ImageUtils.getImage(selectedImageUri, getContentResolver());
                     if (sampledImage != null) {
                         Bitmap picWithEmotions = recognizeEmotions.recognizeEmotions(sampledImage);
-                        String expression = recognizeEmotions.getResultEmotion();
+                        String emotion = recognizeEmotions.getResultEmotion();
                         recognizeEmotions.setResultEmotion(null);
-                        saveInLocalDatabase(expression);
+                        saveInLocalDatabase(emotion);
                         homeViewModel.setEmotionPic(picWithEmotions);
                     }
                 }
@@ -201,14 +200,14 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Save emotion data in room database.
      *
-     * @param expression
+     * @param emotion
      */
-    private void saveInLocalDatabase(String expression) {
+    private void saveInLocalDatabase(String emotion) {
         new Thread(() -> {
-            Expression expression1 = new Expression();
-            expression1.setExpression(expression);
-            expression1.setDateTime(LocalDateTime.now().toString());
-            expressionDatabase.expressionDAO().insertNewExpression(expression1);
+            Emotion emotion1 = new Emotion();
+            emotion1.setEmotion(emotion);
+            emotion1.setDateTime(LocalDateTime.now().toString());
+            emotionDatabase.emotionDAO().insertNewEmotion(emotion1);
         }).start();
 
         replaceFragment("HOME");
@@ -242,20 +241,5 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-    }
-
-    public void clearAllButtonClicked(View view) {
-        new AlertDialog.Builder(this)
-                .setCancelable(true)
-                .setTitle("Warning!")
-                .setMessage("All the history will be cleared.\nDo you want to continue?")
-                .setPositiveButton("YES", (dialog, i) -> {
-                    new Thread(() -> expressionDatabase.expressionDAO().clearData()).start();
-                    replaceFragment("HOME");
-                    Toast.makeText(MainActivity.this,"The History has been cleared!",Toast.LENGTH_SHORT).show();
-                })
-                .setNegativeButton("NO",(dialogInterface, i) -> {
-                    dialogInterface.dismiss();
-                }).show();
     }
 }

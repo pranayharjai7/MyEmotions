@@ -3,13 +3,13 @@ package com.pranayharjai7.myemotions.Database.LocalDatabase;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "Expression")
-public class Expression {
+@Entity(tableName = "Emotion")
+public class Emotion {
 
     @PrimaryKey(autoGenerate = true)
     private int key;
     private String dateTime;
-    private String Expression;
+    private String emotion;
 
     public int getKey() {
         return key;
@@ -27,11 +27,11 @@ public class Expression {
         this.dateTime = dateTime;
     }
 
-    public String getExpression() {
-        return Expression;
+    public String getEmotion() {
+        return emotion;
     }
 
-    public void setExpression(String expression) {
-        Expression = expression;
+    public void setEmotion(String emotion) {
+        this.emotion = emotion;
     }
 }
