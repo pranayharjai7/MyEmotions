@@ -9,7 +9,6 @@ import static com.pranayharjai7.myemotions.R.drawable.neutral;
 import static com.pranayharjai7.myemotions.R.drawable.sadness;
 import static com.pranayharjai7.myemotions.R.drawable.surprise;
 
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,50 +17,50 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.pranayharjai7.myemotions.Database.LocalDatabase.Expression;
+import com.pranayharjai7.myemotions.Database.LocalDatabase.Emotion;
 import com.pranayharjai7.myemotions.R;
-import com.pranayharjai7.myemotions.databinding.ExpressionCardLayoutBinding;
+import com.pranayharjai7.myemotions.databinding.EmotionCardLayoutBinding;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class ExpressionViewAdapter extends RecyclerView.Adapter<ExpressionViewAdapter.ExpressionViewHolder> {
+public class EmotionViewAdapter extends RecyclerView.Adapter<EmotionViewAdapter.EmotionViewHolder> {
 
-    private List<Expression> expressions;
+    private List<Emotion> emotions;
 
-    public ExpressionViewAdapter(List<Expression> expressions) {
-        this.expressions = expressions;
+    public EmotionViewAdapter(List<Emotion> emotions) {
+        this.emotions = emotions;
     }
 
-    public static class ExpressionViewHolder extends RecyclerView.ViewHolder {
-        ExpressionCardLayoutBinding binding;
+    public static class EmotionViewHolder extends RecyclerView.ViewHolder {
+        EmotionCardLayoutBinding binding;
 
-        public ExpressionViewHolder(@NonNull View itemView) {
+        public EmotionViewHolder(@NonNull View itemView) {
             super(itemView);
-            binding = ExpressionCardLayoutBinding.bind(itemView);
+            binding = EmotionCardLayoutBinding.bind(itemView);
         }
     }
 
     @Override
     public int getItemCount() {
-        return expressions.size();
+        return emotions.size();
     }
 
     @NonNull
     @Override
-    public ExpressionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.expression_card_layout, parent, false);
-        return new ExpressionViewHolder(view);
+    public EmotionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.emotion_card_layout, parent, false);
+        return new EmotionViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ExpressionViewHolder holder, int position) {
-        LocalDateTime dateTime = LocalDateTime.parse(expressions.get(position).getDateTime());
-        String expression = expressions.get(position).getExpression();
+    public void onBindViewHolder(@NonNull EmotionViewHolder holder, int position) {
+        LocalDateTime dateTime = LocalDateTime.parse(emotions.get(position).getDateTime());
+        String emotion = emotions.get(position).getEmotion();
         String dateTimeString = getDateAndTimeAsString(dateTime);
-        setEmojiAndColor(expression, holder);
+        setEmojiAndColor(emotion, holder);
         holder.binding.dateTextView.setText(dateTimeString);
-        holder.binding.expressionsTextView.setText(expression);
+        holder.binding.emotionTextView.setText(emotion);
     }
 
     private String getDateAndTimeAsString(LocalDateTime dateTime) {
@@ -93,8 +92,8 @@ public class ExpressionViewAdapter extends RecyclerView.Adapter<ExpressionViewAd
         return resultDateTime.toString();
     }
 
-    private void setEmojiAndColor(String expression, ExpressionViewHolder holder) {
-        switch (expression) {
+    private void setEmojiAndColor(String emotion, EmotionViewHolder holder) {
+        switch (emotion) {
             case "Anger": {
                 holder.binding.emojiImageView.setImageResource(anger);
                 holder.binding.homeEmotionCardView.setCardBackgroundColor(Color.parseColor("#e94339"));

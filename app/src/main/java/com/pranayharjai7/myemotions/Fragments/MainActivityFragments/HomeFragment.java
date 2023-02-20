@@ -16,10 +16,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.room.Room;
 
-import com.pranayharjai7.myemotions.Database.LocalDatabase.ExpressionDatabase;
-import com.pranayharjai7.myemotions.MainActivity;
+import com.pranayharjai7.myemotions.Database.LocalDatabase.EmotionDatabase;
 import com.pranayharjai7.myemotions.R;
-import com.pranayharjai7.myemotions.Utils.Adapters.ExpressionViewAdapter;
+import com.pranayharjai7.myemotions.Utils.Adapters.EmotionViewAdapter;
 import com.pranayharjai7.myemotions.ViewModels.HomeViewModel;
 import com.pranayharjai7.myemotions.databinding.FragmentHomeBinding;
 
@@ -27,7 +26,7 @@ public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
     private HomeViewModel homeViewModel;
-    private ExpressionDatabase expressionDatabase;
+    private EmotionDatabase emotionDatabase;
     private String clear = "";
 
     public HomeFragment() {
@@ -43,7 +42,7 @@ public class HomeFragment extends Fragment {
 
     private void init() {
         homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
-        expressionDatabase = Room.databaseBuilder(getContext(), ExpressionDatabase.class, "Expression_db")
+        emotionDatabase = Room.databaseBuilder(getContext(), EmotionDatabase.class, "Emotion_db")
                 .fallbackToDestructiveMigration()
                 .build();
     }
@@ -53,8 +52,8 @@ public class HomeFragment extends Fragment {
             binding.emotionsImageView.setImageBitmap(bitmap);
         });
 
-        expressionDatabase.expressionDAO().getAllExpression().observe(getViewLifecycleOwner(), expressions -> {
-            binding.emotionsRecyclerView.setAdapter(new ExpressionViewAdapter(expressions));
+        emotionDatabase.emotionDAO().getAllEmotion().observe(getViewLifecycleOwner(), emotions -> {
+            binding.emotionsRecyclerView.setAdapter(new EmotionViewAdapter(emotions));
         });
 
 
@@ -83,7 +82,7 @@ public class HomeFragment extends Fragment {
                     .setTitle("Warning!")
                     .setMessage("All the history will be cleared.\nDo you want to continue?")
                     .setPositiveButton("YES", (dialog, i) -> {
-                        new Thread(() -> expressionDatabase.expressionDAO().clearData()).start();
+                        new Thread(() -> emotionDatabase.emotionDAO().clearData()).start();
                         Toast.makeText(getContext(),"The History has been cleared!",Toast.LENGTH_SHORT).show();
                     })
                     .setNegativeButton("NO",(dialogInterface, i) -> {

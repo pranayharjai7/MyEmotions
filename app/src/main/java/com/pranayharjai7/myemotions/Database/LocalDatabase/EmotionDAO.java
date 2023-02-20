@@ -8,14 +8,14 @@ import androidx.room.Query;
 import java.util.List;
 
 @Dao
-public interface ExpressionDAO {
+public interface EmotionDAO {
 
     @Insert
-    void insertNewExpression(Expression expression);
+    void insertNewEmotion(Emotion emotion);
 
-    @Query("SELECT * FROM Expression")
-    LiveData<List<Expression>> getAllExpression();
+    @Query("SELECT * FROM Emotion")
+    LiveData<List<Emotion>> getAllEmotion();
 
-    @Query("DELETE FROM Expression")
+    @Query("DELETE FROM Emotion")
     void clearData();
 }
