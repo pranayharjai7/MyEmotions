@@ -243,19 +243,4 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
-    public void clearAllButtonClicked(View view) {
-        new AlertDialog.Builder(this)
-                .setCancelable(true)
-                .setTitle("Warning!")
-                .setMessage("All the history will be cleared.\nDo you want to continue?")
-                .setPositiveButton("YES", (dialog, i) -> {
-                    new Thread(() -> expressionDatabase.expressionDAO().clearData()).start();
-                    replaceFragment("HOME");
-                    Toast.makeText(MainActivity.this,"The History has been cleared!",Toast.LENGTH_SHORT).show();
-                })
-                .setNegativeButton("NO",(dialogInterface, i) -> {
-                    dialogInterface.dismiss();
-                }).show();
-    }
 }
