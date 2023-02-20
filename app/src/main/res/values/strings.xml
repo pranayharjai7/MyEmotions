@@ -25,4 +25,5 @@
     <string name="open_gallery_button">open gallery button</string>
     <string name="gallery">Gallery</string>
     <string name="camera">Camera</string>
+    <string name="emotionsimageview">emotionsImageView</string>
 </resources>

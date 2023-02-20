@@ -43,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
         String password = binding.passwordLoginEditText.getText().toString();
 
         if (checkLogin(email, password)) {
-           loginUserWithFirebase(email, password);
+           loginUserWithFirebaseAuth(email, password);
         }
     }
 
@@ -62,7 +62,7 @@ public class LoginActivity extends AppCompatActivity {
         String password = binding.passwordRegisterEditText.getText().toString();
 
         if (checkRegistration(username, email, password)) {
-            registerUserWithFirebase(username, email, password);
+            registerUserWithFirebaseAuth(username, email, password);
         }
     }
 
@@ -80,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
      * @param email
      * @param password
      */
-    private void loginUserWithFirebase(String email, String password) {
+    private void loginUserWithFirebaseAuth(String email, String password) {
         binding.progressBar.setVisibility(View.VISIBLE);
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
      * @param email
      * @param password
      */
-    private void registerUserWithFirebase(String username, String email, String password) {
+    private void registerUserWithFirebaseAuth(String username, String email, String password) {
         binding.progressBar.setVisibility(View.VISIBLE);
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
@@ -189,7 +189,6 @@ public class LoginActivity extends AppCompatActivity {
      */
     public void loginMenuButtonClicked(View view) {
         changeMenu(view, binding.signupMenuButton);
-
     }
 
     /**

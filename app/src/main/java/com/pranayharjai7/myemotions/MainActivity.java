@@ -17,17 +17,31 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.room.Room;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.pranayharjai7.myemotions.Database.Emotion;
+import com.pranayharjai7.myemotions.Database.DAO.EmotionDatabase;
+import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.HomeFragment;
+import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.StatsFragment;
 import com.pranayharjai7.myemotions.LoginAndRegister.LoginActivity;
 import com.pranayharjai7.myemotions.Utils.AnimationUtils;
 import com.pranayharjai7.myemotions.Utils.ImageUtils;
+import com.pranayharjai7.myemotions.ViewModels.HomeViewModel;
 import com.pranayharjai7.myemotions.databinding.ActivityMainBinding;
+
+import java.time.LocalDateTime;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int ALL_PERMISSIONS_CODE = 101;
     private ActivityMainBinding binding;
+    private FragmentManager fragmentManager = getSupportFragmentManager();
+    private HomeViewModel homeViewModel;
+    private EmotionDatabase emotionDatabase;
     private FirebaseAuth mAuth;
     private boolean isAllFabVisible;
     private Bitmap sampledImage = null;
@@ -38,15 +52,29 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        binding.mainBottomNavigationView.setBackground(null);
-        isAllFabVisible = binding.cameraButton.getVisibility() == View.VISIBLE;
+        init(savedInstanceState);
         permissions();
-        mAuth = FirebaseAuth.getInstance();
-
-        recognizeEmotions = new RecognizeEmotions(getApplicationContext());
     }
 
+    /**
+     * Initializing variables
+     *
+     * @param savedInstanceState
+     */
+    private void init(Bundle savedInstanceState) {
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        binding.mainBottomNavigationView.setBackground(null);
+        isAllFabVisible = binding.cameraButton.getVisibility() == View.VISIBLE;
+        mAuth = FirebaseAuth.getInstance();
+        recognizeEmotions = new RecognizeEmotions(getApplicationContext());
+        emotionDatabase = Room.databaseBuilder(this, EmotionDatabase.class, "Emotion_db")
+                .fallbackToDestructiveMigration()
+                .build();
+
+        if (savedInstanceState == null) {
+            replaceFragment("HOME");
+        }
+    }
 
     public void mainConstraintLayoutClicked(View view) {
         if (isAllFabVisible) {
@@ -78,19 +106,24 @@ public class MainActivity extends AppCompatActivity {
         recordEmotionButtonClicked(view);
     }
 
-    private ActivityResultLauncher cameraLauncher = registerForActivityResult(
+    private ActivityResultLauncher<Intent> cameraLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
                     sampledImage = (Bitmap) result.getData().getExtras().get("data");
                     if (sampledImage != null) {
                         Bitmap picWithEmotions = recognizeEmotions.recognizeEmotions(sampledImage);
-                        binding.thumbnailImageView.setImageBitmap(picWithEmotions);
+                        String emotion = recognizeEmotions.getResultEmotion();
+                        if (emotion != null) {
+                            saveInLocalDatabase(emotion);
+                        }
+                        recognizeEmotions.setResultEmotion(null);
+                        homeViewModel.setEmotionPic(picWithEmotions);
                     }
                 }
             });
 
-    private ActivityResultLauncher galleryLauncher = registerForActivityResult(
+    private ActivityResultLauncher<Intent> galleryLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
@@ -98,7 +131,12 @@ public class MainActivity extends AppCompatActivity {
                     sampledImage = ImageUtils.getImage(selectedImageUri, getContentResolver());
                     if (sampledImage != null) {
                         Bitmap picWithEmotions = recognizeEmotions.recognizeEmotions(sampledImage);
-                        binding.thumbnailImageView.setImageBitmap(picWithEmotions);
+                        String emotion = recognizeEmotions.getResultEmotion();
+                        if (emotion != null) {
+                            saveInLocalDatabase(emotion);
+                        }
+                        recognizeEmotions.setResultEmotion(null);
+                        homeViewModel.setEmotionPic(picWithEmotions);
                     }
                 }
             });
@@ -106,12 +144,14 @@ public class MainActivity extends AppCompatActivity {
     public void homeMenuItemClicked(MenuItem item) {
         if (!item.isChecked()) {
             item.setChecked(true);
+            replaceFragment("HOME");
         }
     }
 
     public void statsMenuItemClicked(MenuItem item) {
         if (!item.isChecked()) {
             item.setChecked(true);
+            replaceFragment("STATS");
         }
     }
 
@@ -133,16 +173,57 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void replaceFragment(String fragment) {
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setCustomAnimations(
+                R.anim.fade_in,  // enter
+                R.anim.fade_out,  // exit
+                R.anim.fade_in,   // popEnter
+                R.anim.fade_out  // popExit
+        );
+
+        switch (fragment) {
+            case "HOME": {
+                transaction.replace(R.id.fragmentContainerView, HomeFragment.class, null);
+                break;
+            }
+            case "STATS": {
+                transaction.replace(R.id.fragmentContainerView, StatsFragment.class, null);
+                break;
+            }
+            default: {
+                transaction.replace(R.id.fragmentContainerView, HomeFragment.class, null);
+            }
+        }
+
+        transaction.setReorderingAllowed(true)
+                //.addToBackStack(fragment)
+                .commit();
+    }
+
+    /**
+     * Save emotion data in room database.
+     *
+     * @param emotion
+     */
+    private void saveInLocalDatabase(String emotion) {
+        new Thread(() -> {
+            Emotion emotion1 = new Emotion();
+            emotion1.setEmotion(emotion);
+            emotion1.setDateTime(LocalDateTime.now().toString());
+            emotionDatabase.emotionDAO().insertNewEmotion(emotion1);
+        }).start();
+
+        replaceFragment("HOME");
+    }
 
     /**
      * To get camera and read/write external storage permissions.
      */
     private void permissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-
-        } else {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{
                     Manifest.permission.CAMERA,
                     Manifest.permission.READ_EXTERNAL_STORAGE,
