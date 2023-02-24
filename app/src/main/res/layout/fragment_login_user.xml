@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/loginLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/emailAddressLoginEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="TextContrastCheck"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="10dp"
+        android:autofillHints=""
+        android:background="@drawable/edit_text_bg"
+        android:ems="10"
+        android:hint="@string/email_address"
+        android:inputType="textEmailAddress"
+        android:minHeight="48dp"
+        android:paddingStart="50dp"
+        android:paddingEnd="10dp"
+        android:textColor="@android:color/black"
+        android:textColorHint="#78909C" />
+
+    <EditText
+        android:id="@+id/passwordLoginEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/emailAddressLoginEditText"
+        tools:ignore="TextContrastCheck"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="10dp"
+        android:autofillHints=""
+        android:background="@drawable/edit_text_bg"
+        android:ems="10"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        android:minHeight="48dp"
+        android:paddingStart="50dp"
+        android:paddingEnd="10dp"
+        android:textColor="@android:color/black"
+        android:textColorHint="#78909C" />
+
+    <TextView
+        android:id="@+id/forgotPasswordTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="20dp"
+        android:text="@string/forgot_password"
+        android:textColor="#00838F"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/passwordLoginEditText" />
+
+    <ImageView
+        android:id="@+id/emailIcon"
+        app:layout_constraintBottom_toBottomOf="@+id/emailAddressLoginEditText"
+        app:layout_constraintStart_toStartOf="@+id/emailAddressLoginEditText"
+        app:layout_constraintTop_toTopOf="@+id/emailAddressLoginEditText"
+        app:srcCompat="@drawable/ic_email_blue"
+        tools:ignore="ImageContrastCheck"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/emailicon"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp" />
+
+    <ImageView
+        android:id="@+id/passwordIcon"
+        app:layout_constraintBottom_toBottomOf="@+id/passwordLoginEditText"
+        app:layout_constraintStart_toStartOf="@+id/passwordLoginEditText"
+        app:layout_constraintTop_toTopOf="@+id/passwordLoginEditText"
+        app:srcCompat="@drawable/ic_baseline_lock_24"
+        tools:ignore="ImageContrastCheck"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/passwordicon"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/loginButton"
+        app:backgroundTint="#42B3E5"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/forgotPasswordTextView"
+        app:srcCompat="@drawable/ic_login_arrow_white"
+        tools:ignore="SpeakableTextPresentCheck,ImageContrastCheck,TouchTargetSizeCheck"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:contentDescription="@string/login"
+        android:focusable="true"
+        android:onClick="loginButtonClicked" />
+
+    <ProgressBar
+        android:id="@+id/loginProgressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

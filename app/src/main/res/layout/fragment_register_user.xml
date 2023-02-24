@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/registerLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/usernameRegisterEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="10dp"
+        android:autofillHints=""
+        android:background="@drawable/edit_text_bg"
+        android:ems="10"
+        android:hint="@string/user_name"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
+        android:paddingStart="50dp"
+        android:paddingEnd="10dp"
+        android:textColor="@android:color/black"
+        android:textColorHint="#78909C"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/emailAddressRegisterEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="10dp"
+        android:autofillHints=""
+        android:background="@drawable/edit_text_bg"
+        android:ems="10"
+        android:hint="@string/email_address"
+        android:inputType="textEmailAddress"
+        android:minHeight="48dp"
+        android:paddingStart="50dp"
+        android:paddingEnd="10dp"
+        android:textColor="@android:color/black"
+        android:textColorHint="#78909C"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/usernameRegisterEditText"
+        tools:ignore="TextContrastCheck" />
+
+    <EditText
+        android:id="@+id/passwordRegisterEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="10dp"
+        android:autofillHints=""
+        android:background="@drawable/edit_text_bg"
+        android:ems="10"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        android:minHeight="48dp"
+        android:paddingStart="50dp"
+        android:paddingEnd="10dp"
+        android:textColor="@android:color/black"
+        android:textColorHint="#78909C"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/emailAddressRegisterEditText"
+        tools:ignore="TextContrastCheck" />
+
+    <ImageView
+        android:id="@+id/usernameIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/usernameicon"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        app:layout_constraintBottom_toBottomOf="@+id/usernameRegisterEditText"
+        app:layout_constraintStart_toStartOf="@+id/usernameRegisterEditText"
+        app:layout_constraintTop_toTopOf="@+id/usernameRegisterEditText"
+        app:srcCompat="@drawable/ic_person_blue"
+        tools:ignore="ImageContrastCheck" />
+
+    <ImageView
+        android:id="@+id/emailIcon2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/emailicon"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        app:layout_constraintBottom_toBottomOf="@+id/emailAddressRegisterEditText"
+        app:layout_constraintStart_toStartOf="@+id/emailAddressRegisterEditText"
+        app:layout_constraintTop_toTopOf="@+id/emailAddressRegisterEditText"
+        app:srcCompat="@drawable/ic_email_blue"
+        tools:ignore="ImageContrastCheck" />
+
+    <ImageView
+        android:id="@+id/passwordIcon2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/passwordicon"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        app:layout_constraintBottom_toBottomOf="@+id/passwordRegisterEditText"
+        app:layout_constraintStart_toStartOf="@+id/passwordRegisterEditText"
+        app:layout_constraintTop_toTopOf="@+id/passwordRegisterEditText"
+        app:srcCompat="@drawable/ic_baseline_lock_24"
+        tools:ignore="ImageContrastCheck" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/registerButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:contentDescription="@string/login"
+        android:focusable="true"
+        android:onClick="registerButtonClicked"
+        app:backgroundTint="#42B3E5"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/passwordRegisterEditText"
+        app:srcCompat="@drawable/ic_login_arrow_white"
+        tools:ignore="SpeakableTextPresentCheck,ImageContrastCheck" />
+
+    <ProgressBar
+        android:id="@+id/registerProgressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
