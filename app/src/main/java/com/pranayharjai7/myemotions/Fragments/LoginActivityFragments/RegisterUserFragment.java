@@ -14,14 +14,16 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.pranayharjai7.myemotions.Database.Emotion;
+import com.pranayharjai7.myemotions.Database.UserProfile;
 import com.pranayharjai7.myemotions.MainActivity;
 import com.pranayharjai7.myemotions.R;
+import com.pranayharjai7.myemotions.Utils.Enums.MoodVisibility;
 import com.pranayharjai7.myemotions.ViewModels.RegisterViewModel;
 import com.pranayharjai7.myemotions.databinding.FragmentRegisterUserBinding;
+
+import java.util.ArrayList;
 
 public class RegisterUserFragment extends Fragment {
 
@@ -92,21 +94,46 @@ public class RegisterUserFragment extends Fragment {
      * @param password
      */
     private void registerUserWithFirebaseAuth(String username, String email, String password) {
+        Emotion emotion = new Emotion();
+        emotion.setEmotion("Happy");
         binding.registerButton.setVisibility(View.VISIBLE);
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        //To add username to profile
-                        task.getResult().getUser()
-                                .updateProfile(new UserProfileChangeRequest.Builder().setDisplayName(username).build());
-                        Toast.makeText(getContext(), "User Registered successfully!", Toast.LENGTH_SHORT).show();
+                        UserProfile userProfile = createNewUserProfile(username, email);
+                        String userId =  task.getResult().getUser().getUid();
+                        saveProfileInRealTimeDatabase(userProfile, userId);
                         mAuth.signOut(); //By default, registered user gets signed in
+                        Toast.makeText(getContext(), "User Registered successfully!", Toast.LENGTH_SHORT).show();
                         registerViewModel.setRegisterUserFragmentView(binding.registerButton);
                     } else {
                         Toast.makeText(getContext(), "Failed to Register,Try Again!", Toast.LENGTH_SHORT).show();
                     }
                     binding.registerProgressBar.setVisibility(View.GONE);
                 });
+    }
+
+    /**
+     * To save user in Realtime Database.
+     * @param userProfile UserProfile to be saved
+     * @param userId Unique userId
+     */
+    private void saveProfileInRealTimeDatabase(UserProfile userProfile, String userId) {
+        firebaseDatabase.getReference("MyEmotions")
+                .child("UserProfile")
+                .child(userId)
+                .setValue(userProfile);
+    }
+
+    private UserProfile createNewUserProfile(String username, String email) {
+        UserProfile userProfile = new UserProfile();
+        userProfile.setUsername(username);
+        userProfile.setEmail(email);
+        userProfile.setEmotions(new ArrayList<>());
+        userProfile.setLocation("");
+        userProfile.setMoodVisibility(MoodVisibility.PUBLIC.toString());
+        userProfile.setFriends(new ArrayList<>());
+        return userProfile;
     }
 
     /**
