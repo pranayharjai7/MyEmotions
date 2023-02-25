@@ -1,4 +1,4 @@
-package com.pranayharjai7.myemotions.LoginAndRegister;
+package com.pranayharjai7.myemotions;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -13,8 +13,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.pranayharjai7.myemotions.Fragments.LoginActivityFragments.LoginUserFragment;
 import com.pranayharjai7.myemotions.Fragments.LoginActivityFragments.RegisterUserFragment;
-import com.pranayharjai7.myemotions.MainActivity;
-import com.pranayharjai7.myemotions.R;
 import com.pranayharjai7.myemotions.ViewModels.LoginViewModel;
 import com.pranayharjai7.myemotions.ViewModels.RegisterViewModel;
 import com.pranayharjai7.myemotions.databinding.ActivityLoginBinding;

@@ -27,7 +27,6 @@ import com.pranayharjai7.myemotions.Database.Emotion;
 import com.pranayharjai7.myemotions.Database.DAO.EmotionDatabase;
 import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.HomeFragment;
 import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.StatsFragment;
-import com.pranayharjai7.myemotions.LoginAndRegister.LoginActivity;
 import com.pranayharjai7.myemotions.Utils.AnimationUtils;
 import com.pranayharjai7.myemotions.Utils.ImageUtils;
 import com.pranayharjai7.myemotions.ViewModels.HomeViewModel;

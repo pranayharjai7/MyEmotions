@@ -6,7 +6,6 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.pranayharjai7.myemotions.LoginAndRegister.LoginActivity;
 import com.pranayharjai7.myemotions.databinding.ActivityLauncherBinding;
 
 public class LauncherActivity extends AppCompatActivity {
