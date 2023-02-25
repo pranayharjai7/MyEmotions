@@ -15,6 +15,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.pranayharjai7.myemotions.Database.Emotion;
 import com.pranayharjai7.myemotions.MainActivity;
 import com.pranayharjai7.myemotions.R;
 import com.pranayharjai7.myemotions.ViewModels.RegisterViewModel;
@@ -24,6 +27,7 @@ public class RegisterUserFragment extends Fragment {
 
     private FragmentRegisterUserBinding binding;
     private FirebaseAuth mAuth;
+    private FirebaseDatabase firebaseDatabase;
     private RegisterViewModel registerViewModel;
 
     public RegisterUserFragment() {
@@ -39,6 +43,7 @@ public class RegisterUserFragment extends Fragment {
 
     private void init() {
         registerViewModel = new ViewModelProvider(requireActivity()).get(RegisterViewModel.class);
+        firebaseDatabase = FirebaseDatabase.getInstance();
         mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() != null) {
             login();
@@ -96,7 +101,6 @@ public class RegisterUserFragment extends Fragment {
                                 .updateProfile(new UserProfileChangeRequest.Builder().setDisplayName(username).build());
                         Toast.makeText(getContext(), "User Registered successfully!", Toast.LENGTH_SHORT).show();
                         mAuth.signOut(); //By default, registered user gets signed in
-                        //replaceFragment("LOGIN"); //you can use viewmodel observation
                         registerViewModel.setRegisterUserFragmentView(binding.registerButton);
                     } else {
                         Toast.makeText(getContext(), "Failed to Register,Try Again!", Toast.LENGTH_SHORT).show();

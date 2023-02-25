@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "180348823571",
+    "firebase_url": "https://myemotions-007-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "myemotions-007",
     "storage_bucket": "myemotions-007.appspot.com"
   },
@@ -13,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "180348823571-29222pso5flidlludkrp4cgo4novofdo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pranayharjai7.myemotions",
+            "certificate_hash": "67c8360f7e0e84839c0ea13d455afb8d1a44207a"
+          }
+        },
         {
           "client_id": "180348823571-n12mm4108ulmgfphclr3fqc2isctoc2r.apps.googleusercontent.com",
           "client_type": 3
@@ -27,7 +36,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "180348823571-n12mm4108ulmgfphclr3fqc2isctoc2r.apps.googleusercontent.com",
+              "client_id": "180348823571-fau8gfk0cifrlrvorn87sac1eakfme2q.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
