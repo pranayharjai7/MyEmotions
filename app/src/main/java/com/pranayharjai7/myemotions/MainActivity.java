@@ -27,7 +27,6 @@ import com.pranayharjai7.myemotions.Database.Emotion;
 import com.pranayharjai7.myemotions.Database.DAO.EmotionDatabase;
 import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.HomeFragment;
 import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.StatsFragment;
-import com.pranayharjai7.myemotions.LoginAndRegister.LoginActivity;
 import com.pranayharjai7.myemotions.Utils.AnimationUtils;
 import com.pranayharjai7.myemotions.Utils.ImageUtils;
 import com.pranayharjai7.myemotions.ViewModels.HomeViewModel;
@@ -184,15 +183,15 @@ public class MainActivity extends AppCompatActivity {
 
         switch (fragment) {
             case "HOME": {
-                transaction.replace(R.id.fragmentContainerView, HomeFragment.class, null);
+                transaction.replace(R.id.mainFragmentContainerView, HomeFragment.class, null);
                 break;
             }
             case "STATS": {
-                transaction.replace(R.id.fragmentContainerView, StatsFragment.class, null);
+                transaction.replace(R.id.mainFragmentContainerView, StatsFragment.class, null);
                 break;
             }
             default: {
-                transaction.replace(R.id.fragmentContainerView, HomeFragment.class, null);
+                transaction.replace(R.id.mainFragmentContainerView, HomeFragment.class, null);
             }
         }
 
