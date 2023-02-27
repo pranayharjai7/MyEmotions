@@ -1,5 +1,6 @@
 package com.pranayharjai7.myemotions.Database;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -12,6 +13,7 @@ import java.util.List;
 public class UserProfile {
 
     @PrimaryKey
+    @NonNull
     private String userId;
     private String username;
     private String email;
