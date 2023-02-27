@@ -1,9 +1,18 @@
 package com.pranayharjai7.myemotions.Database;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+import com.pranayharjai7.myemotions.Utils.Enums.MoodVisibility;
+
+import java.util.ArrayList;
 import java.util.List;
 
+@Entity(tableName = "UserProfile")
 public class UserProfile {
 
+    @PrimaryKey
+    private String userId;
     private String username;
     private String email;
     private List<Emotion> emotions;
@@ -14,13 +23,32 @@ public class UserProfile {
     public UserProfile() {
     }
 
-    public UserProfile(String username, String email, List<Emotion> emotions, String location, List<String> friends, String moodVisibility) {
+    public UserProfile(String userId, String username, String email, List<Emotion> emotions, String location, List<String> friends, String moodVisibility) {
+        this.userId = userId;
         this.username = username;
         this.email = email;
         this.emotions = emotions;
         this.location = location;
         this.friends = friends;
         this.moodVisibility = moodVisibility;
+    }
+
+    public UserProfile(String userId, String username, String email) {
+        this.userId = userId;
+        this.username = username;
+        this.email = email;
+        this.emotions = new ArrayList<>();
+        this.location = "";
+        this.friends = new ArrayList<>();
+        this.moodVisibility = MoodVisibility.PUBLIC.toString();
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {

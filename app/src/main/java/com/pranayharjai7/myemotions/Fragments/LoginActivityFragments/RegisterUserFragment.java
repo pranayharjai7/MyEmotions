@@ -97,9 +97,9 @@ public class RegisterUserFragment extends Fragment {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        UserProfile userProfile = createNewUserProfile(username, email);
                         String userId =  task.getResult().getUser().getUid();
-                        saveProfileInRealTimeDatabase(userProfile, userId);
+                        UserProfile userProfile = new UserProfile(userId, username, email);
+                        saveProfileInRealTimeDatabase(userProfile);
                         mAuth.signOut(); //By default, registered user gets signed in
                         Toast.makeText(getContext(), "User Registered successfully!", Toast.LENGTH_SHORT).show();
                         registerViewModel.setRegisterUserFragmentView(binding.registerButton);
@@ -113,24 +113,12 @@ public class RegisterUserFragment extends Fragment {
     /**
      * To save user in Realtime Database.
      * @param userProfile UserProfile to be saved
-     * @param userId Unique userId
      */
-    private void saveProfileInRealTimeDatabase(UserProfile userProfile, String userId) {
+    private void saveProfileInRealTimeDatabase(UserProfile userProfile) {
         firebaseDatabase.getReference("MyEmotions")
                 .child("UserProfile")
-                .child(userId)
+                .child(userProfile.getUserId())
                 .setValue(userProfile);
-    }
-
-    private UserProfile createNewUserProfile(String username, String email) {
-        UserProfile userProfile = new UserProfile();
-        userProfile.setUsername(username);
-        userProfile.setEmail(email);
-        userProfile.setEmotions(new ArrayList<>());
-        userProfile.setLocation("");
-        userProfile.setMoodVisibility(MoodVisibility.PUBLIC.toString());
-        userProfile.setFriends(new ArrayList<>());
-        return userProfile;
     }
 
     /**
