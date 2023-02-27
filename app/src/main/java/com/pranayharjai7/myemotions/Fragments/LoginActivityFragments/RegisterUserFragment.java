@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
-import com.pranayharjai7.myemotions.Database.Emotion;
 import com.pranayharjai7.myemotions.Database.UserProfile;
 import com.pranayharjai7.myemotions.MainActivity;
 import com.pranayharjai7.myemotions.R;
@@ -94,8 +93,6 @@ public class RegisterUserFragment extends Fragment {
      * @param password
      */
     private void registerUserWithFirebaseAuth(String username, String email, String password) {
-        Emotion emotion = new Emotion();
-        emotion.setEmotion("Happy");
         binding.registerButton.setVisibility(View.VISIBLE);
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {

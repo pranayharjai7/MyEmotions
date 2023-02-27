@@ -51,8 +51,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        init(savedInstanceState);
         permissions();
+        init(savedInstanceState);
     }
 
     /**
@@ -140,6 +140,22 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+    /**
+     * Save emotion data in room database.
+     *
+     * @param emotion
+     */
+    private void saveInLocalDatabase(String emotion) {
+        new Thread(() -> {
+            Emotion emotion1 = new Emotion();
+            emotion1.setEmotion(emotion);
+            emotion1.setDateTime(LocalDateTime.now().toString());
+            emotionDatabase.emotionDAO().insertNewEmotion(emotion1);
+        }).start();
+
+        replaceFragment("HOME");
+    }
+
     public void homeMenuItemClicked(MenuItem item) {
         if (!item.isChecked()) {
             item.setChecked(true);
@@ -198,22 +214,6 @@ public class MainActivity extends AppCompatActivity {
         transaction.setReorderingAllowed(true)
                 //.addToBackStack(fragment)
                 .commit();
-    }
-
-    /**
-     * Save emotion data in room database.
-     *
-     * @param emotion
-     */
-    private void saveInLocalDatabase(String emotion) {
-        new Thread(() -> {
-            Emotion emotion1 = new Emotion();
-            emotion1.setEmotion(emotion);
-            emotion1.setDateTime(LocalDateTime.now().toString());
-            emotionDatabase.emotionDAO().insertNewEmotion(emotion1);
-        }).start();
-
-        replaceFragment("HOME");
     }
 
     /**

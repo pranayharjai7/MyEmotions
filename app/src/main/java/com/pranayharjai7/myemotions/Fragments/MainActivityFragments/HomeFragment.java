@@ -16,18 +16,29 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.room.Room;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.pranayharjai7.myemotions.Database.DAO.EmotionDatabase;
+import com.pranayharjai7.myemotions.Database.Emotion;
+import com.pranayharjai7.myemotions.Database.UserProfile;
 import com.pranayharjai7.myemotions.R;
 import com.pranayharjai7.myemotions.Utils.Adapters.EmotionViewAdapter;
 import com.pranayharjai7.myemotions.ViewModels.HomeViewModel;
 import com.pranayharjai7.myemotions.databinding.FragmentHomeBinding;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
     private HomeViewModel homeViewModel;
     private EmotionDatabase emotionDatabase;
-    private String clear = "";
+    private FirebaseAuth mAuth;
+    private FirebaseDatabase firebaseDatabase;
 
     public HomeFragment() {
         super(R.layout.fragment_home);
@@ -45,6 +56,8 @@ public class HomeFragment extends Fragment {
         emotionDatabase = Room.databaseBuilder(getContext(), EmotionDatabase.class, "Emotion_db")
                 .fallbackToDestructiveMigration()
                 .build();
+        mAuth = FirebaseAuth.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
     }
 
     private void observations() {
@@ -54,10 +67,68 @@ public class HomeFragment extends Fragment {
 
         emotionDatabase.emotionDAO().getAllEmotion().observe(getViewLifecycleOwner(), emotions -> {
             binding.emotionsRecyclerView.setAdapter(new EmotionViewAdapter(emotions));
+            //updateRealtimeDatabase(emotions);
         });
-
-
     }
+
+//    private void updateRealtimeDatabase(List<Emotion> localEmotions) {
+//        firebaseDatabase.getReference("MyEmotions")
+//                .child("UserProfile")
+//                .child(mAuth.getCurrentUser().getUid())
+//                .addListenerForSingleValueEvent(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                        UserProfile userProfile = snapshot.getValue(UserProfile.class);
+//                        if (userProfile != null) {
+//                            List<Emotion> remoteEmotions = userProfile.getEmotions();
+//                            if (remoteEmotions == null) {
+//                                remoteEmotions = new ArrayList<>();
+//                            }
+//
+//                            List<Emotion> newEmotions = new ArrayList<>();
+//                            if (localEmotions.isEmpty()) {
+//                                userProfile.setEmotions(newEmotions);
+//                            } else {
+//                                newEmotions = getNewEmotionsForRealtimeDatabase(localEmotions, remoteEmotions, newEmotions);
+//                                if (!newEmotions.isEmpty()) {
+//                                    remoteEmotions.addAll(newEmotions);
+//                                    userProfile.setEmotions(remoteEmotions);
+//                                }
+//                            }
+//
+//                            setUserProfileInRealtimeDatabase(userProfile);
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError error) {
+//
+//                    }
+//                });
+//    }
+//
+//    private List<Emotion> getNewEmotionsForRealtimeDatabase(List<Emotion> localEmotions, List<Emotion> remoteEmotions, List<Emotion> newEmotions) {
+//        for (Emotion localEmotion : localEmotions) {
+//            boolean isAlreadyExists = false;
+//            for (Emotion remoteEmotion : remoteEmotions) {
+//                if (remoteEmotion.getDateTime().equals(localEmotion.getDateTime())) {
+//                    isAlreadyExists = true;
+//                    break;
+//                }
+//            }
+//            if (!isAlreadyExists) {
+//                newEmotions.add(localEmotion);
+//            }
+//        }
+//        return newEmotions;
+//    }
+//
+//    private void setUserProfileInRealtimeDatabase(UserProfile userProfile) {
+//        firebaseDatabase.getReference("MyEmotions")
+//                .child("UserProfile")
+//                .child(mAuth.getCurrentUser().getUid())
+//                .setValue(userProfile);
+//    }
 
     @Nullable
     @Override
@@ -83,9 +154,9 @@ public class HomeFragment extends Fragment {
                     .setMessage("All the history will be cleared.\nDo you want to continue?")
                     .setPositiveButton("YES", (dialog, i) -> {
                         new Thread(() -> emotionDatabase.emotionDAO().clearData()).start();
-                        Toast.makeText(getContext(),"The History has been cleared!",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "The History has been cleared!", Toast.LENGTH_SHORT).show();
                     })
-                    .setNegativeButton("NO",(dialogInterface, i) -> {
+                    .setNegativeButton("NO", (dialogInterface, i) -> {
                         dialogInterface.dismiss();
                     }).show();
         }
