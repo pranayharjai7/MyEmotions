@@ -8,6 +8,7 @@ public class Emotion {
 
     @PrimaryKey(autoGenerate = true)
     private int key;
+    private String userId;
     private String dateTime;
     private String emotion;
 
@@ -17,6 +18,14 @@ public class Emotion {
 
     public void setKey(int key) {
         this.key = key;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getDateTime() {

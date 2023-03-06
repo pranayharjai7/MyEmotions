@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.pranayharjai7.myemotions.Database.Emotion;
 import com.pranayharjai7.myemotions.R;
+import com.pranayharjai7.myemotions.Utils.DateTimeUtils;
 import com.pranayharjai7.myemotions.databinding.EmotionCardLayoutBinding;
 
 import java.time.LocalDateTime;
@@ -55,7 +56,7 @@ public class EmotionViewAdapter extends RecyclerView.Adapter<EmotionViewAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull EmotionViewHolder holder, int position) {
-        LocalDateTime dateTime = LocalDateTime.parse(emotions.get(position).getDateTime());
+        LocalDateTime dateTime = DateTimeUtils.convertStringToLocalDateTime(emotions.get(position).getDateTime());
         String emotion = emotions.get(position).getEmotion();
         String dateTimeString = getDateAndTimeAsString(dateTime);
         setEmojiAndColor(emotion, holder);

@@ -20,8 +20,14 @@ public interface EmotionDAO {
     void insertAllEmotions(List<Emotion> emotions);
 
     @Query("SELECT * FROM Emotion")
-    LiveData<List<Emotion>> getAllEmotion();
+    LiveData<List<Emotion>> getAllEmotions();
+
+    @Query("SELECT * FROM Emotion WHERE userId = :userId")
+    LiveData<List<Emotion>> getUserEmotions(String userId);
 
     @Query("DELETE FROM Emotion")
-    void clearData();
+    void clearAllData();
+
+    @Query("DELETE FROM Emotion WHERE userId = :userId")
+    void clearUserData(String userId);
 }
