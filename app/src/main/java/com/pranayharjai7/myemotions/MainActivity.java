@@ -23,16 +23,27 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.room.Room;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.pranayharjai7.myemotions.Database.Emotion;
 import com.pranayharjai7.myemotions.Database.DAO.EmotionDatabase;
 import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.HomeFragment;
 import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.StatsFragment;
 import com.pranayharjai7.myemotions.Utils.AnimationUtils;
+import com.pranayharjai7.myemotions.Utils.DateTimeUtils;
 import com.pranayharjai7.myemotions.Utils.ImageUtils;
+import com.pranayharjai7.myemotions.Utils.Interfaces.OnRealtimeEmotionsLoadedCallback;
 import com.pranayharjai7.myemotions.ViewModels.HomeViewModel;
 import com.pranayharjai7.myemotions.databinding.ActivityMainBinding;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private HomeViewModel homeViewModel;
     private EmotionDatabase emotionDatabase;
     private FirebaseAuth mAuth;
+    private FirebaseDatabase firebaseDatabase;
     private boolean isAllFabVisible;
     private Bitmap sampledImage = null;
     RecognizeEmotions recognizeEmotions;
@@ -51,8 +63,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        init(savedInstanceState);
         permissions();
+        init(savedInstanceState);
     }
 
     /**
@@ -65,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         binding.mainBottomNavigationView.setBackground(null);
         isAllFabVisible = binding.cameraButton.getVisibility() == View.VISIBLE;
         mAuth = FirebaseAuth.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
         recognizeEmotions = new RecognizeEmotions(getApplicationContext());
         emotionDatabase = Room.databaseBuilder(this, EmotionDatabase.class, "Emotion_db")
                 .fallbackToDestructiveMigration()
@@ -73,22 +86,105 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             replaceFragment("HOME");
         }
+
+        syncRealtimeEmotionDatabase();
+        syncLocalEmotionDatabase();
     }
 
-    public void mainConstraintLayoutClicked(View view) {
-        if (isAllFabVisible) {
-            AnimationUtils.animateCloseRecordEmotionButton(binding);
-            isAllFabVisible = !isAllFabVisible;
-        }
+    private void syncRealtimeEmotionDatabase() {
+        List<Emotion> localEmotions = emotionDatabase.emotionDAO().getUserEmotions(mAuth.getCurrentUser().getUid()).getValue();
+        //This function call uses a callback method to retrieve data from firebase
+        getRealtimeEmotionsForSyncing(realtimeEmotions -> {
+                    if (localEmotions != null && realtimeEmotions != null) {
+                        List<Emotion> missingEmotions = new ArrayList<>();
+                        for (Emotion localEmotion : localEmotions) {
+                            boolean found = false;
+                            for (Emotion realtimeEmotion : realtimeEmotions) {
+                                if (realtimeEmotion.getDateTime().equals(localEmotion.getDateTime())) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found) {
+                                missingEmotions.add(localEmotion);
+                            }
+                        }
+
+                        if (!missingEmotions.isEmpty()) {
+                            DatabaseReference emotionsRef = firebaseDatabase.getReference("MyEmotions")
+                                    .child("UserProfile")
+                                    .child(mAuth.getCurrentUser().getUid())
+                                    .child("emotions");
+
+                            for (Emotion missingEmotion : missingEmotions) {
+                                Map<String, Object> emotionMap = new HashMap<>();
+                                emotionMap.put("emotion", missingEmotion.getEmotion());
+                                emotionsRef.child(missingEmotion.getDateTime())
+                                        .setValue(emotionMap);
+                            }
+                        }
+                    }
+                }
+        );
     }
 
-    public void recordEmotionButtonClicked(View view) {
-        if (isAllFabVisible) {
-            AnimationUtils.animateCloseRecordEmotionButton(binding);
-        } else {
-            AnimationUtils.animateOpenRecordEmotionButton(binding);
-        }
-        isAllFabVisible = !isAllFabVisible;
+    private void syncLocalEmotionDatabase() {
+        List<Emotion> localEmotions = emotionDatabase.emotionDAO().getUserEmotions(mAuth.getCurrentUser().getUid()).getValue();
+        getRealtimeEmotionsForSyncing(realtimeEmotions -> {
+            if (localEmotions != null && realtimeEmotions != null) {
+                List<Emotion> missingEmotions = new ArrayList<>();
+                for (Emotion realtimeEmotion : realtimeEmotions) {
+                    boolean found = false;
+                    for (Emotion localEmotion : localEmotions) {
+                        if (localEmotion.getDateTime().equals(realtimeEmotion.getDateTime())) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        missingEmotions.add(realtimeEmotion);
+                    }
+                }
+
+                if (!missingEmotions.isEmpty()) {
+                    new Thread(() -> emotionDatabase.emotionDAO().insertAllEmotions(missingEmotions)).start();
+                }
+            } else if (localEmotions == null && realtimeEmotions != null) {
+                new Thread(() -> emotionDatabase.emotionDAO().insertAllEmotions(realtimeEmotions)).start();
+            }
+        });
+    }
+
+
+    private void getRealtimeEmotionsForSyncing(OnRealtimeEmotionsLoadedCallback callback) {
+        List<Emotion> realtimeEmotions = new ArrayList<>();
+        firebaseDatabase.getReference("MyEmotions")
+                .child("UserProfile")
+                .child(mAuth.getCurrentUser().getUid())
+                .child("emotions")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Map<String, Object> emotionsMap = (Map<String, Object>) snapshot.getValue();
+                        if (emotionsMap != null) {
+                            for (Map.Entry<String, Object> entry : emotionsMap.entrySet()) {
+                                String dateTime = entry.getKey();
+                                String recordedEmotion = ((Map<String, Object>) entry.getValue()).get("emotion").toString();
+                                Emotion emotion = new Emotion();
+                                emotion.setUserId(mAuth.getCurrentUser().getUid());
+                                emotion.setDateTime(dateTime);
+                                emotion.setEmotion(recordedEmotion);
+                                realtimeEmotions.add(emotion);
+                            }
+                        }
+                        callback.onRealtimeEmotionsLoaded(realtimeEmotions);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
     }
 
     public void cameraButtonClicked(View view) {
@@ -139,6 +235,49 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             });
+
+    /**
+     * Save emotion data in room database.
+     *
+     * @param emotion
+     */
+    private void saveInLocalDatabase(String emotion) {
+        new Thread(() -> {
+            Emotion emotion1 = new Emotion();
+            emotion1.setUserId(mAuth.getCurrentUser().getUid());
+            emotion1.setEmotion(emotion);
+            emotion1.setDateTime(DateTimeUtils.convertDateAndTimeToString(LocalDateTime.now()));
+            emotionDatabase.emotionDAO().insertNewEmotion(emotion1);
+
+            Map<String, Object> emotionMap = new HashMap<>();
+            emotionMap.put("emotion", emotion1.getEmotion());
+
+            firebaseDatabase.getReference("MyEmotions")
+                    .child("UserProfile")
+                    .child(mAuth.getCurrentUser().getUid())
+                    .child("emotions")
+                    .child(emotion1.getDateTime())
+                    .setValue(emotionMap);
+        }).start();
+
+        replaceFragment("HOME");
+    }
+
+    public void mainConstraintLayoutClicked(View view) {
+        if (isAllFabVisible) {
+            AnimationUtils.animateCloseRecordEmotionButton(binding);
+            isAllFabVisible = !isAllFabVisible;
+        }
+    }
+
+    public void recordEmotionButtonClicked(View view) {
+        if (isAllFabVisible) {
+            AnimationUtils.animateCloseRecordEmotionButton(binding);
+        } else {
+            AnimationUtils.animateOpenRecordEmotionButton(binding);
+        }
+        isAllFabVisible = !isAllFabVisible;
+    }
 
     public void homeMenuItemClicked(MenuItem item) {
         if (!item.isChecked()) {
@@ -198,22 +337,6 @@ public class MainActivity extends AppCompatActivity {
         transaction.setReorderingAllowed(true)
                 //.addToBackStack(fragment)
                 .commit();
-    }
-
-    /**
-     * Save emotion data in room database.
-     *
-     * @param emotion
-     */
-    private void saveInLocalDatabase(String emotion) {
-        new Thread(() -> {
-            Emotion emotion1 = new Emotion();
-            emotion1.setEmotion(emotion);
-            emotion1.setDateTime(LocalDateTime.now().toString());
-            emotionDatabase.emotionDAO().insertNewEmotion(emotion1);
-        }).start();
-
-        replaceFragment("HOME");
     }
 
     /**

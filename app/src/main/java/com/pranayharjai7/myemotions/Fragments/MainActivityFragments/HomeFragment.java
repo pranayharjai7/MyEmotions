@@ -16,6 +16,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.room.Room;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 import com.pranayharjai7.myemotions.Database.DAO.EmotionDatabase;
 import com.pranayharjai7.myemotions.R;
 import com.pranayharjai7.myemotions.Utils.Adapters.EmotionViewAdapter;
@@ -27,7 +29,8 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     private HomeViewModel homeViewModel;
     private EmotionDatabase emotionDatabase;
-    private String clear = "";
+    private FirebaseAuth mAuth;
+    private FirebaseDatabase firebaseDatabase;
 
     public HomeFragment() {
         super(R.layout.fragment_home);
@@ -45,6 +48,8 @@ public class HomeFragment extends Fragment {
         emotionDatabase = Room.databaseBuilder(getContext(), EmotionDatabase.class, "Emotion_db")
                 .fallbackToDestructiveMigration()
                 .build();
+        mAuth = FirebaseAuth.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
     }
 
     private void observations() {
@@ -52,11 +57,8 @@ public class HomeFragment extends Fragment {
             binding.emotionsImageView.setImageBitmap(bitmap);
         });
 
-        emotionDatabase.emotionDAO().getAllEmotion().observe(getViewLifecycleOwner(), emotions -> {
-            binding.emotionsRecyclerView.setAdapter(new EmotionViewAdapter(emotions));
-        });
-
-
+        emotionDatabase.emotionDAO().getUserEmotions(mAuth.getCurrentUser().getUid()).observe(getViewLifecycleOwner(),
+                emotions -> binding.emotionsRecyclerView.setAdapter(new EmotionViewAdapter(emotions)));
     }
 
     @Nullable
@@ -82,14 +84,30 @@ public class HomeFragment extends Fragment {
                     .setTitle("Warning!")
                     .setMessage("All the history will be cleared.\nDo you want to continue?")
                     .setPositiveButton("YES", (dialog, i) -> {
-                        new Thread(() -> emotionDatabase.emotionDAO().clearData()).start();
-                        Toast.makeText(getContext(),"The History has been cleared!",Toast.LENGTH_SHORT).show();
+                        deleteFromDatabase();
                     })
-                    .setNegativeButton("NO",(dialogInterface, i) -> {
+                    .setNegativeButton("NO", (dialogInterface, i) -> {
                         dialogInterface.dismiss();
                     }).show();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void deleteFromDatabase() {
+        firebaseDatabase.getReference("MyEmotions") //deleting from Firebase
+                .child("UserProfile")
+                .child(mAuth.getCurrentUser().getUid())
+                .child("emotions")
+                .removeValue()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        //deleting from local database
+                        new Thread(() -> emotionDatabase.emotionDAO().clearUserData(mAuth.getCurrentUser().getUid())).start();
+                        Toast.makeText(getContext(), "The History has been cleared!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), "Couldn't delete, please try again", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override
