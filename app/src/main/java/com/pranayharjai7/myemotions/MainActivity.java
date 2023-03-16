@@ -92,67 +92,51 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void syncRealtimeEmotionDatabase() {
-        List<Emotion> localEmotions = emotionDatabase.emotionDAO().getUserEmotions(mAuth.getCurrentUser().getUid()).getValue();
-        //This function call uses a callback method to retrieve data from firebase
-        getRealtimeEmotionsForSyncing(realtimeEmotions -> {
-                    if (localEmotions != null && realtimeEmotions != null) {
-                        List<Emotion> missingEmotions = new ArrayList<>();
-                        for (Emotion localEmotion : localEmotions) {
-                            boolean found = false;
-                            for (Emotion realtimeEmotion : realtimeEmotions) {
-                                if (realtimeEmotion.getDateTime().equals(localEmotion.getDateTime())) {
-                                    found = true;
-                                    break;
+        emotionDatabase.emotionDAO().getUserEmotions(mAuth.getCurrentUser().getUid()).observe(
+                this, localEmotions -> {
+                    //This function call uses a callback method to retrieve data from firebase
+                    getRealtimeEmotionsForSyncing(realtimeEmotions -> {
+                                if (localEmotions != null && realtimeEmotions != null) {
+                                    List<Emotion> missingEmotions = findMissingEmotions(localEmotions, realtimeEmotions);
+
+                                    if (!missingEmotions.isEmpty()) {
+                                        DatabaseReference emotionsRef = firebaseDatabase.getReference("MyEmotions")
+                                                .child("UserProfile")
+                                                .child(mAuth.getCurrentUser().getUid())
+                                                .child("emotions");
+
+                                        for (Emotion missingEmotion : missingEmotions) {
+                                            Map<String, Object> emotionMap = new HashMap<>();
+                                            emotionMap.put("emotion", missingEmotion.getEmotion());
+                                            emotionsRef.child(missingEmotion.getDateTime())
+                                                    .setValue(emotionMap);
+                                        }
+                                    }
                                 }
                             }
-                            if (!found) {
-                                missingEmotions.add(localEmotion);
-                            }
-                        }
-
-                        if (!missingEmotions.isEmpty()) {
-                            DatabaseReference emotionsRef = firebaseDatabase.getReference("MyEmotions")
-                                    .child("UserProfile")
-                                    .child(mAuth.getCurrentUser().getUid())
-                                    .child("emotions");
-
-                            for (Emotion missingEmotion : missingEmotions) {
-                                Map<String, Object> emotionMap = new HashMap<>();
-                                emotionMap.put("emotion", missingEmotion.getEmotion());
-                                emotionsRef.child(missingEmotion.getDateTime())
-                                        .setValue(emotionMap);
-                            }
-                        }
-                    }
+                    );
                 }
         );
+
     }
 
     private void syncLocalEmotionDatabase() {
-        List<Emotion> localEmotions = emotionDatabase.emotionDAO().getUserEmotions(mAuth.getCurrentUser().getUid()).getValue();
-        getRealtimeEmotionsForSyncing(realtimeEmotions -> {
-            if (localEmotions != null && realtimeEmotions != null) {
-                List<Emotion> missingEmotions = new ArrayList<>();
-                for (Emotion realtimeEmotion : realtimeEmotions) {
-                    boolean found = false;
-                    for (Emotion localEmotion : localEmotions) {
-                        if (localEmotion.getDateTime().equals(realtimeEmotion.getDateTime())) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) {
-                        missingEmotions.add(realtimeEmotion);
-                    }
-                }
+        emotionDatabase.emotionDAO().getUserEmotions(mAuth.getCurrentUser().getUid()).observe(
+                this, localEmotions -> {
+                    //This function call uses a callback method to retrieve data from firebase
+                    getRealtimeEmotionsForSyncing(realtimeEmotions -> {
+                        if (localEmotions != null && realtimeEmotions != null) {
+                            List<Emotion> missingEmotions = findMissingEmotions(realtimeEmotions, localEmotions);
 
-                if (!missingEmotions.isEmpty()) {
-                    new Thread(() -> emotionDatabase.emotionDAO().insertAllEmotions(missingEmotions)).start();
-                }
-            } else if (localEmotions == null && realtimeEmotions != null) {
-                new Thread(() -> emotionDatabase.emotionDAO().insertAllEmotions(realtimeEmotions)).start();
-            }
-        });
+                            if (!missingEmotions.isEmpty()) {
+                                new Thread(() -> emotionDatabase.emotionDAO().insertAllEmotions(missingEmotions)).start();
+                            }
+                        } else if (localEmotions == null && realtimeEmotions != null) {
+                            new Thread(() -> emotionDatabase.emotionDAO().insertAllEmotions(realtimeEmotions)).start();
+                        }
+                    });
+                });
+
     }
 
 
@@ -185,6 +169,23 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
+    }
+
+    private List<Emotion> findMissingEmotions(List<Emotion> emotionList1, List<Emotion> emotionList2) {
+        List<Emotion> missingEmotions = new ArrayList<>();
+        for (Emotion emotion1 : emotionList1) {
+            boolean found = false;
+            for (Emotion emotion2 : emotionList2) {
+                if (emotion2.getDateTime().equals(emotion1.getDateTime())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                missingEmotions.add(emotion1);
+            }
+        }
+        return missingEmotions;
     }
 
     public void cameraButtonClicked(View view) {
