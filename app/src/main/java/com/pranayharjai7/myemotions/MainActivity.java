@@ -31,6 +31,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.pranayharjai7.myemotions.Database.Emotion;
 import com.pranayharjai7.myemotions.Database.DAO.EmotionDatabase;
 import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.HomeFragment;
+import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.MapsFragment;
 import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.StatsFragment;
 import com.pranayharjai7.myemotions.Utils.AnimationUtils;
 import com.pranayharjai7.myemotions.Utils.DateTimeUtils;
@@ -297,6 +298,7 @@ public class MainActivity extends AppCompatActivity {
     public void mapsMenuItemClicked(MenuItem item) {
         if (!item.isChecked()) {
             item.setChecked(true);
+            replaceFragment("MAPS");
         }
     }
 
@@ -328,6 +330,10 @@ public class MainActivity extends AppCompatActivity {
             }
             case "STATS": {
                 transaction.replace(R.id.mainFragmentContainerView, StatsFragment.class, null);
+                break;
+            }
+            case "MAPS": {
+                transaction.replace(R.id.mainFragmentContainerView, MapsFragment.class, null);
                 break;
             }
             default: {
