@@ -1,7 +1,6 @@
 package com.pranayharjai7.myemotions.Fragments.MainActivityFragments;
 
 import android.annotation.SuppressLint;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,16 +17,20 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 import com.pranayharjai7.myemotions.R;
+import com.pranayharjai7.myemotions.Utils.LatLngUtils;
 import com.pranayharjai7.myemotions.databinding.FragmentMapsBinding;
 
-public class MapsFragment extends Fragment implements OnMapReadyCallback {
+public class MapsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener {
 
     private FragmentMapsBinding binding;
+
+    private FirebaseAuth mAuth;
+    private FirebaseDatabase firebaseDatabase;
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -47,32 +50,53 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         supportMapFragment.getMapAsync(this);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
+        mAuth = FirebaseAuth.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
     }
 
     @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
-        LatLng myHouse = new LatLng(47.5, 21.6);
+        LatLng myHouse = new LatLng(47.5399011, 21.6226994);
         MarkerOptions marker = new MarkerOptions();
         marker.position(myHouse);
         marker.title("Home");
         marker.snippet("Emotion: Happy");
         mMap.addMarker(marker);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(myHouse));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myHouse, 16f));
+        //mMap.moveCamera(CameraUpdateFactory.newLatLng(myHouse));
+        //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myHouse, 16f));
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        mMap.setOnMyLocationButtonClickListener(this);
 
+        getLastLocationOfDevice();
+    }
 
+    @Override
+    public boolean onMyLocationButtonClick() {
+        getLastLocationOfDevice();
+        return false;
+    }
+
+    @SuppressLint("MissingPermission")
+    private void getLastLocationOfDevice() {
         fusedLocationProviderClient.getLastLocation().addOnSuccessListener(location -> {
             if (location != null) {
                 LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                //Do something with current location
+                setLastLocationOfUserInFirebase(currentLocation);
             } else {
                 Toast.makeText(getContext(), "Could not get current location. Please try again later.", Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    private void setLastLocationOfUserInFirebase(LatLng currentLocation) {
+        firebaseDatabase.getReference("MyEmotions")
+                .child("UserProfile")
+                .child(mAuth.getCurrentUser().getUid())
+                .child("location")
+                .setValue(LatLngUtils.convertLatLngToString(currentLocation));
     }
 
 
@@ -90,4 +114,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         super.onDestroyView();
         binding = null;
     }
+
+
 }
