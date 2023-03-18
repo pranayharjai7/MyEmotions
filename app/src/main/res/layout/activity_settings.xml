@@ -45,12 +45,31 @@
                 android:textStyle="bold"
                 tools:ignore="TextContrastCheck" />
 
-            <Spinner
-                android:id="@+id/moodVisibilitySpinner"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/mood_visibility_spinner_text"
-                android:minHeight="48dp" />
+                android:layout_height="match_parent">
+
+                <Spinner
+                    android:id="@+id/moodVisibilitySpinner"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/mood_visibility_spinner_text"
+                    android:minHeight="48dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Button
+                    android:id="@+id/setMoodVisibilityButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="setMoodVisibilityButtonClicked"
+                    android:text="Set"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/moodVisibilitySpinner"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
         </LinearLayout>
     </ScrollView>
 
