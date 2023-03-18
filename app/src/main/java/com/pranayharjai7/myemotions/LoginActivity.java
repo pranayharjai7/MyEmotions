@@ -64,15 +64,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Going to Main activity after logging in user.
-     */
-    private void login() {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
-    /**
      * TO change menu to Login.
      *
      * @param view
