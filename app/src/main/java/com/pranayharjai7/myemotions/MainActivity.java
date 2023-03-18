@@ -30,8 +30,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.pranayharjai7.myemotions.Database.Emotion;
 import com.pranayharjai7.myemotions.Database.DAO.EmotionDatabase;
+import com.pranayharjai7.myemotions.Database.Emotion;
 import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.HomeFragment;
 import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.MapsFragment;
 import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.StatsFragment;
@@ -355,12 +355,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void friendsNavigationMenuButtonClicked(@NonNull MenuItem item) {
+        binding.mainDrawerLayout.closeDrawer(GravityCompat.END);
         //TODO create an activity to add friends, to accept or reject received friend requests, Delete Friends
     }
 
     public void settingsNavigationMenuButtonClicked(@NonNull MenuItem item) {
-        //TODO create a settings activity
-        //Settings -> change visibility mode
+        binding.mainDrawerLayout.closeDrawer(GravityCompat.END);
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 
     public void logoutNavigationMenuButtonClicked(@NonNull MenuItem item) {
@@ -402,5 +404,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (binding.mainDrawerLayout.isDrawerOpen(GravityCompat.END)) {
+            binding.mainDrawerLayout.closeDrawer(GravityCompat.END);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        binding.mainSideNavigationView.setCheckedItem(R.id.nav_home);
     }
 }
