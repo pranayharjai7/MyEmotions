@@ -17,7 +17,7 @@ public class AnimationUtils {
         ObjectAnimator animateCameraY= ObjectAnimator.ofFloat(binding.cameraButton, "translationY", -230);
         ObjectAnimator animateGalleryX= ObjectAnimator.ofFloat(binding.galleryButton, "translationX", -200);
         ObjectAnimator animateGalleryY= ObjectAnimator.ofFloat(binding.galleryButton, "translationY", -230);
-        ObjectAnimator animateRecordEmotionRotation= ObjectAnimator.ofFloat(binding.recordEmotionButton, "rotation", 45);
+        ObjectAnimator animateRecordEmotionRotation= ObjectAnimator.ofFloat(binding.recordEmotionButton, "rotation", 135);
         animateCameraX.setDuration(200).start();
         animateCameraY.setDuration(200).start();
         animateGalleryX.setDuration(200).start();

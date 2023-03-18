@@ -16,31 +16,38 @@ public class UserProfile {
     private String email;
     private String location;
     private String moodVisibility;
+    private String latestEmotion;
+    private String latestEmotionDateTime;
 
     public UserProfile() {
     }
 
-    public UserProfile(@NonNull String userId, String username, String email, String location, String moodVisibility) {
+    public UserProfile(@NonNull String userId, String username, String email, String location, String moodVisibility, String latestEmotion, String latestEmotionDateTime) {
         this.userId = userId;
         this.username = username;
         this.email = email;
         this.location = location;
         this.moodVisibility = moodVisibility;
+        this.latestEmotion = latestEmotion;
+        this.latestEmotionDateTime = latestEmotionDateTime;
     }
 
-    public UserProfile(String userId, String username, String email) {
+    public UserProfile(@NonNull String userId, String username, String email) {
         this.userId = userId;
         this.username = username;
         this.email = email;
         this.location = "";
         this.moodVisibility = MoodVisibility.PUBLIC.toString();
+        this.latestEmotion = "";
+        this.latestEmotionDateTime = "";
     }
 
+    @NonNull
     public String getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(@NonNull String userId) {
         this.userId = userId;
     }
 
@@ -74,5 +81,21 @@ public class UserProfile {
 
     public void setMoodVisibility(String moodVisibility) {
         this.moodVisibility = moodVisibility;
+    }
+
+    public String getLatestEmotion() {
+        return latestEmotion;
+    }
+
+    public void setLatestEmotion(String latestEmotion) {
+        this.latestEmotion = latestEmotion;
+    }
+
+    public String getLatestEmotionDateTime() {
+        return latestEmotionDateTime;
+    }
+
+    public void setLatestEmotionDateTime(String latestEmotionDateTime) {
+        this.latestEmotionDateTime = latestEmotionDateTime;
     }
 }

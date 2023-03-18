@@ -31,6 +31,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.pranayharjai7.myemotions.Database.Emotion;
 import com.pranayharjai7.myemotions.Database.DAO.EmotionDatabase;
 import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.HomeFragment;
+import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.MapsFragment;
 import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.StatsFragment;
 import com.pranayharjai7.myemotions.Utils.AnimationUtils;
 import com.pranayharjai7.myemotions.Utils.DateTimeUtils;
@@ -92,67 +93,51 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void syncRealtimeEmotionDatabase() {
-        List<Emotion> localEmotions = emotionDatabase.emotionDAO().getUserEmotions(mAuth.getCurrentUser().getUid()).getValue();
-        //This function call uses a callback method to retrieve data from firebase
-        getRealtimeEmotionsForSyncing(realtimeEmotions -> {
-                    if (localEmotions != null && realtimeEmotions != null) {
-                        List<Emotion> missingEmotions = new ArrayList<>();
-                        for (Emotion localEmotion : localEmotions) {
-                            boolean found = false;
-                            for (Emotion realtimeEmotion : realtimeEmotions) {
-                                if (realtimeEmotion.getDateTime().equals(localEmotion.getDateTime())) {
-                                    found = true;
-                                    break;
+        emotionDatabase.emotionDAO().getUserEmotions(mAuth.getCurrentUser().getUid()).observe(
+                this, localEmotions -> {
+                    //This function call uses a callback method to retrieve data from firebase
+                    getRealtimeEmotionsForSyncing(realtimeEmotions -> {
+                                if (localEmotions != null && realtimeEmotions != null) {
+                                    List<Emotion> missingEmotions = findMissingEmotions(localEmotions, realtimeEmotions);
+
+                                    if (!missingEmotions.isEmpty()) {
+                                        DatabaseReference emotionsRef = firebaseDatabase.getReference("MyEmotions")
+                                                .child("UserProfile")
+                                                .child(mAuth.getCurrentUser().getUid())
+                                                .child("emotions");
+
+                                        for (Emotion missingEmotion : missingEmotions) {
+                                            Map<String, Object> emotionMap = new HashMap<>();
+                                            emotionMap.put("emotion", missingEmotion.getEmotion());
+                                            emotionsRef.child(missingEmotion.getDateTime())
+                                                    .setValue(emotionMap);
+                                        }
+                                    }
                                 }
                             }
-                            if (!found) {
-                                missingEmotions.add(localEmotion);
-                            }
-                        }
-
-                        if (!missingEmotions.isEmpty()) {
-                            DatabaseReference emotionsRef = firebaseDatabase.getReference("MyEmotions")
-                                    .child("UserProfile")
-                                    .child(mAuth.getCurrentUser().getUid())
-                                    .child("emotions");
-
-                            for (Emotion missingEmotion : missingEmotions) {
-                                Map<String, Object> emotionMap = new HashMap<>();
-                                emotionMap.put("emotion", missingEmotion.getEmotion());
-                                emotionsRef.child(missingEmotion.getDateTime())
-                                        .setValue(emotionMap);
-                            }
-                        }
-                    }
+                    );
                 }
         );
+
     }
 
     private void syncLocalEmotionDatabase() {
-        List<Emotion> localEmotions = emotionDatabase.emotionDAO().getUserEmotions(mAuth.getCurrentUser().getUid()).getValue();
-        getRealtimeEmotionsForSyncing(realtimeEmotions -> {
-            if (localEmotions != null && realtimeEmotions != null) {
-                List<Emotion> missingEmotions = new ArrayList<>();
-                for (Emotion realtimeEmotion : realtimeEmotions) {
-                    boolean found = false;
-                    for (Emotion localEmotion : localEmotions) {
-                        if (localEmotion.getDateTime().equals(realtimeEmotion.getDateTime())) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) {
-                        missingEmotions.add(realtimeEmotion);
-                    }
-                }
+        emotionDatabase.emotionDAO().getUserEmotions(mAuth.getCurrentUser().getUid()).observe(
+                this, localEmotions -> {
+                    //This function call uses a callback method to retrieve data from firebase
+                    getRealtimeEmotionsForSyncing(realtimeEmotions -> {
+                        if (localEmotions != null && realtimeEmotions != null) {
+                            List<Emotion> missingEmotions = findMissingEmotions(realtimeEmotions, localEmotions);
 
-                if (!missingEmotions.isEmpty()) {
-                    new Thread(() -> emotionDatabase.emotionDAO().insertAllEmotions(missingEmotions)).start();
-                }
-            } else if (localEmotions == null && realtimeEmotions != null) {
-                new Thread(() -> emotionDatabase.emotionDAO().insertAllEmotions(realtimeEmotions)).start();
-            }
-        });
+                            if (!missingEmotions.isEmpty()) {
+                                new Thread(() -> emotionDatabase.emotionDAO().insertAllEmotions(missingEmotions)).start();
+                            }
+                        } else if (localEmotions == null && realtimeEmotions != null) {
+                            new Thread(() -> emotionDatabase.emotionDAO().insertAllEmotions(realtimeEmotions)).start();
+                        }
+                    });
+                });
+
     }
 
 
@@ -185,6 +170,23 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
+    }
+
+    private List<Emotion> findMissingEmotions(List<Emotion> emotionList1, List<Emotion> emotionList2) {
+        List<Emotion> missingEmotions = new ArrayList<>();
+        for (Emotion emotion1 : emotionList1) {
+            boolean found = false;
+            for (Emotion emotion2 : emotionList2) {
+                if (emotion2.getDateTime().equals(emotion1.getDateTime())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                missingEmotions.add(emotion1);
+            }
+        }
+        return missingEmotions;
     }
 
     public void cameraButtonClicked(View view) {
@@ -296,6 +298,7 @@ public class MainActivity extends AppCompatActivity {
     public void mapsMenuItemClicked(MenuItem item) {
         if (!item.isChecked()) {
             item.setChecked(true);
+            replaceFragment("MAPS");
         }
     }
 
@@ -329,6 +332,10 @@ public class MainActivity extends AppCompatActivity {
                 transaction.replace(R.id.mainFragmentContainerView, StatsFragment.class, null);
                 break;
             }
+            case "MAPS": {
+                transaction.replace(R.id.mainFragmentContainerView, MapsFragment.class, null);
+                break;
+            }
             default: {
                 transaction.replace(R.id.mainFragmentContainerView, HomeFragment.class, null);
             }
@@ -345,12 +352,14 @@ public class MainActivity extends AppCompatActivity {
     private void permissions() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
                 || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{
                     Manifest.permission.CAMERA,
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.INTERNET
+                    Manifest.permission.INTERNET,
+                    Manifest.permission.ACCESS_FINE_LOCATION
             }, ALL_PERMISSIONS_CODE);
         }
 
@@ -362,7 +371,8 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == ALL_PERMISSIONS_CODE) {
             if (grantResults.length != 0) {
                 if (grantResults[0] != PackageManager.PERMISSION_GRANTED || grantResults[1] != PackageManager.PERMISSION_GRANTED
-                        || grantResults[2] != PackageManager.PERMISSION_GRANTED || grantResults[3] != PackageManager.PERMISSION_GRANTED) {
+                        || grantResults[2] != PackageManager.PERMISSION_GRANTED || grantResults[3] != PackageManager.PERMISSION_GRANTED
+                        || grantResults[4] != PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, "Oops!! You didn't allow permissions!", Toast.LENGTH_SHORT).show();
                 }
             }

@@ -121,6 +121,8 @@ public class RegisterUserFragment extends Fragment {
         map.put("email", userProfile.getEmail());
         map.put("location", userProfile.getLocation());
         map.put("moodVisibility", userProfile.getMoodVisibility());
+        map.put("latestEmotion", userProfile.getLatestEmotion());
+        map.put("latestEmotionDateTime", userProfile.getLatestEmotionDateTime());
 
         firebaseDatabase.getReference("MyEmotions")
                 .child("UserProfile")
