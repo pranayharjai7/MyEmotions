@@ -17,11 +17,13 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.room.Room;
 
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -46,7 +48,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int ALL_PERMISSIONS_CODE = 101;
     private ActivityMainBinding binding;
@@ -76,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
     private void init(Bundle savedInstanceState) {
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         binding.mainBottomNavigationView.setBackground(null);
+        binding.mainSideNavigationView.setNavigationItemSelectedListener(this);
         isAllFabVisible = binding.cameraButton.getVisibility() == View.VISIBLE;
         mAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
@@ -86,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             replaceFragment("HOME");
+            binding.mainSideNavigationView.setCheckedItem(R.id.nav_home);
         }
 
         syncRealtimeEmotionDatabase();
@@ -304,13 +308,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void moreMenuItemClicked(MenuItem item) {
         if (!item.isChecked()) {
-            item.setChecked(true);
-            //TODO
-            mAuth.signOut();
-            Toast.makeText(this, "Logged Out!", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-            finish();
+            binding.mainDrawerLayout.openDrawer(GravityCompat.END);
         }
     }
 
@@ -344,6 +342,33 @@ public class MainActivity extends AppCompatActivity {
         transaction.setReorderingAllowed(true)
                 //.addToBackStack(fragment)
                 .commit();
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        return true;
+    }
+
+    public void homeNavigationMenuButtonClicked(@NonNull MenuItem item) {
+        homeMenuItemClicked(binding.mainBottomNavigationView.getMenu().findItem(R.id.homeItem));
+        binding.mainDrawerLayout.closeDrawer(GravityCompat.END);
+    }
+
+    public void friendsNavigationMenuButtonClicked(@NonNull MenuItem item) {
+        //TODO create an activity to add friends, to accept or reject received friend requests, Delete Friends
+    }
+
+    public void settingsNavigationMenuButtonClicked(@NonNull MenuItem item) {
+        //TODO create a settings activity
+        //Settings -> change visibility mode
+    }
+
+    public void logoutNavigationMenuButtonClicked(@NonNull MenuItem item) {
+        mAuth.signOut();
+        Toast.makeText(this, "Logged Out!", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     /**
