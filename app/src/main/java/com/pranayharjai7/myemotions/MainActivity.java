@@ -263,10 +263,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .child(mAuth.getCurrentUser().getUid())
                     .child("emotions")
                     .child(emotion1.getDateTime())
-                    .setValue(emotionMap);
+                    .setValue(emotionMap)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            addLatestEmotionToUserProfile(emotion1);
+                        } else {
+                            Toast.makeText(this, "Couldn't upload emotion", Toast.LENGTH_SHORT).show();
+                        }
+                    });
         }).start();
 
         replaceFragment("HOME");
+    }
+
+    private void addLatestEmotionToUserProfile(Emotion emotion) {
+        DatabaseReference ref = firebaseDatabase.getReference("MyEmotions")
+                .child("UserProfile")
+                .child(mAuth.getCurrentUser().getUid());
+        ref.child("latestEmotion").setValue(emotion.getEmotion());
+        ref.child("latestEmotionDateTime").setValue(emotion.getDateTime());
+
     }
 
     public void mainConstraintLayoutClicked(View view) {
