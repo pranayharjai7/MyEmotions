@@ -23,5 +23,5 @@ public interface UserProfileDAO {
     LiveData<List<UserProfile>> getAllUserProfile();
 
     @Query("DELETE FROM UserProfile")
-    void clearData();
+    void clearAllData();
 }
