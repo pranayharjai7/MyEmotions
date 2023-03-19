@@ -1,114 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainDrawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    tools:openDrawer="end">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/mainConstraintLayout"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/mainCoordinatorLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:onClick="mainConstraintLayoutClicked">
+        android:layout_height="match_parent">
 
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/mainFragmentContainerView"
-            android:name="com.pranayharjai7.myemotions.Fragments.MainActivityFragments.HomeFragment"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:layout="@layout/fragment_home" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <com.google.android.material.bottomappbar.BottomAppBar
-        android:id="@+id/mainBottomAppBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:fabCradleVerticalOffset="5dp"
-        app:fabCradleRoundedCornerRadius="30dp"
-        android:layout_gravity="bottom" >
-
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/mainBottomNavigationView"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/mainConstraintLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:menu="@menu/main_bottom_nav_menu"
-            android:layout_marginEnd="16dp"
-            android:background="@android:color/transparent"/>
-    </com.google.android.material.bottomappbar.BottomAppBar>
+            android:onClick="mainConstraintLayoutClicked">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/recordEmotionButton"
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/mainFragmentContainerView"
+                android:name="com.pranayharjai7.myemotions.Fragments.MainActivityFragments.HomeFragment"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout="@layout/fragment_home" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/mainBottomAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            app:fabCradleRoundedCornerRadius="30dp"
+            app:fabCradleVerticalOffset="5dp">
+
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/mainBottomNavigationView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="16dp"
+                android:background="@android:color/transparent"
+                app:menu="@menu/main_bottom_nav_menu" />
+        </com.google.android.material.bottomappbar.BottomAppBar>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/recordEmotionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:contentDescription="@string/plus_button_to_open_gallery_or_camera"
+            android:focusable="true"
+            android:onClick="recordEmotionButtonClicked"
+            app:layout_anchor="@id/mainBottomAppBar"
+            app:srcCompat="@drawable/ic_plus_white"
+            tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck,ImageContrastCheck" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/cameraButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:contentDescription="@string/camera_button"
+            android:focusable="true"
+            android:onClick="cameraButtonClicked"
+            android:translationX="0dp"
+            android:translationY="0dp"
+            android:visibility="gone"
+            app:elevation="10dp"
+            app:layout_anchor="@id/recordEmotionButton"
+            app:layout_anchorGravity="center"
+            app:srcCompat="@drawable/ic_camera_white"
+            tools:ignore="RedundantDescriptionCheck,ImageContrastCheck" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/galleryButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:contentDescription="@string/open_gallery_button"
+            android:focusable="true"
+            android:onClick="galleryButtonClicked"
+            android:translationX="0dp"
+            android:translationY="0dp"
+            android:visibility="gone"
+            app:elevation="10dp"
+            app:layout_anchor="@id/recordEmotionButton"
+            app:layout_anchorGravity="center"
+            app:srcCompat="@drawable/ic_open_gallery_icon_white"
+            tools:ignore="RedundantDescriptionCheck,ImageContrastCheck" />
+
+        <TextView
+            android:id="@+id/galleryTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/gallery"
+            android:textSize="18sp"
+            android:translationX="-35dp"
+            android:visibility="gone"
+            app:layout_anchor="@id/galleryButton"
+            app:layout_anchorGravity="center|start" />
+
+        <TextView
+            android:id="@+id/cameraTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/camera"
+            android:textSize="18sp"
+            android:translationX="37dp"
+            android:visibility="gone"
+            app:layout_anchor="@id/cameraButton"
+            app:layout_anchorGravity="center|end" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/mainSideNavigationView"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:contentDescription="@string/plus_button_to_open_gallery_or_camera"
-        android:focusable="true"
-        android:onClick="recordEmotionButtonClicked"
-        app:layout_anchor="@id/mainBottomAppBar"
-        app:srcCompat="@drawable/ic_plus_white"
-        tools:ignore="SpeakableTextPresentCheck,RedundantDescriptionCheck,ImageContrastCheck" />
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        app:menu="@menu/main_drawer_menu" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/cameraButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:contentDescription="@string/camera_button"
-        android:focusable="true"
-        android:onClick="cameraButtonClicked"
-        android:translationX="0dp"
-        android:translationY="0dp"
-        android:visibility="gone"
-        app:elevation="10dp"
-        app:layout_anchor="@id/recordEmotionButton"
-        app:layout_anchorGravity="center"
-        app:srcCompat="@drawable/ic_camera_white"
-        tools:ignore="RedundantDescriptionCheck,ImageContrastCheck" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/galleryButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:contentDescription="@string/open_gallery_button"
-        android:focusable="true"
-        android:onClick="galleryButtonClicked"
-        android:translationX="0dp"
-        android:translationY="0dp"
-        android:visibility="gone"
-        app:elevation="10dp"
-        app:layout_anchor="@id/recordEmotionButton"
-        app:layout_anchorGravity="center"
-        app:srcCompat="@drawable/ic_open_gallery_icon_white"
-        tools:ignore="RedundantDescriptionCheck,ImageContrastCheck" />
-
-    <TextView
-        android:id="@+id/galleryTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/gallery"
-        android:textSize="18sp"
-        android:translationX="-35dp"
-        android:visibility="gone"
-        app:layout_anchor="@id/galleryButton"
-        app:layout_anchorGravity="center|start" />
-
-    <TextView
-        android:id="@+id/cameraTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/camera"
-        android:textSize="18sp"
-        android:translationX="37dp"
-        android:visibility="gone"
-        app:layout_anchor="@id/cameraButton"
-        app:layout_anchorGravity="center|end" />
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.drawerlayout.widget.DrawerLayout>

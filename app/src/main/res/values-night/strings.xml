@@ -26,4 +26,5 @@
     <string name="gallery">Gallery</string>
     <string name="camera">Camera</string>
     <string name="emotionsimageview">emotionsImageView</string>
+    <string name="mood_visibility_spinner_text">Mood Visibility Spinner</string>
 </resources>

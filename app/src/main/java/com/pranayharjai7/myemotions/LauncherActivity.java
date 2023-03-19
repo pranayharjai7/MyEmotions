@@ -29,7 +29,7 @@ public class LauncherActivity extends AppCompatActivity {
     }
 
     public void launcherConstraintLayoutClicked(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();
     }
