@@ -112,7 +112,9 @@ public class UserProfileViewAdapter extends RecyclerView.Adapter<UserProfileView
 
         getUsernameOfCurrentUser(usernameOfCurrentUser -> {
             addFriendToCurrentUser(friend, friendName, result -> {
-                addCurrentUserAsFriendToFriendRequestSender(friend, usernameOfCurrentUser, friendName);
+                addCurrentUserAsFriendToFriendRequestSender(friend, usernameOfCurrentUser, friendName, result1 -> {
+                    removeFriendRequestFromFirebase(friend, friendName);
+                });
             });
         });
     }
@@ -152,7 +154,7 @@ public class UserProfileViewAdapter extends RecyclerView.Adapter<UserProfileView
                 });
     }
 
-    private void addCurrentUserAsFriendToFriendRequestSender(Friend friend, String usernameOfCurrentUser, String friendName) {
+    private void addCurrentUserAsFriendToFriendRequestSender(Friend friend, String usernameOfCurrentUser, String friendName, Callback<String> callback) {
         firebaseDatabase.getReference("MyEmotions")
                 .child("UserProfile")
                 .child(friend.getFriendId())
@@ -162,10 +164,24 @@ public class UserProfileViewAdapter extends RecyclerView.Adapter<UserProfileView
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Toast.makeText(context, friendName + " added as friend!", Toast.LENGTH_SHORT).show();
+                        callback.onSuccess(friendName);
                     } else {
                         Toast.makeText(context, "Couldn't add friend, please try again.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
+    private void removeFriendRequestFromFirebase(Friend friend, String friendName) {
+        firebaseDatabase.getReference("MyEmotions")
+                .child("UserProfile")
+                .child(friend.getUserId())
+                .child("friendRequests")
+                .child(friend.getFriendId())
+                .removeValue()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Toast.makeText(context, "Error in removing friend request, please check database.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 }
