@@ -16,15 +16,15 @@ import com.google.firebase.database.ValueEventListener;
 import com.pranayharjai7.myemotions.Database.DAO.UserProfileDatabase;
 import com.pranayharjai7.myemotions.Database.UserProfile;
 import com.pranayharjai7.myemotions.Utils.Adapters.UserProfileViewAdapter;
-import com.pranayharjai7.myemotions.databinding.ActivityFriendsBinding;
+import com.pranayharjai7.myemotions.databinding.ActivityAddFriendsBinding;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class FriendsActivity extends AppCompatActivity {
+public class AddFriendsActivity extends AppCompatActivity {
 
-    private ActivityFriendsBinding binding;
+    private ActivityAddFriendsBinding binding;
     private FirebaseAuth mAuth;
     private FirebaseDatabase firebaseDatabase;
     private UserProfileDatabase userProfileDatabase;
@@ -32,7 +32,7 @@ public class FriendsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityFriendsBinding.inflate(getLayoutInflater());
+        binding = ActivityAddFriendsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         init(savedInstanceState);

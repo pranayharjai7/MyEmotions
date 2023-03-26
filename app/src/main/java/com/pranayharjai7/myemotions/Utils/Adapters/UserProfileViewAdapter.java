@@ -76,7 +76,7 @@ public class UserProfileViewAdapter extends RecyclerView.Adapter<UserProfileView
                 .setCancelable(true)
                 .setTitle("Add " + username + " as friend?")
                 .setPositiveButton("YES", (dialog, i) -> {
-                    if (context.toString().contains("FriendsActivity")) {
+                    if (context.toString().contains("AddFriendsActivity")) {
                         sendFriendRequest(friendId, username);
                     } else {
                         addUserAsFriend(friendId, username);

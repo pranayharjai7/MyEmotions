@@ -24,9 +24,9 @@
         <activity
             android:name=".FriendRequestsActivity"
             android:exported="false"
-            android:parentActivityName=".FriendsActivity" />
+            android:parentActivityName=".AddFriendsActivity" />
         <activity
-            android:name=".FriendsActivity"
+            android:name=".AddFriendsActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
         <activity
