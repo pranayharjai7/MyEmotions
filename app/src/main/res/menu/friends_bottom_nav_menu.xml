@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/myFriendsItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/ic_group_white"
+            android:onClick="friendsMenuItemClicked"
+            android:title="My Friends" />
+        <item
+            android:id="@+id/addFriendsItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/ic_person_search_white"
+            android:onClick="addFriendsMenuItemClicked"
+            android:title="Add Friends" />
+        <item
+            android:id="@+id/friendRequestsItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/icon_person_add_white"
+            android:onClick="friendRequestsMenuItemClicked"
+            android:title="Friend Requests" />
+        <item
+            android:id="@+id/removeFriendsItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/ic_person_remove_white"
+            android:onClick="removeFriendsMenuItemClicked"
+            android:title="Remove Friends" />
+    </group>
+</menu>

@@ -1,8 +1,6 @@
 package com.pranayharjai7.myemotions;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -82,10 +80,5 @@ public class AddFriendsActivity extends AppCompatActivity {
                         }
                     });
         }).start();
-    }
-
-    public void friendRequestsButtonClicked(View view) {
-        Intent intent = new Intent(this, FriendRequestsActivity.class);
-        startActivity(intent);
     }
 }
