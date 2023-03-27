@@ -1,6 +1,7 @@
 package com.pranayharjai7.myemotions;
 
-import android.content.Intent;
+import static com.pranayharjai7.myemotions.Utils.FragmentUtils.replaceLoginFragment;
+
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -8,17 +9,16 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.pranayharjai7.myemotions.Fragments.LoginActivityFragments.LoginUserFragment;
-import com.pranayharjai7.myemotions.Fragments.LoginActivityFragments.RegisterUserFragment;
 import com.pranayharjai7.myemotions.ViewModels.LoginViewModel;
 import com.pranayharjai7.myemotions.ViewModels.RegisterViewModel;
 import com.pranayharjai7.myemotions.databinding.ActivityLoginBinding;
 
 public class LoginActivity extends AppCompatActivity {
 
+    public static final String LOGIN = "LOGIN";
+    public static final String REGISTER = "REGISTER";
     private ActivityLoginBinding binding;
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private LoginViewModel loginViewModel;
@@ -38,7 +38,7 @@ public class LoginActivity extends AppCompatActivity {
         loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
         registerViewModel = new ViewModelProvider(this).get(RegisterViewModel.class);
         if (savedInstanceState == null) {
-            replaceFragment("LOGIN");
+            replaceLoginFragment(fragmentManager, LOGIN);
         }
     }
 
@@ -69,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
      * @param view
      */
     public void loginMenuButtonClicked(View view) {
-        replaceFragment("LOGIN");
+        replaceLoginFragment(fragmentManager, LOGIN);
         changeMenu(view, binding.signupMenuButton);
     }
 
@@ -79,36 +79,8 @@ public class LoginActivity extends AppCompatActivity {
      * @param view
      */
     public void signupMenuButtonClicked(View view) {
-        replaceFragment("REGISTER");
+        replaceLoginFragment(fragmentManager, REGISTER);
         changeMenu(view, binding.loginMenuButton);
-    }
-
-    private void replaceFragment(String fragment) {
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setCustomAnimations(
-                R.anim.fade_in,  // enter
-                R.anim.fade_out,  // exit
-                R.anim.fade_in,   // popEnter
-                R.anim.fade_out  // popExit
-        );
-
-        switch (fragment) {
-            case "LOGIN": {
-                transaction.replace(R.id.loginFragmentContainerView, LoginUserFragment.class, null);
-                break;
-            }
-            case "REGISTER": {
-                transaction.replace(R.id.loginFragmentContainerView, RegisterUserFragment.class, null);
-                break;
-            }
-            default: {
-                transaction.replace(R.id.loginFragmentContainerView, LoginUserFragment.class, null);
-            }
-        }
-
-        transaction.setReorderingAllowed(true)
-                //.addToBackStack(fragment)
-                .commit();
     }
 
     private void changeMenu(View view1, View view2) {
