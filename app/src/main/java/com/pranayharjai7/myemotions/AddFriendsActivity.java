@@ -22,6 +22,7 @@ import java.util.List;
 
 public class AddFriendsActivity extends AppCompatActivity {
 
+    public static final String ADD_FRIENDS_ACTIVITY = "AddFriendsActivity";
     private ActivityAddFriendsBinding binding;
     private FirebaseAuth mAuth;
     private FirebaseDatabase firebaseDatabase;
@@ -49,7 +50,9 @@ public class AddFriendsActivity extends AppCompatActivity {
     private void observations() {
         userProfileDatabase.userProfileDAO().getAllUserProfile().observe(this, userProfiles -> {
             Collections.sort(userProfiles, (o1, o2) -> o1.getUsername().compareTo(o2.getUsername()));
-            binding.userProfilesRecyclerView.setAdapter(new UserProfileViewAdapter(userProfiles, this));
+            binding.userProfilesRecyclerView.setAdapter(
+                    new UserProfileViewAdapter(userProfiles, this, ADD_FRIENDS_ACTIVITY)
+            );
         });
     }
 

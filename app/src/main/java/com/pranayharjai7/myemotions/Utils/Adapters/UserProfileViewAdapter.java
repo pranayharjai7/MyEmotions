@@ -1,5 +1,7 @@
 package com.pranayharjai7.myemotions.Utils.Adapters;
 
+import static com.pranayharjai7.myemotions.Fragments.FriendsActivityFragments.MyFriendsFragment.MY_FRIENDS_FRAGMENT;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,13 +32,14 @@ public class UserProfileViewAdapter extends RecyclerView.Adapter<UserProfileView
     private Context context;
     private FirebaseAuth mAuth;
     private FirebaseDatabase firebaseDatabase;
+    private String contextClass;
 
-    public UserProfileViewAdapter(List<UserProfile> userProfiles, Context context) {
+    public UserProfileViewAdapter(List<UserProfile> userProfiles, Context context, String contextClass) {
         this.userProfiles = userProfiles;
         this.context = context;
+        this.contextClass = contextClass;
         mAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
-
     }
 
     public static class UserProfileViewHolder extends RecyclerView.ViewHolder {
@@ -68,7 +71,10 @@ public class UserProfileViewAdapter extends RecyclerView.Adapter<UserProfileView
 
         holder.binding.usernameTextView.setText(username);
         holder.binding.emailTextView.setText(email);
-        holder.binding.userProfileCardView.setOnClickListener(v -> userProfileCardViewClicked(userId, username));
+        if (!contextClass.equals(MY_FRIENDS_FRAGMENT)) {
+            holder.binding.userProfileCardView.setOnClickListener(v -> userProfileCardViewClicked(userId, username));
+        }
+        //TODO When you will create other fragments, use if conditions here to do the tasks accordingly
     }
 
     private void userProfileCardViewClicked(String friendId, String username) {

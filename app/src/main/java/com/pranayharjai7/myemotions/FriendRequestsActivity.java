@@ -22,7 +22,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class FriendRequestsActivity extends AppCompatActivity {
 
-    ActivityFriendRequestsBinding binding;
+    public static final String FRIEND_REQUESTS_ACTIVITY = "FriendRequestsActivity";
+    private ActivityFriendRequestsBinding binding;
     private FirebaseAuth mAuth;
     private FirebaseDatabase firebaseDatabase;
 
@@ -44,7 +45,9 @@ public class FriendRequestsActivity extends AppCompatActivity {
     private void addFriendRequestsToRecyclerView() {
         getFriendRequestsUIds(friendRequestsUIds -> {
             getFriendRequestsUserProfiles(friendRequestsUIds, friendRequestsUserProfiles -> {
-                binding.friendRequestsRecyclerView.setAdapter(new UserProfileViewAdapter(friendRequestsUserProfiles, this));
+                binding.friendRequestsRecyclerView.setAdapter(
+                        new UserProfileViewAdapter(friendRequestsUserProfiles, this, FRIEND_REQUESTS_ACTIVITY)
+                );
             });
         });
     }
