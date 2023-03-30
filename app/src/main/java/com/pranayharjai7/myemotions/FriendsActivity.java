@@ -1,11 +1,10 @@
 package com.pranayharjai7.myemotions;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
-
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.pranayharjai7.myemotions.Utils.FragmentUtils;
 import com.pranayharjai7.myemotions.databinding.ActivityFriendsBinding;
@@ -52,9 +51,7 @@ public class FriendsActivity extends AppCompatActivity {
     public void friendRequestsMenuItemClicked(MenuItem item) {
         if (!item.isChecked()) {
             item.setChecked(true);
-            Intent intent = new Intent(this, FriendRequestsActivity.class);
-            startActivity(intent);
-            //TODO Change fragments instead of activity
+            FragmentUtils.replaceFriendsFragment(fragmentManager, FRIEND_REQUESTS);
         }
     }
 

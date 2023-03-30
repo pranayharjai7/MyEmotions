@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.pranayharjai7.myemotions.Fragments.FriendsActivityFragments.AddFriendsFragment;
+import com.pranayharjai7.myemotions.Fragments.FriendsActivityFragments.FriendRequestsFragment;
 import com.pranayharjai7.myemotions.Fragments.FriendsActivityFragments.MyFriendsFragment;
 import com.pranayharjai7.myemotions.Fragments.LoginActivityFragments.LoginUserFragment;
 import com.pranayharjai7.myemotions.Fragments.LoginActivityFragments.RegisterUserFragment;
@@ -100,10 +101,10 @@ public class FragmentUtils {
                 transaction.replace(R.id.friendsFragmentContainerView, AddFriendsFragment.class, null);
                 break;
             }
-//            case FRIEND_REQUESTS: {
-//                transaction.replace(R.id.friendsFragmentContainerView, MapsFragment.class, null);
-//                break;
-//            }
+            case FRIEND_REQUESTS: {
+                transaction.replace(R.id.friendsFragmentContainerView, FriendRequestsFragment.class, null);
+                break;
+            }
 //            case REMOVE_FRIENDS: {
 //                transaction.replace(R.id.friendsFragmentContainerView, MapsFragment.class, null);
 //                break;

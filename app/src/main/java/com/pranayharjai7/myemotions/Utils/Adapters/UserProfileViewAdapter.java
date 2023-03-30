@@ -1,6 +1,7 @@
 package com.pranayharjai7.myemotions.Utils.Adapters;
 
 import static com.pranayharjai7.myemotions.Fragments.FriendsActivityFragments.AddFriendsFragment.ADD_FRIENDS_FRAGMENT;
+import static com.pranayharjai7.myemotions.Fragments.FriendsActivityFragments.FriendRequestsFragment.FRIEND_REQUESTS_FRAGMENT;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -82,10 +83,10 @@ public class UserProfileViewAdapter extends RecyclerView.Adapter<UserProfileView
                 holder.binding.userProfileCardView.setOnClickListener(v -> addFriendsListener(userId, username));
                 break;
             }
-//            case FRIEND_REQUESTS_FRAGMENT: {
-//                holder.binding.userProfileCardView.setOnClickListener(v -> acceptFriendRequestListener(userId, username));
-//                break;
-//            }
+            case FRIEND_REQUESTS_FRAGMENT: {
+                holder.binding.userProfileCardView.setOnClickListener(v -> acceptFriendRequestListener(userId, username));
+                break;
+            }
 //            case REMOVE_FRIENDS_FRAGMENT: {
 //                holder.binding.userProfileCardView.setOnClickListener(v -> removeFriendListener(userId, username));
 //                break;
