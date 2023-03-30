@@ -19,7 +19,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.room.Room;
 
@@ -32,11 +31,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pranayharjai7.myemotions.Database.DAO.EmotionDatabase;
 import com.pranayharjai7.myemotions.Database.Emotion;
-import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.HomeFragment;
-import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.MapsFragment;
-import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.StatsFragment;
 import com.pranayharjai7.myemotions.Utils.AnimationUtils;
 import com.pranayharjai7.myemotions.Utils.DateTimeUtils;
+import com.pranayharjai7.myemotions.Utils.FragmentUtils;
 import com.pranayharjai7.myemotions.Utils.ImageUtils;
 import com.pranayharjai7.myemotions.Utils.Interfaces.OnRealtimeEmotionsLoadedCallback;
 import com.pranayharjai7.myemotions.ViewModels.HomeViewModel;
@@ -51,6 +48,9 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int ALL_PERMISSIONS_CODE = 101;
+    public static final String HOME = "HOME";
+    public static final String STATS = "STATS";
+    public static final String MAPS = "MAPS";
     private ActivityMainBinding binding;
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private HomeViewModel homeViewModel;
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .build();
 
         if (savedInstanceState == null) {
-            replaceFragment("HOME");
+            FragmentUtils.replaceMainFragment(fragmentManager, HOME);
             binding.mainSideNavigationView.setCheckedItem(R.id.nav_home);
         }
 
@@ -273,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     });
         }).start();
 
-        replaceFragment("HOME");
+        FragmentUtils.replaceMainFragment(fragmentManager, HOME);
     }
 
     private void addLatestEmotionToUserProfile(Emotion emotion) {
@@ -304,21 +304,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void homeMenuItemClicked(MenuItem item) {
         if (!item.isChecked()) {
             item.setChecked(true);
-            replaceFragment("HOME");
+            FragmentUtils.replaceMainFragment(fragmentManager, HOME);
         }
     }
 
     public void statsMenuItemClicked(MenuItem item) {
         if (!item.isChecked()) {
             item.setChecked(true);
-            replaceFragment("STATS");
+            FragmentUtils.replaceMainFragment(fragmentManager, STATS);
         }
     }
 
     public void mapsMenuItemClicked(MenuItem item) {
         if (!item.isChecked()) {
             item.setChecked(true);
-            replaceFragment("MAPS");
+            FragmentUtils.replaceMainFragment(fragmentManager, MAPS);
         }
     }
 
@@ -326,38 +326,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (!item.isChecked()) {
             binding.mainDrawerLayout.openDrawer(GravityCompat.END);
         }
-    }
-
-    private void replaceFragment(String fragment) {
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setCustomAnimations(
-                R.anim.fade_in,  // enter
-                R.anim.fade_out,  // exit
-                R.anim.fade_in,   // popEnter
-                R.anim.fade_out  // popExit
-        );
-
-        switch (fragment) {
-            case "HOME": {
-                transaction.replace(R.id.mainFragmentContainerView, HomeFragment.class, null);
-                break;
-            }
-            case "STATS": {
-                transaction.replace(R.id.mainFragmentContainerView, StatsFragment.class, null);
-                break;
-            }
-            case "MAPS": {
-                transaction.replace(R.id.mainFragmentContainerView, MapsFragment.class, null);
-                break;
-            }
-            default: {
-                transaction.replace(R.id.mainFragmentContainerView, HomeFragment.class, null);
-            }
-        }
-
-        transaction.setReorderingAllowed(true)
-                //.addToBackStack(fragment)
-                .commit();
     }
 
     @Override
