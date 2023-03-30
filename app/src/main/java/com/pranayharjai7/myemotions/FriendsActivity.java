@@ -45,9 +45,7 @@ public class FriendsActivity extends AppCompatActivity {
     public void addFriendsMenuItemClicked(MenuItem item) {
         if (!item.isChecked()) {
             item.setChecked(true);
-            Intent intent = new Intent(this, AddFriendsActivity.class);
-            startActivity(intent);
-            //TODO Change fragments instead of activity
+            FragmentUtils.replaceFriendsFragment(fragmentManager, ADD_FRIENDS);
         }
     }
 

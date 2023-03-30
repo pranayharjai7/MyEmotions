@@ -12,6 +12,7 @@ import static com.pranayharjai7.myemotions.MainActivity.STATS;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.pranayharjai7.myemotions.Fragments.FriendsActivityFragments.AddFriendsFragment;
 import com.pranayharjai7.myemotions.Fragments.FriendsActivityFragments.MyFriendsFragment;
 import com.pranayharjai7.myemotions.Fragments.LoginActivityFragments.LoginUserFragment;
 import com.pranayharjai7.myemotions.Fragments.LoginActivityFragments.RegisterUserFragment;
@@ -96,7 +97,7 @@ public class FragmentUtils {
                 break;
             }
             case ADD_FRIENDS: {
-//                transaction.replace(R.id.friendsFragmentContainerView, StatsFragment.class, null);
+                transaction.replace(R.id.friendsFragmentContainerView, AddFriendsFragment.class, null);
                 break;
             }
 //            case FRIEND_REQUESTS: {

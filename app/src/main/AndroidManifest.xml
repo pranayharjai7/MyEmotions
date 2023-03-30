@@ -30,10 +30,6 @@
             android:exported="false"
             android:parentActivityName=".FriendsActivity" />
         <activity
-            android:name=".AddFriendsActivity"
-            android:exported="false"
-            android:parentActivityName=".FriendsActivity" />
-        <activity
             android:name=".SettingsActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />

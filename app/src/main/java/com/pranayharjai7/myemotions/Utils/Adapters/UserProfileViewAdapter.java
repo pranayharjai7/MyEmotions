@@ -1,6 +1,6 @@
 package com.pranayharjai7.myemotions.Utils.Adapters;
 
-import static com.pranayharjai7.myemotions.Fragments.FriendsActivityFragments.MyFriendsFragment.MY_FRIENDS_FRAGMENT;
+import static com.pranayharjai7.myemotions.Fragments.FriendsActivityFragments.AddFriendsFragment.ADD_FRIENDS_FRAGMENT;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -32,9 +32,10 @@ public class UserProfileViewAdapter extends RecyclerView.Adapter<UserProfileView
     private Context context;
     private FirebaseAuth mAuth;
     private FirebaseDatabase firebaseDatabase;
+    @NonNull
     private String contextClass;
 
-    public UserProfileViewAdapter(List<UserProfile> userProfiles, Context context, String contextClass) {
+    public UserProfileViewAdapter(List<UserProfile> userProfiles, Context context, @NonNull String contextClass) {
         this.userProfiles = userProfiles;
         this.context = context;
         this.contextClass = contextClass;
@@ -71,26 +72,55 @@ public class UserProfileViewAdapter extends RecyclerView.Adapter<UserProfileView
 
         holder.binding.usernameTextView.setText(username);
         holder.binding.emailTextView.setText(email);
-        if (!contextClass.equals(MY_FRIENDS_FRAGMENT)) {
-            holder.binding.userProfileCardView.setOnClickListener(v -> userProfileCardViewClicked(userId, username));
-        }
-        //TODO When you will create other fragments, use if conditions here to do the tasks accordingly
+
+        setCardViewListener(holder, userId, username);
     }
 
-    private void userProfileCardViewClicked(String friendId, String username) {
+    private void setCardViewListener(UserProfileViewHolder holder, String userId, String username) {
+        switch (contextClass) {
+            case ADD_FRIENDS_FRAGMENT: {
+                holder.binding.userProfileCardView.setOnClickListener(v -> addFriendsListener(userId, username));
+                break;
+            }
+//            case FRIEND_REQUESTS_FRAGMENT: {
+//                holder.binding.userProfileCardView.setOnClickListener(v -> acceptFriendRequestListener(userId, username));
+//                break;
+//            }
+//            case REMOVE_FRIENDS_FRAGMENT: {
+//                holder.binding.userProfileCardView.setOnClickListener(v -> removeFriendListener(userId, username));
+//                break;
+//            }
+            default: {
+                holder.binding.userProfileCardView.setOnClickListener(null);
+            }
+        }
+    }
+
+    private void addFriendsListener(String friendId, String username) {
         new AlertDialog.Builder(context)
                 .setCancelable(true)
                 .setTitle("Add " + username + " as friend?")
                 .setPositiveButton("YES", (dialog, i) -> {
-                    if (context.toString().contains("AddFriendsActivity")) {
-                        sendFriendRequest(friendId, username);
-                    } else {
-                        addUserAsFriend(friendId, username);
-                    }
+                    sendFriendRequest(friendId, username);
                 })
-                .setNegativeButton("NO", (dialogInterface, i) -> {
-                    dialogInterface.dismiss();
+                .setNegativeButton("NO", (dialog, i) -> {
+                    dialog.dismiss();
                 }).show();
+    }
+
+    private void acceptFriendRequestListener(String friendId, String username) {
+        new AlertDialog.Builder(context)
+                .setCancelable(true)
+                .setTitle("Add " + username + " as friend?")
+                .setPositiveButton("YES", (dialog, i) -> {
+                    addUserAsFriend(friendId, username);
+                })
+                .setNegativeButton("NO", (dialog, i) -> {
+                    dialog.dismiss();
+                }).show();
+    }
+
+    private void removeFriendListener(String userId, String username) {
     }
 
     private void sendFriendRequest(String friendId, String usernameOfReceiver) {
