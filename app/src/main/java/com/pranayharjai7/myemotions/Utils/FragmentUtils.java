@@ -27,12 +27,7 @@ import com.pranayharjai7.myemotions.R;
 public class FragmentUtils {
     public static void replaceMainFragment(FragmentManager fragmentManager, String fragment) {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setCustomAnimations(
-                R.anim.fade_in,  // enter
-                R.anim.fade_out,  // exit
-                R.anim.fade_in,   // popEnter
-                R.anim.fade_out  // popExit
-        );
+        setFragmentTransactionAnimations(transaction);
 
         switch (fragment) {
             case HOME: {
@@ -52,19 +47,12 @@ public class FragmentUtils {
             }
         }
 
-        transaction.setReorderingAllowed(true)
-                //.addToBackStack(fragment)
-                .commit();
+        commitFragmentTransaction(transaction);
     }
 
     public static void replaceLoginFragment(FragmentManager fragmentManager, String fragment) {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setCustomAnimations(
-                R.anim.fade_in,  // enter
-                R.anim.fade_out,  // exit
-                R.anim.fade_in,   // popEnter
-                R.anim.fade_out  // popExit
-        );
+        setFragmentTransactionAnimations(transaction);
 
         switch (fragment) {
             case LOGIN: {
@@ -80,19 +68,12 @@ public class FragmentUtils {
             }
         }
 
-        transaction.setReorderingAllowed(true)
-                //.addToBackStack(fragment)
-                .commit();
+        commitFragmentTransaction(transaction);
     }
 
     public static void replaceFriendsFragment(FragmentManager fragmentManager, String fragment) {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setCustomAnimations(
-                R.anim.fade_in,  // enter
-                R.anim.fade_out,  // exit
-                R.anim.fade_in,   // popEnter
-                R.anim.fade_out  // popExit
-        );
+        setFragmentTransactionAnimations(transaction);
 
         switch (fragment) {
             case MY_FRIENDS: {
@@ -116,6 +97,19 @@ public class FragmentUtils {
             }
         }
 
+        commitFragmentTransaction(transaction);
+    }
+
+    private static void setFragmentTransactionAnimations(FragmentTransaction transaction) {
+        transaction.setCustomAnimations(
+                R.anim.fade_in,  // enter
+                R.anim.fade_out,  // exit
+                R.anim.fade_in,   // popEnter
+                R.anim.fade_out  // popExit
+        );
+    }
+
+    private static void commitFragmentTransaction(FragmentTransaction transaction) {
         transaction.setReorderingAllowed(true)
                 //.addToBackStack(fragment)
                 .commit();
