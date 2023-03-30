@@ -4,21 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FriendRequestsActivity">
+    tools:context=".Fragments.FriendsActivityFragments.RemoveFriendsFragment">
 
     <TextView
-        android:id="@+id/friendRequestsHeaderTextView"
+        android:id="@+id/removeFriendsHeaderTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="Friend Requests"
+        android:text="Remove Friends"
         android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <SearchView
-        android:id="@+id/searchView"
+        android:id="@+id/removeFriendsSearchView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -26,18 +26,20 @@
         android:layout_marginEnd="20dp"
         android:background="@drawable/edit_text_bg"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/friendRequestsHeaderTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/removeFriendsHeaderTextView" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/friendRequestsRecyclerView"
+        android:id="@+id/removeFriendsRecyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="30dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="40dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchView" />
+        app:layout_constraintTop_toBottomOf="@+id/removeFriendsSearchView" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -22,10 +22,6 @@
         android:theme="@style/Theme.MyEmotions"
         tools:targetApi="31">
         <activity
-            android:name=".FriendRequestsActivity"
-            android:exported="false"
-            android:parentActivityName=".FriendsActivity" />
-        <activity
             android:name=".FriendsActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />

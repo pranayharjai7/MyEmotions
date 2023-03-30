@@ -1,9 +1,13 @@
-package com.pranayharjai7.myemotions;
+package com.pranayharjai7.myemotions.Fragments.FriendsActivityFragments;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -14,24 +18,22 @@ import com.google.firebase.database.ValueEventListener;
 import com.pranayharjai7.myemotions.Database.UserProfile;
 import com.pranayharjai7.myemotions.Utils.Adapters.UserProfileViewAdapter;
 import com.pranayharjai7.myemotions.Utils.Interfaces.Callback;
-import com.pranayharjai7.myemotions.databinding.ActivityFriendRequestsBinding;
+import com.pranayharjai7.myemotions.databinding.FragmentFriendRequestsBinding;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class FriendRequestsActivity extends AppCompatActivity {
+public class FriendRequestsFragment extends Fragment {
 
-    ActivityFriendRequestsBinding binding;
+    public static final String FRIEND_REQUESTS_FRAGMENT = "FriendRequestsFragment";
+    private FragmentFriendRequestsBinding binding;
     private FirebaseAuth mAuth;
     private FirebaseDatabase firebaseDatabase;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivityFriendRequestsBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         init(savedInstanceState);
     }
 
@@ -44,7 +46,11 @@ public class FriendRequestsActivity extends AppCompatActivity {
     private void addFriendRequestsToRecyclerView() {
         getFriendRequestsUIds(friendRequestsUIds -> {
             getFriendRequestsUserProfiles(friendRequestsUIds, friendRequestsUserProfiles -> {
-                binding.friendRequestsRecyclerView.setAdapter(new UserProfileViewAdapter(friendRequestsUserProfiles, this));
+                if (isAdded()) {
+                    binding.friendRequestsRecyclerView.setAdapter(
+                            new UserProfileViewAdapter(friendRequestsUserProfiles, requireContext(), FRIEND_REQUESTS_FRAGMENT)
+                    );
+                }
             });
         });
     }
@@ -97,5 +103,18 @@ public class FriendRequestsActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        binding = FragmentFriendRequestsBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }

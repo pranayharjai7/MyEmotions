@@ -1,33 +1,22 @@
 package com.pranayharjai7.myemotions;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
+import android.view.MenuItem;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.Room;
+import androidx.fragment.app.FragmentManager;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.pranayharjai7.myemotions.Database.DAO.UserProfileDatabase;
-import com.pranayharjai7.myemotions.Database.UserProfile;
-import com.pranayharjai7.myemotions.Utils.Adapters.UserProfileViewAdapter;
+import com.pranayharjai7.myemotions.Utils.FragmentUtils;
 import com.pranayharjai7.myemotions.databinding.ActivityFriendsBinding;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class FriendsActivity extends AppCompatActivity {
 
+    public static final String MY_FRIENDS = "MY FRIENDS";
+    public static final String ADD_FRIENDS = "ADD FRIENDS";
+    public static final String FRIEND_REQUESTS = "FRIEND REQUESTS";
+    public static final String REMOVE_FRIENDS = "REMOVE FRIENDS";
     private ActivityFriendsBinding binding;
-    private FirebaseAuth mAuth;
-    private FirebaseDatabase firebaseDatabase;
-    private UserProfileDatabase userProfileDatabase;
+    private FragmentManager fragmentManager = getSupportFragmentManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,56 +25,40 @@ public class FriendsActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         init(savedInstanceState);
-        observations();
     }
 
     private void init(Bundle savedInstanceState) {
-        mAuth = FirebaseAuth.getInstance();
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        userProfileDatabase = Room.databaseBuilder(this, UserProfileDatabase.class, "UserProfile_db")
-                .fallbackToDestructiveMigration()
-                .build();
-        addAllUsersToLocalDatabaseFromFirebase();
+        binding.friendsBottomNavigationView.setBackground(null);
+        if (savedInstanceState == null) {
+            FragmentUtils.replaceFriendsFragment(fragmentManager, MY_FRIENDS);
+        }
     }
 
-    private void observations() {
-        userProfileDatabase.userProfileDAO().getAllUserProfile().observe(this, userProfiles -> {
-            Collections.sort(userProfiles, (o1, o2) -> o1.getUsername().compareTo(o2.getUsername()));
-            binding.userProfilesRecyclerView.setAdapter(new UserProfileViewAdapter(userProfiles, this));
-        });
+    public void myFriendsMenuItemClicked(MenuItem item) {
+        if (!item.isChecked()) {
+            item.setChecked(true);
+            FragmentUtils.replaceFriendsFragment(fragmentManager, MY_FRIENDS);
+        }
     }
 
-    private void addAllUsersToLocalDatabaseFromFirebase() {
-        new Thread(() -> {
-            userProfileDatabase.userProfileDAO().clearAllData();
-
-            firebaseDatabase.getReference("MyEmotions")
-                    .child("UserProfile")
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            List<UserProfile> userProfiles = new ArrayList<>();
-                            for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                                String userId = userSnapshot.getKey();
-                                String username = userSnapshot.child("username").getValue(String.class);
-                                String email = userSnapshot.child("email").getValue(String.class);
-
-                                UserProfile userProfile = new UserProfile(userId, username, email);
-                                userProfiles.add(userProfile);
-                            }
-                            new Thread(() -> userProfileDatabase.userProfileDAO().insertAllUserProfiles(userProfiles)).start();
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-                    });
-        }).start();
+    public void addFriendsMenuItemClicked(MenuItem item) {
+        if (!item.isChecked()) {
+            item.setChecked(true);
+            FragmentUtils.replaceFriendsFragment(fragmentManager, ADD_FRIENDS);
+        }
     }
 
-    public void friendRequestsButtonClicked(View view) {
-        Intent intent = new Intent(this, FriendRequestsActivity.class);
-        startActivity(intent);
+    public void friendRequestsMenuItemClicked(MenuItem item) {
+        if (!item.isChecked()) {
+            item.setChecked(true);
+            FragmentUtils.replaceFriendsFragment(fragmentManager, FRIEND_REQUESTS);
+        }
+    }
+
+    public void removeFriendsMenuItemClicked(MenuItem item) {
+        if (!item.isChecked()) {
+            item.setChecked(true);
+            FragmentUtils.replaceFriendsFragment(fragmentManager, REMOVE_FRIENDS);
+        }
     }
 }
