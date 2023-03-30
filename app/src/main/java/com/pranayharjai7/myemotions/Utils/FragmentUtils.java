@@ -3,6 +3,7 @@ package com.pranayharjai7.myemotions.Utils;
 import static com.pranayharjai7.myemotions.FriendsActivity.ADD_FRIENDS;
 import static com.pranayharjai7.myemotions.FriendsActivity.FRIEND_REQUESTS;
 import static com.pranayharjai7.myemotions.FriendsActivity.MY_FRIENDS;
+import static com.pranayharjai7.myemotions.FriendsActivity.REMOVE_FRIENDS;
 import static com.pranayharjai7.myemotions.LoginActivity.LOGIN;
 import static com.pranayharjai7.myemotions.LoginActivity.REGISTER;
 import static com.pranayharjai7.myemotions.MainActivity.HOME;
@@ -15,6 +16,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.pranayharjai7.myemotions.Fragments.FriendsActivityFragments.AddFriendsFragment;
 import com.pranayharjai7.myemotions.Fragments.FriendsActivityFragments.FriendRequestsFragment;
 import com.pranayharjai7.myemotions.Fragments.FriendsActivityFragments.MyFriendsFragment;
+import com.pranayharjai7.myemotions.Fragments.FriendsActivityFragments.RemoveFriendsFragment;
 import com.pranayharjai7.myemotions.Fragments.LoginActivityFragments.LoginUserFragment;
 import com.pranayharjai7.myemotions.Fragments.LoginActivityFragments.RegisterUserFragment;
 import com.pranayharjai7.myemotions.Fragments.MainActivityFragments.HomeFragment;
@@ -105,10 +107,10 @@ public class FragmentUtils {
                 transaction.replace(R.id.friendsFragmentContainerView, FriendRequestsFragment.class, null);
                 break;
             }
-//            case REMOVE_FRIENDS: {
-//                transaction.replace(R.id.friendsFragmentContainerView, MapsFragment.class, null);
-//                break;
-//            }
+            case REMOVE_FRIENDS: {
+                transaction.replace(R.id.friendsFragmentContainerView, RemoveFriendsFragment.class, null);
+                break;
+            }
             default: {
                 transaction.replace(R.id.friendsFragmentContainerView, MyFriendsFragment.class, null);
             }

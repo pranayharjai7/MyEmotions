@@ -58,7 +58,7 @@ public class FriendsActivity extends AppCompatActivity {
     public void removeFriendsMenuItemClicked(MenuItem item) {
         if (!item.isChecked()) {
             item.setChecked(true);
-            //TODO Change fragments
+            FragmentUtils.replaceFriendsFragment(fragmentManager, REMOVE_FRIENDS);
         }
     }
 }

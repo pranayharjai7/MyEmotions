@@ -2,6 +2,7 @@ package com.pranayharjai7.myemotions.Utils.Adapters;
 
 import static com.pranayharjai7.myemotions.Fragments.FriendsActivityFragments.AddFriendsFragment.ADD_FRIENDS_FRAGMENT;
 import static com.pranayharjai7.myemotions.Fragments.FriendsActivityFragments.FriendRequestsFragment.FRIEND_REQUESTS_FRAGMENT;
+import static com.pranayharjai7.myemotions.Fragments.FriendsActivityFragments.RemoveFriendsFragment.REMOVE_FRIENDS_FRAGMENT;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -87,10 +88,10 @@ public class UserProfileViewAdapter extends RecyclerView.Adapter<UserProfileView
                 holder.binding.userProfileCardView.setOnClickListener(v -> acceptFriendRequestListener(userId, username));
                 break;
             }
-//            case REMOVE_FRIENDS_FRAGMENT: {
-//                holder.binding.userProfileCardView.setOnClickListener(v -> removeFriendListener(userId, username));
-//                break;
-//            }
+            case REMOVE_FRIENDS_FRAGMENT: {
+                holder.binding.userProfileCardView.setOnClickListener(v -> removeFriendListener(userId, username));
+                break;
+            }
             default: {
                 holder.binding.userProfileCardView.setOnClickListener(null);
             }
@@ -121,7 +122,16 @@ public class UserProfileViewAdapter extends RecyclerView.Adapter<UserProfileView
                 }).show();
     }
 
-    private void removeFriendListener(String userId, String username) {
+    private void removeFriendListener(String friendId, String username) {
+        new AlertDialog.Builder(context)
+                .setCancelable(true)
+                .setTitle("Are you sure you want to remove " + username + " as friend?")
+                .setPositiveButton("YES", (dialog, i) -> {
+                    removeUserAsFriend(friendId, username);
+                })
+                .setNegativeButton("NO", (dialog, i) -> {
+                    dialog.dismiss();
+                }).show();
     }
 
     private void sendFriendRequest(String friendId, String usernameOfReceiver) {
@@ -153,6 +163,13 @@ public class UserProfileViewAdapter extends RecyclerView.Adapter<UserProfileView
                     removeFriendRequestFromFirebase(friend, friendName);
                 });
             });
+        });
+    }
+
+    private void removeUserAsFriend(String friendId, String username) {
+        Friend friend = new Friend(mAuth.getCurrentUser().getUid(), friendId);
+        removeFriendFromCurrentUser(friend, result -> {
+            removeCurrentUserFromFriend(friend, username);
         });
     }
 
@@ -218,6 +235,36 @@ public class UserProfileViewAdapter extends RecyclerView.Adapter<UserProfileView
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful()) {
                         Toast.makeText(context, "Error in removing friend request, please check database.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void removeFriendFromCurrentUser(Friend friend, Callback<?> callback) {
+        firebaseDatabase.getReference("MyEmotions")
+                .child("UserProfile")
+                .child(friend.getUserId())
+                .child("friends")
+                .child(friend.getFriendId())
+                .removeValue()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        callback.onSuccess(null);
+                    }
+                });
+    }
+
+    private void removeCurrentUserFromFriend(Friend friend, String username) {
+        firebaseDatabase.getReference("MyEmotions")
+                .child("UserProfile")
+                .child(friend.getFriendId())
+                .child("friends")
+                .child(friend.getUserId())
+                .removeValue()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(context, username + " removed as a friend!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(context, "Error in removing friend, please check database.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
