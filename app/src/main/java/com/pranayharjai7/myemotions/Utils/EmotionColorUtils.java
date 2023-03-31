@@ -3,8 +3,6 @@ package com.pranayharjai7.myemotions.Utils;
 import android.content.Context;
 import android.graphics.Color;
 
-import com.pranayharjai7.myemotions.mtcnn.EmotionLabelUtils;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

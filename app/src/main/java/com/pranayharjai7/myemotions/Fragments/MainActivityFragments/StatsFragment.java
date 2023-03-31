@@ -32,7 +32,7 @@ import com.pranayharjai7.myemotions.Utils.DateTimeUtils;
 import com.pranayharjai7.myemotions.Utils.EmotionColorUtils;
 import com.pranayharjai7.myemotions.Utils.Interfaces.Callback;
 import com.pranayharjai7.myemotions.databinding.FragmentStatsBinding;
-import com.pranayharjai7.myemotions.mtcnn.EmotionLabelUtils;
+import com.pranayharjai7.myemotions.Utils.EmotionLabelUtils;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
