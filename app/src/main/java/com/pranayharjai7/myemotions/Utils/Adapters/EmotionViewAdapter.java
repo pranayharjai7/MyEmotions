@@ -9,6 +9,7 @@ import static com.pranayharjai7.myemotions.R.drawable.neutral;
 import static com.pranayharjai7.myemotions.R.drawable.sadness;
 import static com.pranayharjai7.myemotions.R.drawable.surprise;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,17 +21,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.pranayharjai7.myemotions.Database.Emotion;
 import com.pranayharjai7.myemotions.R;
 import com.pranayharjai7.myemotions.Utils.DateTimeUtils;
+import com.pranayharjai7.myemotions.Utils.EmotionColorUtils;
 import com.pranayharjai7.myemotions.databinding.EmotionCardLayoutBinding;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 public class EmotionViewAdapter extends RecyclerView.Adapter<EmotionViewAdapter.EmotionViewHolder> {
 
     private List<Emotion> emotions;
+    private Context context;
 
-    public EmotionViewAdapter(List<Emotion> emotions) {
+    public EmotionViewAdapter(List<Emotion> emotions, Context context) {
         this.emotions = emotions;
+        this.context = context;
     }
 
     public static class EmotionViewHolder extends RecyclerView.ViewHolder {
@@ -93,49 +98,45 @@ public class EmotionViewAdapter extends RecyclerView.Adapter<EmotionViewAdapter.
         return resultDateTime.toString();
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void setEmojiAndColor(String emotion, EmotionViewHolder holder) {
+        Map<String, Integer> emotionColorMap = EmotionColorUtils.getColorMapForEmotions(context);
+        holder.binding.homeEmotionCardView.setCardBackgroundColor(emotionColorMap.get(emotion));
+
         switch (emotion) {
             case "Anger": {
                 holder.binding.emojiImageView.setImageResource(anger);
-                holder.binding.homeEmotionCardView.setCardBackgroundColor(Color.parseColor("#e94339"));
                 break;
             }
             case "Contempt": {
                 holder.binding.emojiImageView.setImageResource(contempt);
-                holder.binding.homeEmotionCardView.setCardBackgroundColor(Color.parseColor("#bca67f"));
                 break;
             }
             case "Disgust": {
                 holder.binding.emojiImageView.setImageResource(disgust);
-                holder.binding.homeEmotionCardView.setCardBackgroundColor(Color.parseColor("#bb1b34"));
                 break;
             }
             case "Fear": {
                 holder.binding.emojiImageView.setImageResource(fear);
-                holder.binding.homeEmotionCardView.setCardBackgroundColor(Color.parseColor("#8464e4"));
                 break;
             }
             case "Happiness": {
                 holder.binding.emojiImageView.setImageResource(happiness);
-                holder.binding.homeEmotionCardView.setCardBackgroundColor(Color.parseColor("#049943"));
                 break;
             }
             case "Neutral": {
                 holder.binding.emojiImageView.setImageResource(neutral);
-                holder.binding.homeEmotionCardView.setCardBackgroundColor(Color.parseColor("#d4ab36"));
                 break;
             }
             case "Sadness": {
                 holder.binding.emojiImageView.setImageResource(sadness);
-                holder.binding.homeEmotionCardView.setCardBackgroundColor(Color.parseColor("#d68838"));
                 break;
             }
             case "Surprise": {
                 holder.binding.emojiImageView.setImageResource(surprise);
-                holder.binding.homeEmotionCardView.setCardBackgroundColor(Color.parseColor("#1ecf92"));
                 break;
             }
-            default : {
+            default: {
                 holder.binding.emojiImageView.setImageResource(neutral);
             }
         }
