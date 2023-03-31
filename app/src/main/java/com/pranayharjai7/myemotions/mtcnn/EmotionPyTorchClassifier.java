@@ -6,22 +6,20 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.util.Pair;
 
+import com.pranayharjai7.myemotions.Utils.EmotionLabelUtils;
+
 import org.pytorch.IValue;
 import org.pytorch.LiteModuleLoader;
 import org.pytorch.Module;
 import org.pytorch.Tensor;
 import org.pytorch.torchvision.TensorImageUtils;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 public class EmotionPyTorchClassifier {
@@ -36,7 +34,7 @@ public class EmotionPyTorchClassifier {
 
     public EmotionPyTorchClassifier(final Context context) throws IOException {
         module = LiteModuleLoader.load(assetFilePath(context, MODEL_FILE));
-        loadLabels(context);
+        labels = EmotionLabelUtils.loadLabels(context);
     }
 
     public static String assetFilePath(Context context, String assetName) throws IOException {
@@ -55,26 +53,6 @@ public class EmotionPyTorchClassifier {
                 os.flush();
             }
             return file.getAbsolutePath();
-        }
-    }
-
-    private void loadLabels(final Context context) {
-        BufferedReader br;
-        labels = new ArrayList<>();
-        try {
-            br = new BufferedReader(new InputStreamReader(context.getAssets().open("emotionsLabel.txt")));
-            String line;
-            int line_ind = 0;
-            while ((line = br.readLine()) != null) {
-                ++line_ind;
-                //line=line.toLowerCase();
-                String[] categoryInfo = line.trim().split(":");
-                String category = categoryInfo[1];
-                labels.add(category);
-            }
-            br.close();
-        } catch (IOException e) {
-            throw new RuntimeException("Problem reading emotion label file!", e);
         }
     }
 
