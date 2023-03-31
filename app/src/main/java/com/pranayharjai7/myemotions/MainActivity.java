@@ -274,6 +274,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }).start();
 
         FragmentUtils.replaceMainFragment(fragmentManager, HOME);
+        homeMenuItemClicked(binding.mainBottomNavigationView.getMenu().findItem(R.id.homeItem));
     }
 
     private void addLatestEmotionToUserProfile(Emotion emotion) {
