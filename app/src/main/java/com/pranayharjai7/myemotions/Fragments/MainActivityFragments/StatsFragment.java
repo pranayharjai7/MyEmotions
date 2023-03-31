@@ -17,6 +17,9 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.data.RadarData;
+import com.github.mikephil.charting.data.RadarDataSet;
+import com.github.mikephil.charting.data.RadarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -63,10 +66,12 @@ public class StatsFragment extends Fragment {
             Map<String, Integer> currentDayEmotionsMap = calculateFrequencyOfEmotionsInADay(userEmotions);
             Map<String, Integer> currentWeekEmotionsMap = calculateFrequencyOfEmotionsInAWeek(userEmotions);
             Map<String, Integer> currentMonthEmotionsMap = calculateFrequencyOfEmotionsInAMonth(userEmotions);
+            Map<String, Integer> currentYearEmotionsMap = calculateFrequencyOfEmotionsInAnYear(userEmotions);
             if (isAdded()) {
                 createPieChartForCurrentDay(currentDayEmotionsMap);
                 createBarChartForCurrentWeek(currentWeekEmotionsMap);
                 createBarChartForCurrentMonth(currentMonthEmotionsMap);
+                createRadarChartForCurrentYear(currentYearEmotionsMap);
             }
         });
     }
@@ -99,6 +104,7 @@ public class StatsFragment extends Fragment {
                 });
     }
 
+    @SuppressWarnings("ConstantConditions")
     private Map<String, Integer> calculateFrequencyOfEmotionsInADay(List<Emotion> userEmotions) {
         List<Emotion> currentDayEmotions = getListOfEmotionsForCurrentDay(userEmotions);
 
@@ -132,11 +138,29 @@ public class StatsFragment extends Fragment {
         return frequencyOfEmotions;
     }
 
+    @SuppressWarnings("ConstantConditions")
     private Map<String, Integer> calculateFrequencyOfEmotionsInAMonth(List<Emotion> userEmotions) {
         List<Emotion> currentMonthEmotions = getListOfEmotionsForCurrentMonth(userEmotions);
 
         Map<String, Integer> frequencyOfEmotions = new HashMap<>();
         for (Emotion emotion : currentMonthEmotions) {
+            String recordedEmotion = emotion.getEmotion();
+            if (frequencyOfEmotions.containsKey(recordedEmotion)) {
+                int currentFrequency = frequencyOfEmotions.get(recordedEmotion);
+                frequencyOfEmotions.put(recordedEmotion, currentFrequency + 1);
+            } else {
+                frequencyOfEmotions.put(recordedEmotion, 1);
+            }
+        }
+        return frequencyOfEmotions;
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private Map<String, Integer> calculateFrequencyOfEmotionsInAnYear(List<Emotion> userEmotions) {
+        List<Emotion> currentYearEmotions = getListOfEmotionsForCurrentYear(userEmotions);
+
+        Map<String, Integer> frequencyOfEmotions = new HashMap<>();
+        for (Emotion emotion : currentYearEmotions) {
             String recordedEmotion = emotion.getEmotion();
             if (frequencyOfEmotions.containsKey(recordedEmotion)) {
                 int currentFrequency = frequencyOfEmotions.get(recordedEmotion);
@@ -178,6 +202,19 @@ public class StatsFragment extends Fragment {
                 .filter(emotion -> {
                     LocalDateTime emotionDateTime = DateTimeUtils.convertStringToLocalDateTime(emotion.getDateTime());
                     return emotionDateTime.isBefore(endOfMonth) && emotionDateTime.isAfter(startOfMonth);
+                })
+                .collect(Collectors.toList());
+    }
+
+
+    private List<Emotion> getListOfEmotionsForCurrentYear(List<Emotion> userEmotions) {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        LocalDateTime startOfYear = LocalDateTime.of(currentDateTime.toLocalDate().withDayOfYear(1), LocalTime.MIN);
+        LocalDateTime endOfYear = LocalDateTime.of(currentDateTime.toLocalDate().withDayOfYear(currentDateTime.toLocalDate().lengthOfYear()), LocalTime.MAX);
+        return userEmotions.stream()
+                .filter(emotion -> {
+                    LocalDateTime emotionDateTime = DateTimeUtils.convertStringToLocalDateTime(emotion.getDateTime());
+                    return emotionDateTime.isBefore(endOfYear) && emotionDateTime.isAfter(startOfYear);
                 })
                 .collect(Collectors.toList());
     }
@@ -276,6 +313,32 @@ public class StatsFragment extends Fragment {
         binding.frequencyOfEmotionsMonthBarChart.getLegend().setEnabled(false);
         binding.frequencyOfEmotionsMonthBarChart.animateY(1000);
         binding.frequencyOfEmotionsMonthBarChart.invalidate();
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private void createRadarChartForCurrentYear(Map<String, Integer> currentYearEmotionsMap) {
+        List<String> emotionLabels = EmotionLabelUtils.loadLabelsSortedByValence(requireContext());
+
+        List<RadarEntry> entries = new ArrayList<>();
+        for (int i = 0; i < emotionLabels.size(); i++) {
+            String emotion = emotionLabels.get(i);
+            int frequency = currentYearEmotionsMap.getOrDefault(emotion, 0);
+            entries.add(new RadarEntry(frequency));
+        }
+
+        RadarDataSet radarDataSet = new RadarDataSet(entries, "Frequency of Emotions (Current Year)");
+        radarDataSet.setColor(Color.RED);
+        radarDataSet.setLineWidth(4f);
+        radarDataSet.setValueTextColor(Color.BLACK);
+        radarDataSet.setValueTextSize(14f);
+
+        RadarData radarData = new RadarData(radarDataSet);
+        binding.frequencyOfEmotionsYearRadarChart.setData(radarData);
+
+        binding.frequencyOfEmotionsYearRadarChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(emotionLabels));
+        binding.frequencyOfEmotionsYearRadarChart.getDescription().setEnabled(false);
+        binding.frequencyOfEmotionsYearRadarChart.animateY(1000);
+        binding.frequencyOfEmotionsYearRadarChart.invalidate();
     }
 
     @Nullable
