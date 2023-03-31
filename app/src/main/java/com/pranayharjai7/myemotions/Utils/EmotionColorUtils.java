@@ -3,8 +3,6 @@ package com.pranayharjai7.myemotions.Utils;
 import android.content.Context;
 import android.graphics.Color;
 
-import com.pranayharjai7.myemotions.mtcnn.EmotionLabelUtils;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +21,7 @@ public class EmotionColorUtils {
 
     public static List<Integer> getColorsForEmotions(Context context) {
 
-        List<String> emotionLabels = EmotionLabelUtils.loadLabels(context);
+        List<String> emotionLabels = EmotionLabelUtils.loadLabelsSortedByValence(context);
         return getColorsForEmotions(emotionLabels);
     }
 
@@ -38,7 +36,7 @@ public class EmotionColorUtils {
     }
 
     public static Map<String, Integer> getColorMapForEmotions(Context context) {
-        List<String> emotionLabels = EmotionLabelUtils.loadLabels(context);
+        List<String> emotionLabels = EmotionLabelUtils.loadLabelsSortedByValence(context);
         return getColorMapForEmotions(emotionLabels);
     }
 

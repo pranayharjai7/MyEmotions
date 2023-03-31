@@ -4,16 +4,100 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragments.MainActivityFragments.StatsFragment" >
+    android:background="@color/white"
+    tools:context=".Fragments.MainActivityFragments.StatsFragment">
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/statsHeaderTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="STATS"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textColor="#FF757575"
+        android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/statsHeaderTextView">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/rangeOfEmotionsTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Range of Emotions (Today)"
+                android:textColor="#FF757575"
+                android:textSize="20sp" />
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/rangeOfEmotionsPieChart"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp" />
+
+            <TextView
+                android:id="@+id/frequencyOfEmotionsWeekTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="20dp"
+                android:text="Frequency of Emotions (Current week)"
+                android:textColor="#FF757575"
+                android:textSize="20sp" />
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/frequencyOfEmotionsWeekBarChart"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp" />
+
+            <TextView
+                android:id="@+id/frequencyOfEmotionsMonthTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Frequency of Emotions (Current month)"
+                android:textColor="#FF757575"
+                android:textSize="20sp" />
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/frequencyOfEmotionsMonthBarChart"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp" />
+
+            <TextView
+                android:id="@+id/frequencyOfEmotionsYearTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Frequency of Emotions (Current year)"
+                android:textColor="#FF757575"
+                android:textSize="20sp" />
+
+            <com.github.mikephil.charting.charts.RadarChart
+                android:id="@+id/frequencyOfEmotionsYearRadarChart"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp" />
+        </LinearLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
