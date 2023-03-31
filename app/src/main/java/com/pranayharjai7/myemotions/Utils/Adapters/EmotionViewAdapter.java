@@ -73,9 +73,9 @@ public class EmotionViewAdapter extends RecyclerView.Adapter<EmotionViewAdapter.
         StringBuilder resultDateTime = new StringBuilder();
         resultDateTime.append("")
                 .append(dateTime.getDayOfMonth())
-                .append(".")
-                .append(dateTime.getMonthValue())
-                .append(".")
+                .append(" ")
+                .append(dateTime.getMonth())
+                .append(" ")
                 .append(dateTime.getYear());
 
         int hour = dateTime.getHour();
@@ -90,10 +90,11 @@ public class EmotionViewAdapter extends RecyclerView.Adapter<EmotionViewAdapter.
             minute = "0" + min;
         }
 
-        resultDateTime.append(" ")
+        resultDateTime.append("\n       ")
                 .append(hour)
                 .append(":")
                 .append(minute)
+                .append(" ")
                 .append(amPm);
         return resultDateTime.toString();
     }
