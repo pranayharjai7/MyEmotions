@@ -14,6 +14,9 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -29,6 +32,7 @@ import com.pranayharjai7.myemotions.databinding.FragmentStatsBinding;
 import com.pranayharjai7.myemotions.mtcnn.EmotionLabelUtils;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,9 +60,13 @@ public class StatsFragment extends Fragment {
         firebaseDatabase = FirebaseDatabase.getInstance();
 
         getAllUserEmotionsFromFirebase(userEmotions -> {
+            Map<String, Integer> currentDayEmotionsMap = calculateFrequencyOfEmotionsInADay(userEmotions);
             Map<String, Integer> currentWeekEmotionsMap = calculateFrequencyOfEmotionsInAWeek(userEmotions);
+            Map<String, Integer> currentMonthEmotionsMap = calculateFrequencyOfEmotionsInAMonth(userEmotions);
             if (isAdded()) {
-                createBarChart(currentWeekEmotionsMap);
+                createPieChartForCurrentDay(currentDayEmotionsMap);
+                createBarChartForCurrentWeek(currentWeekEmotionsMap);
+                createBarChartForCurrentMonth(currentMonthEmotionsMap);
             }
         });
     }
@@ -91,6 +99,22 @@ public class StatsFragment extends Fragment {
                 });
     }
 
+    private Map<String, Integer> calculateFrequencyOfEmotionsInADay(List<Emotion> userEmotions) {
+        List<Emotion> currentDayEmotions = getListOfEmotionsForCurrentDay(userEmotions);
+
+        Map<String, Integer> frequencyOfEmotions = new HashMap<>();
+        for (Emotion emotion : currentDayEmotions) {
+            String recordedEmotion = emotion.getEmotion();
+            if (frequencyOfEmotions.containsKey(recordedEmotion)) {
+                int currentFrequency = frequencyOfEmotions.get(recordedEmotion);
+                frequencyOfEmotions.put(recordedEmotion, currentFrequency + 1);
+            } else {
+                frequencyOfEmotions.put(recordedEmotion, 1);
+            }
+        }
+        return frequencyOfEmotions;
+    }
+
     @SuppressWarnings("ConstantConditions")
     private Map<String, Integer> calculateFrequencyOfEmotionsInAWeek(List<Emotion> userEmotions) {
         List<Emotion> currentWeekEmotions = getListOfEmotionsForCurrentWeek(userEmotions);
@@ -108,6 +132,34 @@ public class StatsFragment extends Fragment {
         return frequencyOfEmotions;
     }
 
+    private Map<String, Integer> calculateFrequencyOfEmotionsInAMonth(List<Emotion> userEmotions) {
+        List<Emotion> currentMonthEmotions = getListOfEmotionsForCurrentMonth(userEmotions);
+
+        Map<String, Integer> frequencyOfEmotions = new HashMap<>();
+        for (Emotion emotion : currentMonthEmotions) {
+            String recordedEmotion = emotion.getEmotion();
+            if (frequencyOfEmotions.containsKey(recordedEmotion)) {
+                int currentFrequency = frequencyOfEmotions.get(recordedEmotion);
+                frequencyOfEmotions.put(recordedEmotion, currentFrequency + 1);
+            } else {
+                frequencyOfEmotions.put(recordedEmotion, 1);
+            }
+        }
+        return frequencyOfEmotions;
+    }
+
+    private List<Emotion> getListOfEmotionsForCurrentDay(List<Emotion> userEmotions) {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        LocalDateTime startOfDay = LocalDateTime.of(currentDateTime.toLocalDate(), LocalTime.MIN);
+        LocalDateTime endOfDay = LocalDateTime.of(currentDateTime.toLocalDate(), LocalTime.MAX);
+        return userEmotions.stream()
+                .filter(emotion -> {
+                    LocalDateTime emotionDateTime = DateTimeUtils.convertStringToLocalDateTime(emotion.getDateTime());
+                    return emotionDateTime.isBefore(endOfDay) && emotionDateTime.isAfter(startOfDay);
+                })
+                .collect(Collectors.toList());
+    }
+
     private List<Emotion> getListOfEmotionsForCurrentWeek(List<Emotion> userEmotions) {
         LocalDateTime currentDateTime = LocalDateTime.now();
         return userEmotions.stream()
@@ -118,9 +170,44 @@ public class StatsFragment extends Fragment {
                 .collect(Collectors.toList());
     }
 
+    private List<Emotion> getListOfEmotionsForCurrentMonth(List<Emotion> userEmotions) {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        LocalDateTime startOfMonth = LocalDateTime.of(currentDateTime.toLocalDate().withDayOfMonth(1), LocalTime.MIN);
+        LocalDateTime endOfMonth = LocalDateTime.of(currentDateTime.toLocalDate().withDayOfMonth(currentDateTime.toLocalDate().lengthOfMonth()), LocalTime.MAX);
+        return userEmotions.stream()
+                .filter(emotion -> {
+                    LocalDateTime emotionDateTime = DateTimeUtils.convertStringToLocalDateTime(emotion.getDateTime());
+                    return emotionDateTime.isBefore(endOfMonth) && emotionDateTime.isAfter(startOfMonth);
+                })
+                .collect(Collectors.toList());
+    }
+
     @SuppressWarnings("ConstantConditions")
-    private void createBarChart(Map<String, Integer> currentWeekEmotions) {
-        List<String> emotionLabels = EmotionLabelUtils.loadLabels(requireContext());
+    private void createPieChartForCurrentDay(Map<String, Integer> currentDayEmotionsMap) {
+        List<String> emotionLabels = EmotionLabelUtils.loadLabelsSortedByValence(requireContext());
+        List<Integer> colors = EmotionColorUtils.getColorsForEmotions(emotionLabels);
+        List<PieEntry> entries = new ArrayList<>();
+
+        for (String emotion : emotionLabels) {
+            int frequency = currentDayEmotionsMap.getOrDefault(emotion, 0);
+            entries.add(new PieEntry(frequency, emotion));
+        }
+
+        PieDataSet pieDataSet = new PieDataSet(entries, "Range of Emotions");
+        pieDataSet.setColors(colors);
+        pieDataSet.setValueTextColor(Color.BLACK);
+        pieDataSet.setValueTextSize(14f);
+
+        PieData pieData = new PieData(pieDataSet);
+        binding.rangeOfEmotionsPieChart.setData(pieData);
+        binding.rangeOfEmotionsPieChart.getDescription().setEnabled(false);
+        binding.rangeOfEmotionsPieChart.animateY(1000);
+        binding.rangeOfEmotionsPieChart.invalidate();
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private void createBarChartForCurrentWeek(Map<String, Integer> currentWeekEmotions) {
+        List<String> emotionLabels = EmotionLabelUtils.loadLabelsSortedByValence(requireContext());
         List<Integer> colors = EmotionColorUtils.getColorsForEmotions(emotionLabels);
 
         List<BarEntry> entries = new ArrayList<>();
@@ -130,30 +217,65 @@ public class StatsFragment extends Fragment {
             entries.add(new BarEntry(i, frequency));
         }
 
-        BarDataSet barDataSet = new BarDataSet(entries, "Frequency of Emotions");
+        BarDataSet barDataSet = new BarDataSet(entries, "Frequency of Emotions (Current week)");
         barDataSet.setColors(colors);
         barDataSet.setValueTextColor(Color.BLACK);
         barDataSet.setValueTextSize(16f);
 
         BarData barData = new BarData(barDataSet);
-        binding.frequencyOfEmotionsBarChart.setData(barData);
+        binding.frequencyOfEmotionsWeekBarChart.setData(barData);
 
-        binding.frequencyOfEmotionsBarChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-        binding.frequencyOfEmotionsBarChart.getXAxis().setGranularity(1f);
-        binding.frequencyOfEmotionsBarChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(emotionLabels));
+        binding.frequencyOfEmotionsWeekBarChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        binding.frequencyOfEmotionsWeekBarChart.getXAxis().setGranularity(1f);
+        binding.frequencyOfEmotionsWeekBarChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(emotionLabels));
 
-        binding.frequencyOfEmotionsBarChart.getAxisLeft().setAxisMinimum(0f);
+        binding.frequencyOfEmotionsWeekBarChart.getAxisLeft().setAxisMinimum(0f);
 
-        binding.frequencyOfEmotionsBarChart.setDrawBarShadow(false);
-        binding.frequencyOfEmotionsBarChart.setPinchZoom(true);
-        binding.frequencyOfEmotionsBarChart.setDrawGridBackground(false);
-        binding.frequencyOfEmotionsBarChart.setScaleEnabled(false);
-        binding.frequencyOfEmotionsBarChart.getDescription().setEnabled(false);
-        binding.frequencyOfEmotionsBarChart.getLegend().setEnabled(false);
-        binding.frequencyOfEmotionsBarChart.animateY(1000);
-        binding.frequencyOfEmotionsBarChart.invalidate();
+        binding.frequencyOfEmotionsWeekBarChart.setDrawBarShadow(false);
+        binding.frequencyOfEmotionsWeekBarChart.setPinchZoom(true);
+        binding.frequencyOfEmotionsWeekBarChart.setDrawGridBackground(false);
+        binding.frequencyOfEmotionsWeekBarChart.setScaleEnabled(false);
+        binding.frequencyOfEmotionsWeekBarChart.getDescription().setEnabled(false);
+        binding.frequencyOfEmotionsWeekBarChart.getLegend().setEnabled(false);
+        binding.frequencyOfEmotionsWeekBarChart.animateY(1000);
+        binding.frequencyOfEmotionsWeekBarChart.invalidate();
+    }
 
 
+    @SuppressWarnings("ConstantConditions")
+    private void createBarChartForCurrentMonth(Map<String, Integer> currentMonthEmotionsMap) {
+        List<String> emotionLabels = EmotionLabelUtils.loadLabelsSortedByValence(requireContext());
+        List<Integer> colors = EmotionColorUtils.getColorsForEmotions(emotionLabels);
+
+        List<BarEntry> entries = new ArrayList<>();
+        for (int i = 0; i < emotionLabels.size(); i++) {
+            String emotion = emotionLabels.get(i);
+            int frequency = currentMonthEmotionsMap.getOrDefault(emotion, 0);
+            entries.add(new BarEntry(i, frequency));
+        }
+
+        BarDataSet barDataSet = new BarDataSet(entries, "Frequency of Emotions (Current month)");
+        barDataSet.setColors(colors);
+        barDataSet.setValueTextColor(Color.BLACK);
+        barDataSet.setValueTextSize(16f);
+
+        BarData barData = new BarData(barDataSet);
+        binding.frequencyOfEmotionsMonthBarChart.setData(barData);
+
+        binding.frequencyOfEmotionsMonthBarChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        binding.frequencyOfEmotionsMonthBarChart.getXAxis().setGranularity(1f);
+        binding.frequencyOfEmotionsMonthBarChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(emotionLabels));
+
+        binding.frequencyOfEmotionsMonthBarChart.getAxisLeft().setAxisMinimum(0f);
+
+        binding.frequencyOfEmotionsMonthBarChart.setDrawBarShadow(false);
+        binding.frequencyOfEmotionsMonthBarChart.setPinchZoom(true);
+        binding.frequencyOfEmotionsMonthBarChart.setDrawGridBackground(false);
+        binding.frequencyOfEmotionsMonthBarChart.setScaleEnabled(false);
+        binding.frequencyOfEmotionsMonthBarChart.getDescription().setEnabled(false);
+        binding.frequencyOfEmotionsMonthBarChart.getLegend().setEnabled(false);
+        binding.frequencyOfEmotionsMonthBarChart.animateY(1000);
+        binding.frequencyOfEmotionsMonthBarChart.invalidate();
     }
 
     @Nullable
