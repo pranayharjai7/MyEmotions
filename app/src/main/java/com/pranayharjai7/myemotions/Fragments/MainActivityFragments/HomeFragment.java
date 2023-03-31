@@ -57,6 +57,11 @@ public class HomeFragment extends Fragment {
             binding.emotionsImageView.setImageBitmap(bitmap);
         });
 
+        homeViewModel.getEmotion().observe(getViewLifecycleOwner(), emotion -> {
+            binding.moodRecommendationCardView.setVisibility(View.VISIBLE);
+            binding.emotionMoodRecommendationTextView.setText(emotion);
+        });
+
         if (isAdded()) {
             emotionDatabase.emotionDAO().getUserEmotions(mAuth.getCurrentUser().getUid()).observe(getViewLifecycleOwner(),
                     emotions -> binding.emotionsRecyclerView.setAdapter(new EmotionViewAdapter(emotions, requireContext())));

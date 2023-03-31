@@ -273,6 +273,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     });
         }).start();
 
+        homeViewModel.setEmotion(emotion);
         FragmentUtils.replaceMainFragment(fragmentManager, HOME);
         homeMenuItemClicked(binding.mainBottomNavigationView.getMenu().findItem(R.id.homeItem));
     }
@@ -300,6 +301,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             AnimationUtils.animateOpenRecordEmotionButton(binding);
         }
         isAllFabVisible = !isAllFabVisible;
+    }
+
+    public void moodRecommendationsButtonClicked(View view) {
+        Intent intent = new Intent(this, MoodRecommendationsActivity.class);
+        startActivity(intent);
     }
 
     public void homeMenuItemClicked(MenuItem item) {
