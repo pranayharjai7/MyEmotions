@@ -57,8 +57,10 @@ public class HomeFragment extends Fragment {
             binding.emotionsImageView.setImageBitmap(bitmap);
         });
 
-        emotionDatabase.emotionDAO().getUserEmotions(mAuth.getCurrentUser().getUid()).observe(getViewLifecycleOwner(),
-                emotions -> binding.emotionsRecyclerView.setAdapter(new EmotionViewAdapter(emotions)));
+        if (isAdded()) {
+            emotionDatabase.emotionDAO().getUserEmotions(mAuth.getCurrentUser().getUid()).observe(getViewLifecycleOwner(),
+                    emotions -> binding.emotionsRecyclerView.setAdapter(new EmotionViewAdapter(emotions, requireContext())));
+        }
     }
 
     @Nullable

@@ -36,7 +36,7 @@ public class EmotionPyTorchClassifier {
 
     public EmotionPyTorchClassifier(final Context context) throws IOException {
         module = LiteModuleLoader.load(assetFilePath(context, MODEL_FILE));
-        loadLabels(context);
+        labels = EmotionLabelUtils.loadLabels(context);
     }
 
     public static String assetFilePath(Context context, String assetName) throws IOException {
@@ -55,26 +55,6 @@ public class EmotionPyTorchClassifier {
                 os.flush();
             }
             return file.getAbsolutePath();
-        }
-    }
-
-    private void loadLabels(final Context context) {
-        BufferedReader br;
-        labels = new ArrayList<>();
-        try {
-            br = new BufferedReader(new InputStreamReader(context.getAssets().open("emotionsLabel.txt")));
-            String line;
-            int line_ind = 0;
-            while ((line = br.readLine()) != null) {
-                ++line_ind;
-                //line=line.toLowerCase();
-                String[] categoryInfo = line.trim().split(":");
-                String category = categoryInfo[1];
-                labels.add(category);
-            }
-            br.close();
-        } catch (IOException e) {
-            throw new RuntimeException("Problem reading emotion label file!", e);
         }
     }
 
