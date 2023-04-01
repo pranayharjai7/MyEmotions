@@ -345,11 +345,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         binding.mainDrawerLayout.closeDrawer(GravityCompat.END);
     }
 
+    public void myProfileNavigationMenuButtonClicked(@NonNull MenuItem item) {
+        binding.mainDrawerLayout.closeDrawer(GravityCompat.END);
+        Intent intent = new Intent(this, MyProfileActivity.class);
+        startActivity(intent);
+    }
+
     public void friendsNavigationMenuButtonClicked(@NonNull MenuItem item) {
         binding.mainDrawerLayout.closeDrawer(GravityCompat.END);
         Intent intent = new Intent(this, FriendsActivity.class);
         startActivity(intent);
-        //TODO create an activity to Show friends, to accept or reject received friend requests, Delete Friends
     }
 
     public void settingsNavigationMenuButtonClicked(@NonNull MenuItem item) {
