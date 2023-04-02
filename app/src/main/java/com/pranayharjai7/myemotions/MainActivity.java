@@ -357,6 +357,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startActivity(intent);
     }
 
+    public void professionalHelpNavigationMenuButtonClicked(@NonNull MenuItem item) {
+        binding.mainDrawerLayout.closeDrawer(GravityCompat.END);
+//        Intent intent = new Intent(this, ProfessionalHelpActivity.class);
+//        startActivity(intent);
+        Uri gmmIntentUri = Uri.parse("geo:0,0?q=psychologist");
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        startActivity(mapIntent);
+    }
+
     public void settingsNavigationMenuButtonClicked(@NonNull MenuItem item) {
         binding.mainDrawerLayout.closeDrawer(GravityCompat.END);
         Intent intent = new Intent(this, SettingsActivity.class);
