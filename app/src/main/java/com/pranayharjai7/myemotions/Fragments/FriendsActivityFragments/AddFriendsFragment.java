@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -46,9 +47,21 @@ public class AddFriendsFragment extends Fragment {
         getAllUsersFromFirebase(userProfiles -> {
             removeFriendsFromAllUsers(userProfiles, filteredProfiles -> {
                 if (isAdded()) {
-                    binding.userProfilesRecyclerView.setAdapter(
-                            new UserProfileViewAdapter(filteredProfiles, requireContext(), ADD_FRIENDS_FRAGMENT)
-                    );
+                    UserProfileViewAdapter adapter = new UserProfileViewAdapter(
+                            filteredProfiles, requireContext(), ADD_FRIENDS_FRAGMENT);
+                    binding.userProfilesRecyclerView.setAdapter(adapter);
+                    binding.userProfilesSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                        @Override
+                        public boolean onQueryTextSubmit(String query) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onQueryTextChange(String newText) {
+                            adapter.setFilter(newText);
+                            return true;
+                        }
+                    });
                 }
             });
         });
