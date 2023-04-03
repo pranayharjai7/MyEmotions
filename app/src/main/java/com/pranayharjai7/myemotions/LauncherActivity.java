@@ -25,7 +25,7 @@ public class LauncherActivity extends AppCompatActivity {
             finish();
         };
 
-        binding.LauncherImage.postDelayed(runnable, 500);
+        binding.launcherConstraintLayout.postDelayed(runnable, 1500);
     }
 
     public void launcherConstraintLayoutClicked(View view) {

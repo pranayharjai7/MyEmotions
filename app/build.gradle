@@ -46,6 +46,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
     implementation 'com.google.android.gms:play-services-location:21.0.1'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.17'
 
     implementation 'org.pytorch:pytorch_android_lite:1.13.1'
     implementation 'org.pytorch:pytorch_android_torchvision_lite:1.13.1'
