@@ -75,4 +75,27 @@ public class EmotionColorUtils {
         }
         return emotionColorMap;
     }
+
+    public static int getColorForEmotion(String emotion) {
+        switch (emotion) {
+            case "Happiness":
+                return Color.parseColor(HAPPINESS_COLOR);
+            case "Surprise":
+                return Color.parseColor(SURPRISE_COLOR);
+            case "Contempt":
+                return Color.parseColor(CONTEMPT_COLOR);
+            case "Neutral":
+                return Color.parseColor(NEUTRAL_COLOR);
+            case "Fear":
+                return Color.parseColor(FEAR_COLOR);
+            case "Sadness":
+                return Color.parseColor(SADNESS_COLOR);
+            case "Anger":
+                return Color.parseColor(ANGER_COLOR);
+            case "Disgust":
+                return Color.parseColor(DISGUST_COLOR);
+            default:
+                return Color.GRAY;
+        }
+    }
 }

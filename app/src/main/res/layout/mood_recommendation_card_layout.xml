@@ -46,6 +46,7 @@
                 android:textAlignment="center"
                 android:textColor="#C8E5F1"
                 android:textSize="20sp"
+                android:textStyle="italic"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
