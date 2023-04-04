@@ -43,7 +43,7 @@ public class MyProfileActivity extends AppCompatActivity {
         firebaseDatabase.getReference("MyEmotions")
                 .child("UserProfile")
                 .child(mAuth.getCurrentUser().getUid())
-                .addListenerForSingleValueEvent(new ValueEventListener() {
+                .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         Map<String, Object> userProfileMap = (Map<String, Object>) snapshot.getValue();
