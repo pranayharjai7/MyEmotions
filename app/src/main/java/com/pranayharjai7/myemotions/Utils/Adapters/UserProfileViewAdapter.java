@@ -26,11 +26,14 @@ import com.pranayharjai7.myemotions.R;
 import com.pranayharjai7.myemotions.Utils.Interfaces.Callback;
 import com.pranayharjai7.myemotions.databinding.UserprofileCardLayoutBinding;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class UserProfileViewAdapter extends RecyclerView.Adapter<UserProfileViewAdapter.UserProfileViewHolder> {
 
     private List<UserProfile> userProfiles;
+    private List<UserProfile> allUserProfiles;
     private Context context;
     private FirebaseAuth mAuth;
     private FirebaseDatabase firebaseDatabase;
@@ -39,6 +42,7 @@ public class UserProfileViewAdapter extends RecyclerView.Adapter<UserProfileView
 
     public UserProfileViewAdapter(List<UserProfile> userProfiles, Context context, @NonNull String contextClass) {
         this.userProfiles = userProfiles;
+        this.allUserProfiles = new ArrayList<>(userProfiles);
         this.context = context;
         this.contextClass = contextClass;
         mAuth = FirebaseAuth.getInstance();
@@ -267,5 +271,24 @@ public class UserProfileViewAdapter extends RecyclerView.Adapter<UserProfileView
                         Toast.makeText(context, "Error in removing friend, please check database.", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    public void setFilter(String query) {
+        List<UserProfile> filteredList = new ArrayList<>();
+
+        if (query == null || query.trim().isEmpty()) {
+            filteredList.addAll(allUserProfiles);
+        } else {
+            String lowerCaseQuery = query.toLowerCase(Locale.getDefault());
+
+            for (UserProfile userProfile : allUserProfiles) {
+                if (userProfile.getUsername().toLowerCase(Locale.getDefault()).contains(lowerCaseQuery)) {
+                    filteredList.add(userProfile);
+                }
+            }
+        }
+
+        userProfiles = filteredList;
+        notifyDataSetChanged();
     }
 }

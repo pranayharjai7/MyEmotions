@@ -31,10 +31,11 @@ public class MoodRecommendationsActivity extends AppCompatActivity {
 
     private List<String> populateSuggestions() {
         List<String> suggestions = new ArrayList<>();
-        suggestions.add("Listen to a happy song. Put on a happy playlist\n\n (tap to open spotify)");
         suggestions.add("Dress up. Wearing attractive clothes might cheer you up.");
         suggestions.add("Meditate. Take control of your spare time to reduce stress.");
         suggestions.add("Exercise. Doing exercise can release chemicals in your brain to lift your mood.");
+        suggestions.add("Get Support. seeking support from loved ones can help you manage you emotional well-being");
+        suggestions.add("Listen to a happy song. Put on a happy playlist\n\n (tap to open spotify)");
         return suggestions;
     }
 }

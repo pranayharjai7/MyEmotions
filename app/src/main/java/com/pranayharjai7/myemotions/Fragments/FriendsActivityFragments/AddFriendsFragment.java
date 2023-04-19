@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +22,7 @@ import com.pranayharjai7.myemotions.databinding.FragmentAddFriendsBinding;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AddFriendsFragment extends Fragment {
 
@@ -43,11 +45,25 @@ public class AddFriendsFragment extends Fragment {
 
     private void addAllUsersToRecyclerView() {
         getAllUsersFromFirebase(userProfiles -> {
-            if (isAdded()) {
-                binding.userProfilesRecyclerView.setAdapter(
-                        new UserProfileViewAdapter(userProfiles, requireContext(), ADD_FRIENDS_FRAGMENT)
-                );
-            }
+            removeFriendsFromAllUsers(userProfiles, filteredProfiles -> {
+                if (isAdded()) {
+                    UserProfileViewAdapter adapter = new UserProfileViewAdapter(
+                            filteredProfiles, requireContext(), ADD_FRIENDS_FRAGMENT);
+                    binding.userProfilesRecyclerView.setAdapter(adapter);
+                    binding.userProfilesSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                        @Override
+                        public boolean onQueryTextSubmit(String query) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onQueryTextChange(String newText) {
+                            adapter.setFilter(newText);
+                            return true;
+                        }
+                    });
+                }
+            });
         });
     }
 
@@ -66,7 +82,35 @@ public class AddFriendsFragment extends Fragment {
                             UserProfile userProfile = new UserProfile(userId, username, email);
                             userProfiles.add(userProfile);
                         }
+                        userProfiles.sort((o1, o2) -> o1.getUsername().compareTo(o2.getUsername()));
                         callback.onSuccess(userProfiles);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+    }
+
+    private void removeFriendsFromAllUsers(List<UserProfile> userProfiles, Callback<List<UserProfile>> callback) {
+        firebaseDatabase.getReference("MyEmotions")
+                .child("UserProfile")
+                .child(mAuth.getCurrentUser().getUid())
+                .child("friends")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        List<String> friendUIds = new ArrayList<>();
+                        for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                            String friendUId = userSnapshot.getKey();
+                            friendUIds.add(friendUId);
+                        }
+                        List<UserProfile> filteredProfiles = userProfiles.stream()
+                                .filter(userProfile -> !friendUIds.contains(userProfile.getUserId()))
+                                .filter(profile -> !profile.getUserId().equals(mAuth.getCurrentUser().getUid()))
+                                .collect(Collectors.toList());
+                        callback.onSuccess(filteredProfiles);
                     }
 
                     @Override

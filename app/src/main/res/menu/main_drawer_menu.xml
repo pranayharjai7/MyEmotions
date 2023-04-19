@@ -8,10 +8,22 @@
             android:title="Home" />
 
         <item
-            android:id="@+id/nav_add_friends"
+            android:id="@+id/nav_my_profile"
             android:icon="@drawable/ic_person_white"
+            android:onClick="myProfileNavigationMenuButtonClicked"
+            android:title="My Profile" />
+
+        <item
+            android:id="@+id/nav_friends"
+            android:icon="@drawable/ic_group_white"
             android:onClick="friendsNavigationMenuButtonClicked"
             android:title="Friends" />
+
+        <item
+            android:id="@+id/nav_professional_help"
+            android:icon="@drawable/ic_help_white"
+            android:onClick="professionalHelpNavigationMenuButtonClicked"
+            android:title="Professional Help" />
 
         <item
             android:id="@+id/nav_settings"

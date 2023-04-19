@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,8 +48,20 @@ public class MyFriendsFragment extends Fragment {
         getMyFriendUIds(friendUIds -> {
             getFriendUserProfiles(friendUIds, friendUserProfiles -> {
                 if (isAdded()) {
-                    binding.myFriendsRecyclerView.setAdapter(
-                            new UserProfileViewAdapter(friendUserProfiles, requireContext(), MY_FRIENDS_FRAGMENT));
+                    UserProfileViewAdapter adapter = new UserProfileViewAdapter(friendUserProfiles, requireContext(), MY_FRIENDS_FRAGMENT);
+                    binding.myFriendsRecyclerView.setAdapter(adapter);
+                    binding.myFriendsSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                        @Override
+                        public boolean onQueryTextSubmit(String query) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onQueryTextChange(String newText) {
+                            adapter.setFilter(newText);
+                            return true;
+                        }
+                    });
                 }
             });
         });
