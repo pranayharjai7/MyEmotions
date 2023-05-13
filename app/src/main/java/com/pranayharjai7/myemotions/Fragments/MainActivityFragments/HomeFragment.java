@@ -21,6 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.pranayharjai7.myemotions.Database.DAO.EmotionDatabase;
 import com.pranayharjai7.myemotions.R;
 import com.pranayharjai7.myemotions.Utils.Adapters.EmotionViewAdapter;
+import com.pranayharjai7.myemotions.Utils.EmotionColorUtils;
 import com.pranayharjai7.myemotions.ViewModels.HomeViewModel;
 import com.pranayharjai7.myemotions.databinding.FragmentHomeBinding;
 
@@ -55,6 +56,12 @@ public class HomeFragment extends Fragment {
     private void observations() {
         homeViewModel.getEmotionPic().observe(getViewLifecycleOwner(), bitmap -> {
             binding.emotionsImageView.setImageBitmap(bitmap);
+        });
+
+        homeViewModel.getEmotion().observe(getViewLifecycleOwner(), emotion -> {
+            binding.moodRecommendationCardView.setVisibility(View.VISIBLE);
+            binding.emotionMoodRecommendationTextView.setText(emotion);
+            binding.emotionMoodRecommendationTextView.setTextColor(EmotionColorUtils.getColorForEmotion(emotion));
         });
 
         if (isAdded()) {

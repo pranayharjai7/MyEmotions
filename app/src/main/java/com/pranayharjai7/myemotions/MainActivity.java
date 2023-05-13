@@ -273,6 +273,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     });
         }).start();
 
+        homeViewModel.setEmotion(emotion);
         FragmentUtils.replaceMainFragment(fragmentManager, HOME);
         homeMenuItemClicked(binding.mainBottomNavigationView.getMenu().findItem(R.id.homeItem));
     }
@@ -300,6 +301,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             AnimationUtils.animateOpenRecordEmotionButton(binding);
         }
         isAllFabVisible = !isAllFabVisible;
+    }
+
+    public void moodRecommendationsButtonClicked(View view) {
+        Intent intent = new Intent(this, MoodRecommendationsActivity.class);
+        startActivity(intent);
     }
 
     public void homeMenuItemClicked(MenuItem item) {
@@ -339,11 +345,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         binding.mainDrawerLayout.closeDrawer(GravityCompat.END);
     }
 
+    public void myProfileNavigationMenuButtonClicked(@NonNull MenuItem item) {
+        binding.mainDrawerLayout.closeDrawer(GravityCompat.END);
+        Intent intent = new Intent(this, MyProfileActivity.class);
+        startActivity(intent);
+    }
+
     public void friendsNavigationMenuButtonClicked(@NonNull MenuItem item) {
         binding.mainDrawerLayout.closeDrawer(GravityCompat.END);
         Intent intent = new Intent(this, FriendsActivity.class);
         startActivity(intent);
-        //TODO create an activity to Show friends, to accept or reject received friend requests, Delete Friends
+    }
+
+    public void professionalHelpNavigationMenuButtonClicked(@NonNull MenuItem item) {
+        binding.mainDrawerLayout.closeDrawer(GravityCompat.END);
+//        Intent intent = new Intent(this, ProfessionalHelpActivity.class);
+//        startActivity(intent);
+        Uri gmmIntentUri = Uri.parse("geo:0,0?q=Mental health professionals near me");
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        startActivity(mapIntent);
     }
 
     public void settingsNavigationMenuButtonClicked(@NonNull MenuItem item) {

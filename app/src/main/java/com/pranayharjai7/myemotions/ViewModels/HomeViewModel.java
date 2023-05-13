@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel;
 public class HomeViewModel extends ViewModel {
 
     private final MutableLiveData<Bitmap> emotionPic = new MutableLiveData<>();
+    private final MutableLiveData<String> emotion = new MutableLiveData<>();
 
     public LiveData<Bitmap> getEmotionPic() {
         return emotionPic;
@@ -16,5 +17,13 @@ public class HomeViewModel extends ViewModel {
 
     public void setEmotionPic(Bitmap emotionPic) {
         this.emotionPic.setValue(emotionPic);
+    }
+
+    public LiveData<String> getEmotion() {
+        return emotion;
+    }
+
+    public void setEmotion(String emotion) {
+        this.emotion.setValue(emotion);
     }
 }
