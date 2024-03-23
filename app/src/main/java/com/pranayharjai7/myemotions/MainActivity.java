@@ -48,9 +48,12 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int ALL_PERMISSIONS_CODE = 101;
+    private static final int LOCATION_PERMISSION_CODE = 102;
+    private static final int CAMERA_PERMISSION_CODE = 103;
     public static final String HOME = "HOME";
     public static final String STATS = "STATS";
     public static final String MAPS = "MAPS";
+
     private ActivityMainBinding binding;
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private HomeViewModel homeViewModel;
@@ -194,6 +197,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void cameraButtonClicked(View view) {
+        if (!cameraPermissions()) {
+            return;
+        }
+
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         cameraLauncher.launch(intent);
         recordEmotionButtonClicked(view);
@@ -323,6 +330,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void mapsMenuItemClicked(MenuItem item) {
+        if (!locationPermissions()) {
+            return;
+        }
+
         if (!item.isChecked()) {
             item.setChecked(true);
             FragmentUtils.replaceMainFragment(fragmentManager, MAPS);
@@ -385,30 +396,63 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * To get camera and read/write external storage permissions.
      */
     private void permissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        cameraPermissions();
+        locationPermissions();
+        otherPermissions();
+    }
+
+    private boolean cameraPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean locationPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_CODE);
+            return false;
+        }
+        return true;
+    }
+
+
+    private void otherPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{
-                    Manifest.permission.CAMERA,
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.INTERNET,
-                    Manifest.permission.ACCESS_FINE_LOCATION
+                    Manifest.permission.INTERNET
             }, ALL_PERMISSIONS_CODE);
         }
-
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CAMERA_PERMISSION_CODE) {
+            if (grantResults.length != 0) {
+                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "Please allow Camera permissions in settings!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+
+        if (requestCode == LOCATION_PERMISSION_CODE) {
+            if (grantResults.length != 0) {
+                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "Please allow Location permissions in settings!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+
         if (requestCode == ALL_PERMISSIONS_CODE) {
             if (grantResults.length != 0) {
                 if (grantResults[0] != PackageManager.PERMISSION_GRANTED || grantResults[1] != PackageManager.PERMISSION_GRANTED
-                        || grantResults[2] != PackageManager.PERMISSION_GRANTED || grantResults[3] != PackageManager.PERMISSION_GRANTED
-                        || grantResults[4] != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Oops!! You didn't allow permissions!", Toast.LENGTH_SHORT).show();
+                        || grantResults[2] != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "Oops, you didn't allow permissions!", Toast.LENGTH_SHORT).show();
                 }
             }
         }
