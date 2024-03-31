@@ -11,6 +11,7 @@ import com.pranayharjai7.myemotions.databinding.ActivityLauncherBinding;
 public class LauncherActivity extends AppCompatActivity {
 
     private ActivityLauncherBinding binding;
+    private boolean layoutClicked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,19 +19,18 @@ public class LauncherActivity extends AppCompatActivity {
         binding = ActivityLauncherBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        Intent intent = new Intent(this, LoginActivity.class);
-
-        Runnable runnable = () -> {
-            startActivity(intent);
-            finish();
+        Runnable loginActivityRunnable = () -> {
+            if (!layoutClicked) {
+                startActivity(new Intent(this, LoginActivity.class));
+                finish();
+            }
         };
-
-        binding.launcherConstraintLayout.postDelayed(runnable, 1500);
+        binding.launcherConstraintLayout.postDelayed(loginActivityRunnable, 1500);
     }
 
     public void launcherConstraintLayoutClicked(View view) {
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
+        layoutClicked = true;
+        startActivity(new Intent(this, LoginActivity.class));
         finish();
     }
 }
