@@ -1,17 +1,20 @@
 package com.pranayharjai7.myemotions.data.repository
 
-import com.pranayharjai7.myemotions.data.remote.supabase.SupabaseManager
 import com.pranayharjai7.myemotions.domain.repository.AuthRepository
+import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.gotrue.SessionStatus
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.Google
 import io.github.jan.supabase.gotrue.user.UserInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class AuthRepositoryImpl : AuthRepository {
+class AuthRepositoryImpl @Inject constructor(
+    private val supabaseClient: SupabaseClient
+) : AuthRepository {
     
-    private val auth = SupabaseManager.client.auth
+    private val auth = supabaseClient.auth
 
     override val currentUser: Flow<UserInfo?> = auth.sessionStatus.map { status ->
         when (status) {

@@ -2,18 +2,22 @@ package com.pranayharjai7.myemotions.ui.navigation
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.pranayharjai7.myemotions.ui.screens.AuthScreen
+import com.pranayharjai7.myemotions.ui.screens.AuthViewModel
 import com.pranayharjai7.myemotions.ui.screens.DashboardScreen
 import com.pranayharjai7.myemotions.ui.screens.SplashScreen
 import kotlinx.serialization.Serializable
 
+/**
+ * Navigation destinations for the application.
+ */
 @Serializable
 sealed class Screen {
     @Serializable
@@ -26,10 +30,14 @@ sealed class Screen {
     data object Dashboard : Screen()
 }
 
+/**
+ * Main navigation host for the application.
+ * Defines the navigation graph and transitions.
+ */
 @Composable
 fun MyEmotionsNavHost(
     navController: NavHostController,
-    viewModel: com.pranayharjai7.myemotions.ui.screens.AuthViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    viewModel: AuthViewModel = hiltViewModel()
 ) {
     NavHost(
         navController = navController,

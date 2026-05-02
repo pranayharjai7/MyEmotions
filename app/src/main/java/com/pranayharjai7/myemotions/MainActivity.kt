@@ -13,7 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.pranayharjai7.myemotions.ui.navigation.MyEmotionsNavHost
 import com.pranayharjai7.myemotions.ui.theme.MyEmotionsTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
