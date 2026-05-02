@@ -1,0 +1,34 @@
+# Built objects
+bin/
+gen/
+
+# Gradle
+.gradle/
+build/
+app/build/
+
+# IDEs
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+
+# Local configuration
+local.properties
+
+# Secrets
+*.jks
+*.keystore
+client_secret_*.json
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+java_pid*.hprof
+
+# Kotlin
+.kotlin/
