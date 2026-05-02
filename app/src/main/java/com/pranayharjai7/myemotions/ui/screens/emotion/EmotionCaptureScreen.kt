@@ -21,18 +21,24 @@ import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -42,6 +48,7 @@ import com.pranayharjai7.myemotions.ui.components.EmotionButton
 import com.pranayharjai7.myemotions.ui.components.EmotionCard
 import java.util.concurrent.Executors
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EmotionCaptureScreen(
     viewModel: EmotionCaptureViewModel = hiltViewModel(),
@@ -72,7 +79,6 @@ fun EmotionCaptureScreen(
     }
 
     var selectedBitmap by remember { mutableStateOf<Bitmap?>(null) }
-    var selectedSource by remember { mutableStateOf("camera") }
     
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
@@ -80,140 +86,166 @@ fun EmotionCaptureScreen(
         uri?.let {
             val bitmap = loadBitmapFromUri(context, it)
             selectedBitmap = bitmap
-            selectedSource = "gallery"
             if (bitmap != null) {
                 viewModel.detectEmotion(bitmap, "gallery")
             }
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Scan Your Emotion",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(top = 40.dp, bottom = 24.dp)
-        )
-
-        EmotionCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-        ) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                if (selectedBitmap != null) {
-                    Image(
-                        bitmap = selectedBitmap!!.asImageBitmap(),
-                        contentDescription = "Selected image",
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                } else if (hasCameraPermission) {
-                    CameraPreview(
-                        onImageCaptured = { bitmap ->
-                            selectedBitmap = bitmap
-                            selectedSource = "camera"
-                            viewModel.detectEmotion(bitmap, "camera")
-                        }
-                    )
-                } else {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Camera permission is required to take a photo.")
-                        Spacer(modifier = Modifier.height(8.dp))
-                        EmotionButton(
-                            text = "Grant Permission",
-                            onClick = { permissionLauncher.launch(Manifest.permission.CAMERA) },
-                            modifier = Modifier.padding(horizontal = 32.dp)
-                        )
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Face Scanner", fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        when (val state = uiState) {
-            is EmotionCaptureUiState.Loading -> {
-                CircularProgressIndicator()
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-            is EmotionCaptureUiState.Success -> {
-                LaunchedEffect(state) {
-                    kotlinx.coroutines.delay(2000)
-                    onNavigateBack()
-                }
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "Detected Emotion: ${state.result.emotion.label}",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "Confidence: ${(state.result.confidence * 100).toInt()}%",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-            is EmotionCaptureUiState.Error -> {
-                Text(
-                    text = "Error: ${state.message}",
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(16.dp)
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-            EmotionCaptureUiState.Idle -> {
-                // Do nothing
-            }
-        }
-
-        // Buttons
-        if (selectedBitmap != null) {
-            EmotionButton(
-                text = "Retake Photo",
-                onClick = {
-                    selectedBitmap = null
-                    viewModel.resetState()
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
-        } else {
-            // The capture button is handled inside CameraPreview for simplicity,
-            // or we can pass a trigger. Let's do a trigger.
-        }
-        
-        Spacer(modifier = Modifier.height(16.dp))
+        },
+        containerColor = MaterialTheme.colorScheme.background
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(horizontal = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Text(
+                text = "Position your face within the frame",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+            )
 
-        EmotionButton(
-            text = "Choose from Gallery",
-            onClick = {
-                galleryLauncher.launch(
-                    androidx.activity.result.PickVisualMediaRequest(
-                        ActivityResultContracts.PickVisualMedia.ImageOnly
-                    )
-                )
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Main Preview Area
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .clip(RoundedCornerShape(32.dp))
+                    .shadow(16.dp, RoundedCornerShape(32.dp)),
+                color = MaterialTheme.colorScheme.surface,
+                shape = RoundedCornerShape(32.dp),
+                border = androidx.compose.foundation.BorderStroke(2.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    if (selectedBitmap != null) {
+                        Image(
+                            bitmap = selectedBitmap!!.asImageBitmap(),
+                            contentDescription = "Captured image",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else if (hasCameraPermission) {
+                        CameraPreview(
+                            onImageCaptured = { bitmap ->
+                                selectedBitmap = bitmap
+                                viewModel.detectEmotion(bitmap, "camera")
+                            }
+                        )
+                    } else {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(24.dp)) {
+                            Text("Camera permission needed", style = MaterialTheme.typography.titleMedium)
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Button(onClick = { permissionLauncher.launch(Manifest.permission.CAMERA) }) {
+                                Text("Grant Permission")
+                            }
+                        }
+                    }
+                    
+                    // Scanning Animation Placeholder
+                    if (uiState is EmotionCaptureUiState.Loading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(2.dp)
+                                .background(MaterialTheme.colorScheme.primary)
+                                .align(Alignment.Center)
+                        )
+                    }
+                }
             }
-        )
-        
-        Spacer(modifier = Modifier.height(24.dp))
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Results / Actions Area
+            Box(modifier = Modifier.height(140.dp)) {
+                when (val state = uiState) {
+                    is EmotionCaptureUiState.Loading -> {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            CircularProgressIndicator()
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text("Analyzing facial expressions...", style = MaterialTheme.typography.bodyMedium)
+                        }
+                    }
+                    is EmotionCaptureUiState.Success -> {
+                        LaunchedEffect(state) {
+                            kotlinx.coroutines.delay(2500)
+                            onNavigateBack()
+                        }
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(24.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(20.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier.size(56.dp).background(Color.White.copy(alpha = 0.4f), CircleShape),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(text = com.pranayharjai7.myemotions.ui.components.emotionToEmoji(state.result.emotion.label), fontSize = 32.sp)
+                                }
+                                Spacer(modifier = Modifier.width(16.dp))
+                                Column {
+                                    Text(text = state.result.emotion.label, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                                    Text(text = "Confidence: ${(state.result.confidence * 100).toInt()}%", style = MaterialTheme.typography.bodyMedium)
+                                }
+                            }
+                        }
+                    }
+                    is EmotionCaptureUiState.Error -> {
+                        Text(text = state.message, color = MaterialTheme.colorScheme.error)
+                    }
+                    EmotionCaptureUiState.Idle -> {
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            OutlinedButton(
+                                onClick = {
+                                    galleryLauncher.launch(androidx.activity.result.PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                                },
+                                shape = RoundedCornerShape(20.dp),
+                                modifier = Modifier.weight(1f).height(56.dp)
+                            ) {
+                                Icon(Icons.Filled.PhotoLibrary, contentDescription = null)
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Gallery")
+                            }
+                            
+                            if (selectedBitmap != null) {
+                                Spacer(modifier = Modifier.width(16.dp))
+                                Button(
+                                    onClick = { selectedBitmap = null; viewModel.resetState() },
+                                    shape = RoundedCornerShape(20.dp),
+                                    modifier = Modifier.weight(1f).height(56.dp)
+                                ) {
+                                    Text("Retake")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(32.dp))
+        }
     }
 }
 

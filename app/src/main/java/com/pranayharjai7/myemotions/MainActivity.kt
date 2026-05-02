@@ -7,16 +7,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.rememberNavController
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pranayharjai7.myemotions.ui.MainViewModel
-import com.pranayharjai7.myemotions.ui.components.AnimatedGradientBackground
-import com.pranayharjai7.myemotions.ui.navigation.MyEmotionsNavHost
+import com.pranayharjai7.myemotions.ui.screens.MainRootScreen
 import com.pranayharjai7.myemotions.ui.theme.MyEmotionsTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -34,10 +30,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AnimatedGradientBackground(theme = theme) {
-                        val navController = rememberNavController()
-                        MyEmotionsNavHost(navController = navController)
-                    }
+                    MainRootScreen(onLogout = { /* Handled in NavHost */ })
                 }
             }
         }

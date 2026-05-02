@@ -20,39 +20,25 @@ import androidx.core.view.WindowCompat
 private val DarkColorScheme = darkColorScheme(
     primary = DarkPrimary,
     onPrimary = DarkOnPrimary,
-    secondary = DarkSecondary,
-    onSecondary = DarkOnSecondary,
     background = DarkBackground,
-    onBackground = DarkOnBackground,
     surface = DarkSurface,
-    onSurface = DarkOnSurface,
+    onSurface = OnSurfaceDark,
     outline = DarkOutline
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = LightPrimary,
     onPrimary = LightOnPrimary,
-    secondary = LightSecondary,
-    onSecondary = LightOnSecondary,
     background = LightBackground,
-    onBackground = LightOnBackground,
     surface = LightSurface,
-    onSurface = LightOnSurface,
+    onSurface = OnSurfaceLight,
     outline = LightOutline
 )
-
-
-
-
-
-
-
 
 @Composable
 fun MyEmotionsTheme(
     moodTheme: MoodTheme = DefaultAzureTheme,
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+, but disabled to maintain brand identity
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
@@ -66,20 +52,31 @@ fun MyEmotionsTheme(
     }
 
     val animatedPrimary by androidx.compose.animation.animateColorAsState(
-        targetValue = moodTheme.accentColor,
-        animationSpec = androidx.compose.animation.core.tween(1500),
+        targetValue = moodTheme.primaryColor,
+        animationSpec = androidx.compose.animation.core.tween(1000),
         label = "PrimaryColorTransition"
     )
 
-    val colorScheme = baseScheme.copy(primary = animatedPrimary)
+    val animatedBackground by androidx.compose.animation.animateColorAsState(
+        targetValue = if (darkTheme) BgDark else moodTheme.backgroundColor,
+        animationSpec = androidx.compose.animation.core.tween(1000),
+        label = "BackgroundColorTransition"
+    )
+
+    val colorScheme = baseScheme.copy(
+        primary = animatedPrimary,
+        background = animatedBackground
+    )
+    
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
+            window.statusBarColor = Color.Transparent.toArgb()
+            window.navigationBarColor = Color.Transparent.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }
-
 
     MaterialTheme(
         colorScheme = colorScheme,

@@ -2,54 +2,47 @@ package com.pranayharjai7.myemotions.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Azure & Electric Blue Palette
+// --- Premium Brand Palette ---
 val AzureBlue = Color(0xFF007AFF)
 val ElectricBlue = Color(0xFF3B82F6)
-val SkyBlue = Color(0xFF60A5FA)
-val DeepNavy = Color(0xFF1E3A8A)
+val SoftAzure = Color(0xFFE3F2FD)
 
-// Emotion Anchor Colors
-val ThemeHappiness = Color(0xFFFFD166) // Golden Sun
-val ThemeSadness = Color(0xFF6366F1)   // Indigo Mist
-val ThemeAnger = Color(0xFFEF4444)     // Soft Crimson
-val ThemeFear = Color(0xFF10B981)      // Deep Emerald
-val ThemeSurprise = Color(0xFF8B5CF6)  // Vivid Violet
-val ThemeDisgust = Color(0xFF84CC16)   // Moss Green
-val ThemeContempt = Color(0xFFEC4899)  // Muted Rose
-val ThemeNeutral = AzureBlue           // Baseline Azure
+// --- Emotion-Aware Premium Colors ---
+val MoodHappy = Color(0xFFFFD54F)    // Warm Gold
+val MoodCalm = Color(0xFF64B5F6)     // Serene Blue
+val MoodSad = Color(0xFF9575CD)      // Muted Lavender
+val MoodAngry = Color(0xFFE57373)    // Soft Coral
+val MoodFear = Color(0xFF81C784)     // Sage Green
+val MoodSurprise = Color(0xFFBA68C8) // Soft Amethyst
+val MoodDisgust = Color(0xFFAED581)  // Light Olive
+val MoodContempt = Color(0xFFF06292) // Dusty Rose
+val MoodNeutral = Color(0xFF90A4AE)  // Blue Grey
 
-// Glassmorphism Colors
-val GlassLight = Color(0xB3FFFFFF) // 70% White
-val GlassDark = Color(0xB30F172A)  // 70% Surface Dark
-val GlassBorderLight = Color(0x4DFFFFFF) // 30% White
-val GlassBorderDark = Color(0x4D334155)  // 30% Outline
+// --- Surfaces & Backgrounds ---
+val BgLight = Color(0xFFF9FBFF)
+val SurfaceLight = Color(0xFFFFFFFF)
+val OnSurfaceLight = Color(0xFF1A1C1E)
 
-// Backgrounds
-val Bg_Light = Color(0xFFF8FAFC)
-val Bg_Dark = Color(0xFF020617)
+val BgDark = Color(0xFF0B1117)
+val SurfaceDark = Color(0xFF161C24)
+val OnSurfaceDark = Color(0xFFF0F2F5)
 
-// Gradients
-val AzureGradient = listOf(AzureBlue, ElectricBlue)
-val SoftAzureGradient = listOf(ElectricBlue, SkyBlue)
-
-// Material 3 Colors - Dark
-val DarkPrimary = SkyBlue
-val DarkOnPrimary = Color.Black
-val DarkSecondary = ElectricBlue
-val DarkOnSecondary = Color.Black
-val DarkBackground = Bg_Dark
-val DarkOnBackground = Color.White
-val DarkSurface = Color(0xFF0F172A)
-val DarkOnSurface = Color.White
-val DarkOutline = Color(0xFF334155)
-
-// Material 3 Colors - Light
+// --- Material 3 Schemes ---
 val LightPrimary = AzureBlue
 val LightOnPrimary = Color.White
-val LightSecondary = ElectricBlue
-val LightOnSecondary = Color.White
-val LightBackground = Bg_Light
-val LightOnBackground = Color(0xFF020617)
-val LightSurface = Color.White
-val LightOnSurface = Color(0xFF020617)
-val LightOutline = Color(0xFFE2E8F0)
+val LightBackground = BgLight
+val LightSurface = SurfaceLight
+val LightOutline = Color(0xFFD1D9E0)
+
+val DarkPrimary = ElectricBlue
+val DarkOnPrimary = Color.White
+val DarkBackground = BgDark
+val DarkSurface = SurfaceDark
+val DarkOutline = Color(0xFF30363D)
+
+// --- Gradients ---
+val PremiumGradient = listOf(AzureBlue, ElectricBlue)
+val HappyGradient = listOf(MoodHappy, Color(0xFFFFB300))
+val CalmGradient = listOf(MoodCalm, Color(0xFF42A5F5))
+val SadGradient = listOf(MoodSad, Color(0xFF7E57C2))
+val AngryGradient = listOf(MoodAngry, Color(0xFFEF5350))
