@@ -36,7 +36,7 @@ sealed class Screen {
     data object EmotionHistory : Screen()
 
     @Serializable
-    data object ManualEmotion : Screen()
+    data object LogMood : Screen()
 }
 
 /**
@@ -101,14 +101,11 @@ fun MyEmotionsNavHost(
                         popUpTo(Screen.Dashboard) { inclusive = true }
                     }
                 },
-                onNavigateToEmotionCapture = {
-                    navController.navigate(Screen.EmotionCapture)
-                },
                 onNavigateToHistory = {
                     navController.navigate(Screen.EmotionHistory)
                 },
-                onNavigateToManualLogging = {
-                    navController.navigate(Screen.ManualEmotion)
+                onNavigateToLogMood = {
+                    navController.navigate(Screen.LogMood)
                 }
             )
         }
@@ -129,10 +126,13 @@ fun MyEmotionsNavHost(
             )
         }
 
-        composable<Screen.ManualEmotion> {
-            com.pranayharjai7.myemotions.ui.screens.manual.ManualEmotionScreen(
+        composable<Screen.LogMood> {
+            com.pranayharjai7.myemotions.ui.screens.logging.LogMoodScreen(
                 onNavigateBack = {
                     navController.popBackStack()
+                },
+                onNavigateToScan = {
+                    navController.navigate(Screen.EmotionCapture)
                 }
             )
         }

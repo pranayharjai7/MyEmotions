@@ -54,7 +54,6 @@ fun AuthScreen(
         }
     }
 
-    AnimatedGradientBackground {
         Scaffold(
             snackbarHost = { SnackbarHost(snackbarHostState) },
             containerColor = Color.Transparent
@@ -108,7 +107,6 @@ fun AuthScreen(
                 AuthError(authState = authState)
             }
         }
-    }
 }
 
 @Composable

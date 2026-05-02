@@ -1,48 +1,55 @@
 package com.pranayharjai7.myemotions.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pranayharjai7.myemotions.domain.model.EmotionRecord
+import com.pranayharjai7.myemotions.ui.components.AnimatedGradientBackground
 import com.pranayharjai7.myemotions.ui.components.EmotionCard
+import com.pranayharjai7.myemotions.ui.components.emotionToEmoji
+import com.pranayharjai7.myemotions.ui.theme.AzureGradient
 import java.text.SimpleDateFormat
+import java.time.LocalTime
 import java.util.Date
 import java.util.Locale
 
-
-/**
- * Main dashboard screen displayed after successful authentication.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
-    onLogout: () -> Unit, 
-    onNavigateToEmotionCapture: () -> Unit = {},
+    onLogout: () -> Unit,
+    onNavigateToLogMood: () -> Unit = {},
     onNavigateToHistory: () -> Unit = {},
-    onNavigateToManualLogging: () -> Unit = {},
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
-    val history by viewModel.history.collectAsState()
+    val todayEmotions by viewModel.todayEmotionList.collectAsStateWithLifecycle()
+    val latestEmotion by viewModel.todayLatestEmotion.collectAsStateWithLifecycle()
+
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = Color.Transparent,
         topBar = {
             TopAppBar(
                 title = {
                     Text(
                         "My Emotions",
+                        color = Color.White,
                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                     )
                 },
@@ -51,10 +58,11 @@ fun DashboardScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ExitToApp,
                             contentDescription = "Logout",
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = Color.White
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         }
     ) { innerPadding ->
@@ -62,126 +70,206 @@ fun DashboardScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .padding(24.dp)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp)
         ) {
-            DashboardHeader(userName = "Pranay")
+            GreetingHero(userName = "Pranay")
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
-            DashboardContent(history = history.take(3), modifier = Modifier.weight(1f))
+            HeroMoodDisplay(latestEmotion = latestEmotion)
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(48.dp))
 
-            TextButton(
-                onClick = onNavigateToHistory,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("View Full Mood History", fontWeight = FontWeight.Bold)
-            }
+            // Unified Action Pill
+            LogMoodAction(onClick = onNavigateToLogMood)
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(48.dp))
 
-            com.pranayharjai7.myemotions.ui.components.EmotionButton(
-                text = "Scan Emotion",
-                onClick = onNavigateToEmotionCapture
+            TimelinePreviewSection(
+                todayEmotions = todayEmotions,
+                onViewFullTimeline = onNavigateToHistory
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            com.pranayharjai7.myemotions.ui.components.EmotionButton(
-                text = "Log Emotion Manually",
-                onClick = onNavigateToManualLogging
-            )
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }
 
 @Composable
-private fun DashboardHeader(userName: String) {
-    Text(
-        text = "Welcome back,",
-        style = MaterialTheme.typography.titleMedium
-    )
-    Text(
-        text = userName,
-        style = MaterialTheme.typography.displaySmall.copy(
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
+private fun GreetingHero(userName: String) {
+    val greeting = when (LocalTime.now().hour) {
+        in 0..11 -> "Good morning"
+        in 12..16 -> "Good afternoon"
+        else -> "Good evening"
+    }
+
+    Column {
+        Text(
+            text = greeting,
+            style = MaterialTheme.typography.titleLarge,
+            color = Color.White.copy(alpha = 0.7f)
         )
-    )
+        Text(
+            text = "$userName.",
+            style = MaterialTheme.typography.displayMedium.copy(
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+        )
+    }
 }
 
 @Composable
-private fun DashboardContent(history: List<EmotionRecord>, modifier: Modifier = Modifier) {
-    EmotionCard(
-        modifier = modifier.fillMaxWidth()
+private fun HeroMoodDisplay(latestEmotion: EmotionRecord?) {
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp)
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            if (latestEmotion != null) {
+                Text(
+                    text = emotionToEmoji(latestEmotion.emotion),
+                    fontSize = 100.sp,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                Text(
+                    text = "Right now, you're feeling",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.White.copy(alpha = 0.7f)
+                )
+                Text(
+                    text = latestEmotion.emotion,
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+            } else {
+                Text(
+                    text = "😶",
+                    fontSize = 100.sp,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                Text(
+                    text = "Start your day by logging a mood",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.White.copy(alpha = 0.7f)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun LogMoodAction(onClick: () -> Unit) {
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(32.dp),
+        color = Color.White.copy(alpha = 0.2f),
+        border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.3f)),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(vertical = 20.dp, horizontal = 24.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
+            Icon(Icons.Default.Add, contentDescription = null, tint = Color.White)
+            Spacer(modifier = Modifier.width(12.dp))
             Text(
-                text = "Recent Emotions",
+                text = "Log how you're feeling",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 16.dp)
+                color = Color.White
             )
+        }
+    }
+}
 
-            if (history.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(
-                        text = "No emotions recorded yet.",
-                        style = MaterialTheme.typography.bodyLarge.copy(color = Color.Gray)
-                    )
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(history) { record ->
-                        EmotionHistoryItem(record)
-                    }
-                }
+@Composable
+private fun TimelinePreviewSection(
+    todayEmotions: List<EmotionRecord>,
+    onViewFullTimeline: () -> Unit
+) {
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Bottom
+        ) {
+            Text(
+                text = "Today's Journey",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+            TextButton(onClick = onViewFullTimeline) {
+                Text("Full Timeline →", color = Color.White.copy(alpha = 0.6f))
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if (todayEmotions.isEmpty()) {
+            Surface(
+                shape = RoundedCornerShape(24.dp),
+                color = Color.White.copy(alpha = 0.1f),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "No emotions recorded yet today.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White.copy(alpha = 0.5f),
+                    modifier = Modifier.padding(24.dp)
+                )
+            }
+        } else {
+            todayEmotions.forEach { record ->
+                GlassTimelineItem(record)
+                Spacer(modifier = Modifier.height(12.dp))
             }
         }
     }
 }
 
 @Composable
-private fun EmotionHistoryItem(record: EmotionRecord) {
-    val dateFormat = SimpleDateFormat("MMM dd, hh:mm a", Locale.getDefault())
+private fun GlassTimelineItem(record: EmotionRecord) {
+    val dateFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
     val dateString = dateFormat.format(Date(record.timestamp))
 
-    val emoji = when(record.emotion) {
-        "Happiness" -> "🙂"
-        "Sadness" -> "😢"
-        "Anger" -> "😠"
-        "Fear" -> "😨"
-        "Surprise" -> "😲"
-        "Disgust" -> "🤢"
-        "Contempt" -> "😒"
-        "Neutral" -> "😐"
-        else -> "🤔"
-    }
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+    Surface(
+        shape = RoundedCornerShape(24.dp),
+        color = Color.White.copy(alpha = 0.1f),
+        border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.1f)),
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = emoji, style = MaterialTheme.typography.headlineSmall)
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = dateString,
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.White.copy(alpha = 0.6f),
+                modifier = Modifier.width(65.dp)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(text = emotionToEmoji(record.emotion), fontSize = 24.sp)
             Spacer(modifier = Modifier.width(16.dp))
-            Column {
-                Text(text = record.emotion, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
-                Text(text = dateString, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
-            }
+            Text(
+                text = record.emotion,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = "${(record.confidence * 100).toInt()}%",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White.copy(alpha = 0.8f),
+                fontWeight = FontWeight.Bold
+            )
         }
-        Text(
-            text = "${(record.confidence * 100).toInt()}%",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.primary,
-            fontWeight = FontWeight.Bold
-        )
     }
 }

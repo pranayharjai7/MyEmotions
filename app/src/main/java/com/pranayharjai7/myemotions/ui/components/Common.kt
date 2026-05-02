@@ -20,7 +20,7 @@ val StandardCornerRadius = 28.dp
 @Composable
 fun EmotionButton(
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.fillMaxWidth(),
     text: String = "",
     enabled: Boolean = true,
     isLoading: Boolean = false,
@@ -29,7 +29,6 @@ fun EmotionButton(
     Button(
         onClick = onClick,
         modifier = modifier
-            .fillMaxWidth()
             .height(56.dp),
         shape = RoundedCornerShape(StandardCornerRadius),
         colors = ButtonDefaults.buttonColors(
@@ -62,7 +61,7 @@ fun EmotionTextField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.fillMaxWidth(),
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     leadingIcon: @Composable (() -> Unit)? = null
@@ -71,8 +70,7 @@ fun EmotionTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label) },
-        modifier = modifier
-            .fillMaxWidth(),
+        modifier = modifier,
         shape = RoundedCornerShape(StandardCornerRadius),
         visualTransformation = visualTransformation,
         keyboardOptions = keyboardOptions,
@@ -151,5 +149,19 @@ fun GoogleSignInButton(
             Spacer(modifier = Modifier.width(8.dp))
             Text("Continue with Google")
         }
+    }
+}
+
+fun emotionToEmoji(emotion: String): String {
+    return when (emotion) {
+        "Happiness" -> "😊"
+        "Sadness" -> "😢"
+        "Anger" -> "😠"
+        "Fear" -> "😨"
+        "Surprise" -> "😲"
+        "Disgust" -> "🤢"
+        "Contempt" -> "😒"
+        "Neutral" -> "😐"
+        else -> "🤔"
     }
 }

@@ -87,135 +87,133 @@ fun EmotionCaptureScreen(
         }
     }
 
-    AnimatedGradientBackground {
-        Column(
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Scan Your Emotion",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(top = 40.dp, bottom = 24.dp)
+        )
+
+        EmotionCard(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxWidth()
+                .weight(1f)
         ) {
-            Text(
-                text = "Scan Your Emotion",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(top = 40.dp, bottom = 24.dp)
-            )
-
-            EmotionCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                if (selectedBitmap != null) {
+                    Image(
+                        bitmap = selectedBitmap!!.asImageBitmap(),
+                        contentDescription = "Selected image",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else if (hasCameraPermission) {
+                    CameraPreview(
+                        onImageCaptured = { bitmap ->
+                            selectedBitmap = bitmap
+                            selectedSource = "camera"
+                            viewModel.detectEmotion(bitmap, "camera")
+                        }
+                    )
+                } else {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("Camera permission is required to take a photo.")
+                        Spacer(modifier = Modifier.height(8.dp))
+                        EmotionButton(
+                            text = "Grant Permission",
+                            onClick = { permissionLauncher.launch(Manifest.permission.CAMERA) },
+                            modifier = Modifier.padding(horizontal = 32.dp)
+                        )
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        when (val state = uiState) {
+            is EmotionCaptureUiState.Loading -> {
+                CircularProgressIndicator()
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            is EmotionCaptureUiState.Success -> {
+                LaunchedEffect(state) {
+                    kotlinx.coroutines.delay(2000)
+                    onNavigateBack()
+                }
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
                 ) {
-                    if (selectedBitmap != null) {
-                        Image(
-                            bitmap = selectedBitmap!!.asImageBitmap(),
-                            contentDescription = "Selected image",
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
-                    } else if (hasCameraPermission) {
-                        CameraPreview(
-                            onImageCaptured = { bitmap ->
-                                selectedBitmap = bitmap
-                                selectedSource = "camera"
-                                viewModel.detectEmotion(bitmap, "camera")
-                            }
-                        )
-                    } else {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("Camera permission is required to take a photo.")
-                            Spacer(modifier = Modifier.height(8.dp))
-                            EmotionButton(
-                                text = "Grant Permission",
-                                onClick = { permissionLauncher.launch(Manifest.permission.CAMERA) },
-                                modifier = Modifier.padding(horizontal = 32.dp)
-                            )
-                        }
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            when (val state = uiState) {
-                is EmotionCaptureUiState.Loading -> {
-                    CircularProgressIndicator()
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-                is EmotionCaptureUiState.Success -> {
-                    LaunchedEffect(state) {
-                        kotlinx.coroutines.delay(2000)
-                        onNavigateBack()
-                    }
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer
-                        )
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = "Detected Emotion: ${state.result.emotion.label}",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = "Confidence: ${(state.result.confidence * 100).toInt()}%",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-                is EmotionCaptureUiState.Error -> {
-                    Text(
-                        text = "Error: ${state.message}",
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-                EmotionCaptureUiState.Idle -> {
-                    // Do nothing
-                }
-            }
-
-            // Buttons
-            if (selectedBitmap != null) {
-                EmotionButton(
-                    text = "Retake Photo",
-                    onClick = {
-                        selectedBitmap = null
-                        viewModel.resetState()
-                    }
-                )
-            } else {
-                // The capture button is handled inside CameraPreview for simplicity,
-                // or we can pass a trigger. Let's do a trigger.
-            }
-            
-            Spacer(modifier = Modifier.height(16.dp))
-
-            EmotionButton(
-                text = "Choose from Gallery",
-                onClick = {
-                    galleryLauncher.launch(
-                        androidx.activity.result.PickVisualMediaRequest(
-                            ActivityResultContracts.PickVisualMedia.ImageOnly
+                        Text(
+                            text = "Detected Emotion: ${state.result.emotion.label}",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
                         )
-                    )
+                        Text(
+                            text = "Confidence: ${(state.result.confidence * 100).toInt()}%",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            is EmotionCaptureUiState.Error -> {
+                Text(
+                    text = "Error: ${state.message}",
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(16.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            EmotionCaptureUiState.Idle -> {
+                // Do nothing
+            }
+        }
+
+        // Buttons
+        if (selectedBitmap != null) {
+            EmotionButton(
+                text = "Retake Photo",
+                onClick = {
+                    selectedBitmap = null
+                    viewModel.resetState()
                 }
             )
-            
-            Spacer(modifier = Modifier.height(24.dp))
+        } else {
+            // The capture button is handled inside CameraPreview for simplicity,
+            // or we can pass a trigger. Let's do a trigger.
         }
+        
+        Spacer(modifier = Modifier.height(16.dp))
+
+        EmotionButton(
+            text = "Choose from Gallery",
+            onClick = {
+                galleryLauncher.launch(
+                    androidx.activity.result.PickVisualMediaRequest(
+                        ActivityResultContracts.PickVisualMedia.ImageOnly
+                    )
+                )
+            }
+        )
+        
+        Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
