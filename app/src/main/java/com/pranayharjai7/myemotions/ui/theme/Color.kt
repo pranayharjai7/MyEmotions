@@ -8,6 +8,16 @@ val ElectricBlue = Color(0xFF3B82F6)
 val SkyBlue = Color(0xFF60A5FA)
 val DeepNavy = Color(0xFF1E3A8A)
 
+// Emotion Anchor Colors
+val ThemeHappiness = Color(0xFFFFD166) // Golden Sun
+val ThemeSadness = Color(0xFF6366F1)   // Indigo Mist
+val ThemeAnger = Color(0xFFEF4444)     // Soft Crimson
+val ThemeFear = Color(0xFF10B981)      // Deep Emerald
+val ThemeSurprise = Color(0xFF8B5CF6)  // Vivid Violet
+val ThemeDisgust = Color(0xFF84CC16)   // Moss Green
+val ThemeContempt = Color(0xFFEC4899)  // Muted Rose
+val ThemeNeutral = AzureBlue           // Baseline Azure
+
 // Glassmorphism Colors
 val GlassLight = Color(0xB3FFFFFF) // 70% White
 val GlassDark = Color(0xB30F172A)  // 70% Surface Dark
