@@ -72,6 +72,7 @@ fun EmotionCaptureScreen(
     }
 
     var selectedBitmap by remember { mutableStateOf<Bitmap?>(null) }
+    var selectedSource by remember { mutableStateOf("camera") }
     
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
@@ -79,8 +80,9 @@ fun EmotionCaptureScreen(
         uri?.let {
             val bitmap = loadBitmapFromUri(context, it)
             selectedBitmap = bitmap
+            selectedSource = "gallery"
             if (bitmap != null) {
-                viewModel.detectEmotion(bitmap)
+                viewModel.detectEmotion(bitmap, "gallery")
             }
         }
     }
@@ -119,7 +121,8 @@ fun EmotionCaptureScreen(
                         CameraPreview(
                             onImageCaptured = { bitmap ->
                                 selectedBitmap = bitmap
-                                viewModel.detectEmotion(bitmap)
+                                selectedSource = "camera"
+                                viewModel.detectEmotion(bitmap, "camera")
                             }
                         )
                     } else {
@@ -144,6 +147,10 @@ fun EmotionCaptureScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                 }
                 is EmotionCaptureUiState.Success -> {
+                    LaunchedEffect(state) {
+                        kotlinx.coroutines.delay(2000)
+                        onNavigateBack()
+                    }
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(

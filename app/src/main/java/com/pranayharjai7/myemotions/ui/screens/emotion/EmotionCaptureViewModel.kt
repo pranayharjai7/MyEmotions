@@ -3,8 +3,9 @@ package com.pranayharjai7.myemotions.ui.screens.emotion
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.pranayharjai7.myemotions.domain.model.EmotionRecord
 import com.pranayharjai7.myemotions.domain.model.EmotionResult
-import com.pranayharjai7.myemotions.domain.usecase.DetectEmotionUseCase
+import com.pranayharjai7.myemotions.domain.repository.EmotionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,17 +22,25 @@ sealed interface EmotionCaptureUiState {
 
 @HiltViewModel
 class EmotionCaptureViewModel @Inject constructor(
-    private val detectEmotionUseCase: DetectEmotionUseCase
+    private val repository: EmotionRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<EmotionCaptureUiState>(EmotionCaptureUiState.Idle)
     val uiState: StateFlow<EmotionCaptureUiState> = _uiState.asStateFlow()
 
-    fun detectEmotion(bitmap: Bitmap) {
+    fun detectEmotion(bitmap: Bitmap, source: String = "camera") {
         viewModelScope.launch {
             _uiState.value = EmotionCaptureUiState.Loading
-            detectEmotionUseCase(bitmap)
+            repository.detectEmotion(bitmap)
                 .onSuccess { result ->
+                    val record = EmotionRecord(
+                        id = java.util.UUID.randomUUID().toString(),
+                        timestamp = System.currentTimeMillis(),
+                        emotion = result.emotion.label,
+                        confidence = result.confidence,
+                        source = source
+                    )
+                    repository.saveEmotion(record)
                     _uiState.value = EmotionCaptureUiState.Success(result)
                 }
                 .onFailure { error ->
