@@ -28,6 +28,9 @@ sealed class Screen {
     
     @Serializable
     data object Dashboard : Screen()
+
+    @Serializable
+    data object EmotionCapture : Screen()
 }
 
 /**
@@ -91,6 +94,17 @@ fun MyEmotionsNavHost(
                     navController.navigate(Screen.Auth) {
                         popUpTo(Screen.Dashboard) { inclusive = true }
                     }
+                },
+                onNavigateToEmotionCapture = {
+                    navController.navigate(Screen.EmotionCapture)
+                }
+            )
+        }
+
+        composable<Screen.EmotionCapture> {
+            com.pranayharjai7.myemotions.ui.screens.emotion.EmotionCaptureScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
                 }
             )
         }

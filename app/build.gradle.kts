@@ -119,6 +119,17 @@ dependencies {
     // Google Maps
     implementation(libs.google.maps.compose)
 
+    // CameraX
+    implementation(libs.camera.camera2)
+    implementation(libs.camera.lifecycle)
+    implementation(libs.camera.view)
+
+    // ML (PyTorch & TensorFlow)
+    implementation(libs.pytorch.android.lite)
+    implementation(libs.pytorch.android.torchvision.lite)
+    implementation(libs.tensorflow.lite)
+    implementation(libs.tensorflow.lite.support)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

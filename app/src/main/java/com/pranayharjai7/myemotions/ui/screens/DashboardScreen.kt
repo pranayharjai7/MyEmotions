@@ -17,7 +17,7 @@ import com.pranayharjai7.myemotions.ui.components.EmotionCard
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashboardScreen(onLogout: () -> Unit) {
+fun DashboardScreen(onLogout: () -> Unit, onNavigateToEmotionCapture: () -> Unit = {}) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
@@ -52,6 +52,13 @@ fun DashboardScreen(onLogout: () -> Unit) {
             Spacer(modifier = Modifier.height(32.dp))
 
             DashboardContent()
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            com.pranayharjai7.myemotions.ui.components.EmotionButton(
+                text = "Scan Emotion",
+                onClick = onNavigateToEmotionCapture
+            )
         }
     }
 }

@@ -1,0 +1,8 @@
+0:Happiness
+1:Surprise
+2:Contempt
+3:Neutral
+4:Fear
+5:Sadness
+6:Anger
+7:Disgust
