@@ -12,12 +12,12 @@ plugins {
 
 android {
     namespace = "com.pranayharjai7.myemotions"
-    compileSdk = 34
-
+    compileSdk = 35
+    
     defaultConfig {
         applicationId = "com.pranayharjai7.myemotions"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -52,8 +52,8 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "17"
+    kotlin {
+        jvmToolchain(17)
     }
     buildFeatures {
         compose = true
@@ -63,6 +63,18 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+    }
+    lint {
+        // Suppress warnings for dependencies where the "latest" version is an
+        // incompatible major-version jump (e.g. Kotlin 2.2, AGP 9, Ktor 3).
+        disable += "GradleDependency"
+        disable += "AndroidGradlePluginVersion"
+        // targetSdk 35 is the latest stable; lint always wants one higher.
+        disable += "OldTargetApi"
+        // AGP 8.7 lint engine vs Navigation 2.8 bundled lint rules mismatch.
+        disable += "ObsoleteLintCustomCheck"
+        // Animated GIF logo is intentional.
+        disable += "GifUsage"
     }
 }
 
