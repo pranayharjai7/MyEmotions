@@ -30,6 +30,8 @@ import java.util.Locale
 fun DashboardScreen(
     onLogout: () -> Unit, 
     onNavigateToEmotionCapture: () -> Unit = {},
+    onNavigateToHistory: () -> Unit = {},
+    onNavigateToManualLogging: () -> Unit = {},
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
     val history by viewModel.history.collectAsState()
@@ -66,13 +68,29 @@ fun DashboardScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            DashboardContent(history = history, modifier = Modifier.weight(1f))
+            DashboardContent(history = history.take(3), modifier = Modifier.weight(1f))
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            TextButton(
+                onClick = onNavigateToHistory,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("View Full Mood History", fontWeight = FontWeight.Bold)
+            }
 
             Spacer(modifier = Modifier.height(32.dp))
 
             com.pranayharjai7.myemotions.ui.components.EmotionButton(
                 text = "Scan Emotion",
                 onClick = onNavigateToEmotionCapture
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            com.pranayharjai7.myemotions.ui.components.EmotionButton(
+                text = "Log Emotion Manually",
+                onClick = onNavigateToManualLogging
             )
         }
     }

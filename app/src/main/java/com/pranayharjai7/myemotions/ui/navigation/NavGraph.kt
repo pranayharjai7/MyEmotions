@@ -31,6 +31,12 @@ sealed class Screen {
 
     @Serializable
     data object EmotionCapture : Screen()
+
+    @Serializable
+    data object EmotionHistory : Screen()
+
+    @Serializable
+    data object ManualEmotion : Screen()
 }
 
 /**
@@ -97,12 +103,34 @@ fun MyEmotionsNavHost(
                 },
                 onNavigateToEmotionCapture = {
                     navController.navigate(Screen.EmotionCapture)
+                },
+                onNavigateToHistory = {
+                    navController.navigate(Screen.EmotionHistory)
+                },
+                onNavigateToManualLogging = {
+                    navController.navigate(Screen.ManualEmotion)
                 }
             )
         }
 
         composable<Screen.EmotionCapture> {
             com.pranayharjai7.myemotions.ui.screens.emotion.EmotionCaptureScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable<Screen.EmotionHistory> {
+            com.pranayharjai7.myemotions.ui.screens.history.EmotionHistoryScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable<Screen.ManualEmotion> {
+            com.pranayharjai7.myemotions.ui.screens.manual.ManualEmotionScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 }
