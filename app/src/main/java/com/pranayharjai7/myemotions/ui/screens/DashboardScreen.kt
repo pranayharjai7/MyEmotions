@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -24,6 +25,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pranayharjai7.myemotions.domain.model.EmotionRecord
 import com.pranayharjai7.myemotions.ui.components.AnimatedGradientBackground
 import com.pranayharjai7.myemotions.ui.components.EmotionCard
+import com.pranayharjai7.myemotions.ui.components.ProfileAvatar
+import com.pranayharjai7.myemotions.ui.components.ProfileBottomSheet
 import com.pranayharjai7.myemotions.ui.components.emotionToEmoji
 import com.pranayharjai7.myemotions.ui.theme.AzureGradient
 import java.text.SimpleDateFormat
@@ -41,6 +44,11 @@ fun DashboardScreen(
 ) {
     val todayEmotions by viewModel.todayEmotionList.collectAsStateWithLifecycle()
     val latestEmotion by viewModel.todayLatestEmotion.collectAsStateWithLifecycle()
+    val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
+
+    var showProfileMenu by androidx.compose.runtime.remember { 
+        androidx.compose.runtime.mutableStateOf(false) 
+    }
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -54,13 +62,11 @@ fun DashboardScreen(
                     )
                 },
                 actions = {
-                    IconButton(onClick = onLogout) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ExitToApp,
-                            contentDescription = "Logout",
-                            tint = Color.White
-                        )
-                    }
+                    ProfileAvatar(
+                        userInfo = currentUser,
+                        onClick = { showProfileMenu = true },
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
@@ -92,6 +98,17 @@ fun DashboardScreen(
             )
 
             Spacer(modifier = Modifier.height(32.dp))
+        }
+
+        if (showProfileMenu) {
+            ProfileBottomSheet(
+                userInfo = currentUser,
+                onDismiss = { showProfileMenu = false },
+                onLogout = onLogout,
+                onNavigateToHistory = onNavigateToHistory,
+                onNavigateToInsights = { /* TODO */ },
+                onNavigateToSettings = { /* TODO */ }
+            )
         }
     }
 }

@@ -3,8 +3,10 @@ package com.pranayharjai7.myemotions.ui.screens
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pranayharjai7.myemotions.domain.model.EmotionRecord
+import com.pranayharjai7.myemotions.domain.repository.AuthRepository
 import com.pranayharjai7.myemotions.domain.repository.EmotionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.jan.supabase.gotrue.user.UserInfo
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -14,8 +16,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
-    private val repository: EmotionRepository
+    private val repository: EmotionRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
+
+    val currentUser: StateFlow<UserInfo?> = authRepository.currentUser
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     private val _history = MutableStateFlow<List<EmotionRecord>>(emptyList())
     val history: StateFlow<List<EmotionRecord>> = _history.asStateFlow()
