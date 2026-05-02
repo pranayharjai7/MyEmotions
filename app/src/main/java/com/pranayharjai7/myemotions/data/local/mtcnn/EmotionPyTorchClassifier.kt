@@ -39,10 +39,23 @@ class EmotionPyTorchClassifier(context: Context) {
         val scores = res.second
         val numEmotions = Math.min(labels.size, scores.size)
         val index = Array(numEmotions) { it }
-        index.sortWith { idx1, idx2 -> java.lang.Float.compare(scores[idx2], scores[idx1]) }
+        
+        // Apply softmax to get probabilities
+        val maxScore = scores.maxOrNull() ?: 0f
+        var sumExp = 0f
+        val probabilities = FloatArray(numEmotions)
+        for (i in 0 until numEmotions) {
+            probabilities[i] = kotlin.math.exp(scores[i] - maxScore)
+            sumExp += probabilities[i]
+        }
+        for (i in 0 until numEmotions) {
+            probabilities[i] /= sumExp
+        }
+
+        index.sortWith { idx1, idx2 -> java.lang.Float.compare(probabilities[idx2], probabilities[idx1]) }
         
         val topLabel = labels[index[0]]
-        val topScore = scores[index[0]]
+        val topScore = probabilities[index[0]]
         
         return Pair(topLabel, topScore)
     }
