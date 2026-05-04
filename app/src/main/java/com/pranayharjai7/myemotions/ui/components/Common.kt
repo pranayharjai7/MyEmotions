@@ -4,11 +4,26 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Block
+import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.rounded.Face
+import androidx.compose.material.icons.rounded.LocalFireDepartment
+import androidx.compose.material.icons.rounded.MoodBad
+import androidx.compose.material.icons.rounded.SentimentDissatisfied
+import androidx.compose.material.icons.rounded.SentimentNeutral
+import androidx.compose.material.icons.rounded.SentimentSatisfied
+import androidx.compose.material.icons.rounded.SentimentVeryDissatisfied
+import androidx.compose.material.icons.rounded.SentimentVerySatisfied
+import androidx.compose.material.icons.rounded.Sick
+import androidx.compose.material.icons.rounded.Warning
+import androidx.compose.material.icons.rounded.WbIncandescent
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -152,16 +167,30 @@ fun GoogleSignInButton(
     }
 }
 
-fun emotionToEmoji(emotion: String): String {
+@Composable
+fun EmotionIcon(
+    emotion: String,
+    modifier: Modifier = Modifier,
+    tint: Color = LocalContentColor.current
+) {
+    Icon(
+        imageVector = emotionToIcon(emotion),
+        contentDescription = emotion,
+        modifier = modifier,
+        tint = tint
+    )
+}
+
+fun emotionToIcon(emotion: String): ImageVector {
     return when (emotion) {
-        "Happiness" -> "😊"
-        "Sadness" -> "😢"
-        "Anger" -> "😠"
-        "Fear" -> "😨"
-        "Surprise" -> "😲"
-        "Disgust" -> "🤢"
-        "Contempt" -> "😒"
-        "Neutral" -> "😐"
-        else -> "🤔"
+        "Happiness" -> Icons.Rounded.SentimentVerySatisfied
+        "Sadness" -> Icons.Rounded.SentimentVeryDissatisfied
+        "Anger" -> Icons.Rounded.LocalFireDepartment
+        "Fear" -> Icons.Rounded.Bolt
+        "Surprise" -> Icons.Rounded.WbIncandescent
+        "Disgust" -> Icons.Rounded.Sick
+        "Contempt" -> Icons.Rounded.Block
+        "Neutral" -> Icons.Rounded.SentimentNeutral
+        else -> Icons.Rounded.Face
     }
 }

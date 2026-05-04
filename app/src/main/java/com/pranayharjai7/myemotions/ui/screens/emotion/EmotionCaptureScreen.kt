@@ -202,7 +202,7 @@ fun EmotionCaptureScreen(
                                     modifier = Modifier.size(56.dp).background(Color.White.copy(alpha = 0.4f), CircleShape),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Text(text = com.pranayharjai7.myemotions.ui.components.emotionToEmoji(state.result.emotion.label), fontSize = 32.sp)
+                                    com.pranayharjai7.myemotions.ui.components.EmotionIcon(emotion = state.result.emotion.label, modifier = Modifier.size(32.dp), tint = MaterialTheme.colorScheme.primary)
                                 }
                                 Spacer(modifier = Modifier.width(16.dp))
                                 Column {

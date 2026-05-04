@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pranayharjai7.myemotions.domain.model.EmotionRecord
-import com.pranayharjai7.myemotions.ui.components.emotionToEmoji
+import com.pranayharjai7.myemotions.ui.components.EmotionIcon
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.*
@@ -102,7 +102,7 @@ fun HistoryItem(record: EmotionRecord, onClick: () -> Unit) {
                     .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = emotionToEmoji(record.emotion), fontSize = 24.sp)
+                EmotionIcon(emotion = record.emotion, modifier = Modifier.size(24.dp), tint = MaterialTheme.colorScheme.primary)
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {

@@ -26,7 +26,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pranayharjai7.myemotions.domain.model.EmotionRecord
 import com.pranayharjai7.myemotions.domain.repository.EmotionRepository
-import com.pranayharjai7.myemotions.ui.components.emotionToEmoji
+import com.pranayharjai7.myemotions.ui.components.EmotionIcon
 import com.pranayharjai7.myemotions.ui.screens.emotion.getRecommendationsForEmotion
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -91,7 +91,7 @@ fun EmotionDetailsScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(text = emotionToEmoji(r.emotion), fontSize = 100.sp)
+                        EmotionIcon(emotion = r.emotion, modifier = Modifier.size(100.dp), tint = MaterialTheme.colorScheme.primary)
                         Text(text = r.emotion, style = MaterialTheme.typography.displayMedium)
                     }
                 }

@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.pranayharjai7.myemotions.ui.components.AnimatedGradientBackground
-import com.pranayharjai7.myemotions.ui.components.emotionToEmoji
+import com.pranayharjai7.myemotions.ui.components.EmotionIcon
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -117,7 +117,7 @@ fun LogMoodScreen(
                 ) {
                     items(emotions) { emotion ->
                         ManualEmotionCard(
-                            emoji = emotionToEmoji(emotion),
+                            emotion = emotion,
                             label = emotion,
                             onClick = { viewModel.logEmotion(emotion) }
                         )
@@ -130,7 +130,7 @@ fun LogMoodScreen(
 
 @Composable
 fun ManualEmotionCard(
-    emoji: String,
+    emotion: String,
     label: String,
     onClick: () -> Unit
 ) {
@@ -148,7 +148,7 @@ fun ManualEmotionCard(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = emoji, fontSize = 40.sp)
+            EmotionIcon(emotion = emotion, modifier = Modifier.size(40.dp), tint = MaterialTheme.colorScheme.primary)
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = label,

@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.pranayharjai7.myemotions.ui.components.emotionToEmoji
+import com.pranayharjai7.myemotions.ui.components.EmotionIcon
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,7 +51,7 @@ fun MoodRecommendationsScreen(
             Spacer(modifier = Modifier.height(16.dp))
             
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = emotionToEmoji(emotion), fontSize = 48.sp)
+                EmotionIcon(emotion = emotion, modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.primary)
                 Spacer(modifier = Modifier.width(16.dp))
                 Column {
                     Text(

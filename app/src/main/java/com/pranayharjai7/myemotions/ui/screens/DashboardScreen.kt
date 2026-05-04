@@ -32,7 +32,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pranayharjai7.myemotions.domain.model.EmotionRecord
 import com.pranayharjai7.myemotions.ui.components.ProfileAvatar
-import com.pranayharjai7.myemotions.ui.components.emotionToEmoji
+import com.pranayharjai7.myemotions.ui.components.EmotionIcon
 import com.pranayharjai7.myemotions.ui.theme.MoodNeutral
 import io.github.jan.supabase.gotrue.user.UserInfo
 import kotlinx.serialization.json.contentOrNull
@@ -189,10 +189,10 @@ private fun PrimaryEmotionCard(
                     transitionSpec = { fadeIn() togetherWith fadeOut() },
                     label = "EmotionIcon"
                 ) { emotion ->
-                    Text(
-                        text = emotionToEmoji(emotion?.emotion ?: "Neutral"),
-                        fontSize = 80.sp,
-                        modifier = Modifier.padding(bottom = 16.dp)
+                    EmotionIcon(
+                        emotion = emotion?.emotion ?: "Neutral",
+                        modifier = Modifier.size(80.dp).padding(bottom = 16.dp),
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
 
