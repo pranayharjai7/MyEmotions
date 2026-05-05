@@ -8,12 +8,17 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(onNavigateBack: () -> Unit) {
-    var isDynamicTheme by remember { mutableStateOf(true) }
-    var areNotificationsEnabled by remember { mutableStateOf(true) }
+fun SettingsScreen(
+    onNavigateBack: () -> Unit,
+    viewModel: SettingsViewModel = hiltViewModel()
+) {
+    val isDynamicTheme by viewModel.isDynamicTheme.collectAsStateWithLifecycle()
+    val areNotificationsEnabled by viewModel.areNotificationsEnabled.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -32,12 +37,12 @@ fun SettingsScreen(onNavigateBack: () -> Unit) {
             ListItem(
                 headlineContent = { Text("Emotion-based Dynamic Theme") },
                 supportingContent = { Text("Changes app colors based on your mood") },
-                trailingContent = { Switch(checked = isDynamicTheme, onCheckedChange = { isDynamicTheme = it }) }
+                trailingContent = { Switch(checked = isDynamicTheme, onCheckedChange = { viewModel.setDynamicTheme(it) }) }
             )
             ListItem(
                 headlineContent = { Text("Static Theme") },
                 supportingContent = { Text("Always use Azure Glass theme") },
-                trailingContent = { Switch(checked = !isDynamicTheme, onCheckedChange = { isDynamicTheme = !it }) }
+                trailingContent = { Switch(checked = !isDynamicTheme, onCheckedChange = { viewModel.setDynamicTheme(!it) }) }
             )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
@@ -46,7 +51,7 @@ fun SettingsScreen(onNavigateBack: () -> Unit) {
             ListItem(
                 headlineContent = { Text("Enable Notifications") },
                 supportingContent = { Text("Receive mood log reminders") },
-                trailingContent = { Switch(checked = areNotificationsEnabled, onCheckedChange = { areNotificationsEnabled = it }) }
+                trailingContent = { Switch(checked = areNotificationsEnabled, onCheckedChange = { viewModel.setNotificationsEnabled(it) }) }
             )
         }
     }

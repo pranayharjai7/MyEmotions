@@ -115,6 +115,9 @@ dependencies {
     implementation(libs.androidx.hilt.work)
     ksp(libs.androidx.hilt.compiler)
     
+    // DataStore
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+
     // WorkManager
     implementation(libs.androidx.work.runtime.ktx)
 
