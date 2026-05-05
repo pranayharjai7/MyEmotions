@@ -52,6 +52,21 @@ sealed class Screen {
     data object Profile : Screen()
 
     @Serializable
+    data object Maps : Screen()
+
+    @Serializable
+    data object Settings : Screen()
+
+    @Serializable
+    data object Reminders : Screen()
+
+    @Serializable
+    data object Help : Screen()
+
+    @Serializable
+    data object RecommendationsHistory : Screen()
+
+    @Serializable
     data class MoodRecommendations(val emotion: String) : Screen()
 
     @Serializable
@@ -71,7 +86,7 @@ fun MyEmotionsNavHost(
     NavHost(
         navController = navController,
         startDestination = Screen.Splash,
-        modifier = Modifier.padding(innerPadding),
+        modifier = Modifier.padding(innerPadding).consumeWindowInsets(innerPadding),
         enterTransition = { 
             fadeIn(animationSpec = tween(700, easing = LinearOutSlowInEasing)) + 
             slideInHorizontally(initialOffsetX = { 300 }, animationSpec = tween(700, easing = LinearOutSlowInEasing))
@@ -130,7 +145,13 @@ fun MyEmotionsNavHost(
                 },
                 onNavigateToRecommendations = { emotion ->
                     navController.navigate(Screen.MoodRecommendations(emotion))
-                }
+                },
+                onNavigateToProfile = { navController.navigate(Screen.Profile) },
+                onNavigateToAnalytics = { navController.navigate(Screen.Analytics) },
+                onNavigateToSettings = { navController.navigate(Screen.Settings) },
+                onNavigateToReminders = { navController.navigate(Screen.Reminders) },
+                onNavigateToHelp = { navController.navigate(Screen.Help) },
+                onNavigateToRecommendationsHistory = { navController.navigate(Screen.RecommendationsHistory) }
             )
         }
 
@@ -191,6 +212,34 @@ fun MyEmotionsNavHost(
             val route: Screen.EmotionDetails = backStackEntry.toRoute()
             com.pranayharjai7.myemotions.ui.screens.history.EmotionDetailsScreen(
                 recordId = route.recordId,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable<Screen.Maps> {
+            com.pranayharjai7.myemotions.ui.screens.MapsScreen()
+        }
+
+        composable<Screen.Settings> {
+            com.pranayharjai7.myemotions.ui.screens.SettingsScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable<Screen.Reminders> {
+            com.pranayharjai7.myemotions.ui.screens.RemindersScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable<Screen.Help> {
+            com.pranayharjai7.myemotions.ui.screens.HelpScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable<Screen.RecommendationsHistory> {
+            com.pranayharjai7.myemotions.ui.screens.RecommendationsHistoryScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
         }

@@ -1,6 +1,7 @@
 package com.pranayharjai7.myemotions.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -33,15 +34,20 @@ import kotlinx.serialization.json.contentOrNull
 fun ProfileAvatar(
     userInfo: UserInfo?,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    borderColor: Color? = null
 ) {
     val avatarUrl = userInfo?.userMetadata?.get("avatar_url")?.jsonPrimitive?.contentOrNull
     val name = userInfo?.userMetadata?.get("full_name")?.jsonPrimitive?.contentOrNull ?: "User"
 
     Box(
         modifier = modifier
-            .size(36.dp)
+            .size(40.dp)
             .clip(CircleShape)
+            .then(
+                if (borderColor != null) Modifier.border(2.dp, borderColor, CircleShape)
+                else Modifier
+            )
             .background(Color.White.copy(alpha = 0.2f))
             .clickable { onClick() },
         contentAlignment = Alignment.Center

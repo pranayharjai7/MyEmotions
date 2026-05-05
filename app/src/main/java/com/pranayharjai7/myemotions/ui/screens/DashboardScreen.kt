@@ -11,6 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.draw.blur
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
@@ -32,6 +33,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pranayharjai7.myemotions.domain.model.EmotionRecord
 import com.pranayharjai7.myemotions.ui.components.ProfileAvatar
+import com.pranayharjai7.myemotions.ui.components.ProfileMenu
 import com.pranayharjai7.myemotions.ui.components.EmotionIcon
 import com.pranayharjai7.myemotions.ui.theme.MoodNeutral
 import io.github.jan.supabase.gotrue.user.UserInfo
@@ -49,6 +51,12 @@ fun DashboardScreen(
     onNavigateToLogMood: () -> Unit = {},
     onNavigateToHistory: () -> Unit = {},
     onNavigateToRecommendations: (String) -> Unit = {},
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateToAnalytics: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {},
+    onNavigateToReminders: () -> Unit = {},
+    onNavigateToHelp: () -> Unit = {},
+    onNavigateToRecommendationsHistory: () -> Unit = {},
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
     val todayEmotions by viewModel.todayEmotionList.collectAsStateWithLifecycle()
@@ -61,6 +69,8 @@ fun DashboardScreen(
             ?: "User"
     }
 
+    var showProfileMenu by remember { mutableStateOf(false) }
+
     Scaffold(
         containerColor = Color.Transparent
     ) { innerPadding ->
@@ -68,12 +78,24 @@ fun DashboardScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
+                .then(if (showProfileMenu) Modifier.blur(16.dp) else Modifier)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp)
         ) {
             WelcomeHeader(
                 userName = userName,
-                userInfo = currentUser
+                userInfo = currentUser,
+                latestEmotion = latestEmotion,
+                showProfileMenu = showProfileMenu,
+                onShowProfileMenuChange = { showProfileMenu = it },
+                onLogout = onLogout,
+                onNavigateToProfile = onNavigateToProfile,
+                onNavigateToAnalytics = onNavigateToAnalytics,
+                onNavigateToHistory = onNavigateToHistory,
+                onNavigateToRecommendationsHistory = onNavigateToRecommendationsHistory,
+                onNavigateToSettings = onNavigateToSettings,
+                onNavigateToReminders = onNavigateToReminders,
+                onNavigateToHelp = onNavigateToHelp
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -120,7 +142,21 @@ fun DashboardScreen(
 }
 
 @Composable
-private fun WelcomeHeader(userName: String, userInfo: UserInfo?) {
+private fun WelcomeHeader(
+    userName: String,
+    userInfo: UserInfo?,
+    latestEmotion: EmotionRecord?,
+    showProfileMenu: Boolean,
+    onShowProfileMenuChange: (Boolean) -> Unit,
+    onLogout: () -> Unit,
+    onNavigateToProfile: () -> Unit,
+    onNavigateToAnalytics: () -> Unit,
+    onNavigateToHistory: () -> Unit,
+    onNavigateToRecommendationsHistory: () -> Unit,
+    onNavigateToSettings: () -> Unit,
+    onNavigateToReminders: () -> Unit,
+    onNavigateToHelp: () -> Unit
+) {
     val greeting = when (LocalTime.now().hour) {
         in 0..11 -> "Good morning,"
         in 12..16 -> "Good afternoon,"
@@ -152,11 +188,29 @@ private fun WelcomeHeader(userName: String, userInfo: UserInfo?) {
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
             )
         }
-        ProfileAvatar(
-            userInfo = userInfo,
-            onClick = { /* Navigate to Profile */ },
-            modifier = Modifier.padding(top = 4.dp)
-        )
+        Box {
+            ProfileAvatar(
+                userInfo = userInfo,
+                onClick = { onShowProfileMenuChange(true) },
+                modifier = Modifier.padding(top = 4.dp),
+                borderColor = if (latestEmotion != null) MaterialTheme.colorScheme.primary else null
+            )
+            
+            if (showProfileMenu) {
+                ProfileMenu(
+                    userInfo = userInfo,
+                    onDismiss = { onShowProfileMenuChange(false) },
+                    onNavigateToProfile = onNavigateToProfile,
+                    onNavigateToAnalytics = onNavigateToAnalytics,
+                    onNavigateToTimeline = onNavigateToHistory,
+                    onNavigateToRecommendationsHistory = onNavigateToRecommendationsHistory,
+                    onNavigateToSettings = onNavigateToSettings,
+                    onNavigateToReminders = onNavigateToReminders,
+                    onNavigateToHelp = onNavigateToHelp,
+                    onLogout = onLogout
+                )
+            }
+        }
     }
 }
 

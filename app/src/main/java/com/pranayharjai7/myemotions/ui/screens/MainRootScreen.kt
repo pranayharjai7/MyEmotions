@@ -6,6 +6,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material3.*
@@ -35,7 +36,7 @@ fun MainRootScreen(
     val isSplash = currentDestination?.hasRoute<Screen.Splash>() == true
 
     val showBottomBar = when (currentDestination?.route?.split(".")?.lastOrNull()?.split("?")?.firstOrNull()) {
-        "Dashboard", "Analytics", "EmotionHistory", "Profile" -> true
+        "Dashboard", "Analytics", "EmotionHistory", "Maps" -> true
         else -> false
     }
 
@@ -54,7 +55,7 @@ fun MainRootScreen(
                         BottomNavItem("Home", Screen.Dashboard, Icons.Default.Home),
                         BottomNavItem("Timeline", Screen.EmotionHistory, Icons.Default.DateRange),
                         BottomNavItem("Analytics", Screen.Analytics, Icons.Default.Timeline),
-                        BottomNavItem("Profile", Screen.Profile, Icons.Default.Person)
+                        BottomNavItem("Maps", Screen.Maps, Icons.Default.LocationOn)
                     )
 
                     items.forEach { item ->
