@@ -1,5 +1,7 @@
 package com.pranayharjai7.myemotions.ui.screens.space
 
+import android.util.Log
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pranayharjai7.myemotions.domain.repository.AuthRepository
@@ -57,9 +59,18 @@ class FeedViewModel @Inject constructor(
     fun loadFeed() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                val user = authRepository.currentUser.firstOrNull()
+                Log.d("FeedViewModel", "Loading feed for user: ${user?.id}")
+                
                 val feed = supabaseClient.postgrest.rpc("get_space_feed").decodeList<FeedItem>()
+                Log.d("FeedViewModel", "Feed loaded: ${feed.size} items")
+                feed.forEach { 
+                    Log.d("FeedViewModel", "Item: ${it.emotion_id} by ${it.username ?: "Unknown"} (ID: ${it.user_id})")
+                }
+                
                 _feedItems.value = feed
             } catch (e: Exception) {
+                Log.e("FeedViewModel", "Error loading feed", e)
                 e.printStackTrace()
             }
         }

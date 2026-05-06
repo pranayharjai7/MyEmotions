@@ -1,5 +1,7 @@
 package com.pranayharjai7.myemotions.ui.screens.space
 
+import android.util.Log
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pranayharjai7.myemotions.domain.model.Friendship
@@ -34,6 +36,7 @@ class FriendsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            Log.d("FriendsViewModel", "Refreshing friendships for user: ${currentUser.value?.id}")
             friendshipRepository.refreshFriendships()
         }
     }
@@ -42,10 +45,17 @@ class FriendsViewModel @Inject constructor(
         _searchQuery.value = query
         if (query.length >= 3) {
             viewModelScope.launch {
+                Log.d("FriendsViewModel", "Searching for: $query")
                 val result = friendshipRepository.searchUsers(query)
                 if (result.isSuccess) {
-                    _searchResults.value = result.getOrNull() ?: emptyList()
+                    val searchList = result.getOrNull() ?: emptyList()
+                    Log.d("FriendsViewModel", "Search results: ${searchList.size} users found")
+                    searchList.forEach { 
+                        Log.d("FriendsViewModel", "Found: ${it.username ?: it.email ?: it.id}")
+                    }
+                    _searchResults.value = searchList
                 } else {
+                    Log.e("FriendsViewModel", "Search failed", result.exceptionOrNull())
                     _searchResults.value = emptyList()
                 }
             }
