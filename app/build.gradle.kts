@@ -125,8 +125,9 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.gif)
 
-    // Google Maps
+    // Google Maps & Location
     implementation(libs.google.maps.compose)
+    implementation("com.google.android.gms:play-services-location:21.2.0")
 
     // CameraX
     implementation(libs.camera.camera2)
@@ -138,6 +139,11 @@ dependencies {
     implementation(libs.pytorch.android.torchvision.lite)
     implementation(libs.tensorflow.lite)
     implementation(libs.tensorflow.lite.support)
+
+    // QR Code Generation and Scanning
+    implementation("com.google.zxing:core:3.5.3")
+    implementation("com.google.mlkit:barcode-scanning:17.2.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -23,6 +23,7 @@ import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.math.max
@@ -90,7 +91,9 @@ class EmotionRepositoryImpl @Inject constructor(
     }
 
     override suspend fun saveEmotion(record: EmotionRecord) {
-        emotionDao.insertEmotion(EmotionRecordEntity.fromDomainModel(record, synced = false))
+        val user = supabaseClient.auth.currentUserOrNull() ?: throw IllegalStateException("User not logged in")
+        val userRecord = record.copy(userId = user.id)
+        emotionDao.insertEmotion(EmotionRecordEntity.fromDomainModel(userRecord, synced = false))
         
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -103,18 +106,60 @@ class EmotionRepositoryImpl @Inject constructor(
         WorkManager.getInstance(context).enqueue(syncRequest)
     }
 
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     override fun getEmotionHistory(): Flow<List<EmotionRecord>> {
-        return emotionDao.getAllEmotions().map { entities ->
-            entities.map { it.toDomainModel() }
+        return supabaseClient.auth.sessionStatus.flatMapLatest { status ->
+            when (status) {
+                is io.github.jan.supabase.gotrue.SessionStatus.Authenticated -> {
+                    val userId = status.session.user?.id ?: return@flatMapLatest kotlinx.coroutines.flow.flowOf(emptyList())
+                    emotionDao.getAllEmotions(userId).map { entities ->
+                        entities.map { it.toDomainModel() }
+                    }
+                }
+                else -> kotlinx.coroutines.flow.flowOf(emptyList())
+            }
+        }
+    }
+
+    override fun getEmotionsByUserId(userId: String): Flow<List<EmotionRecord>> = kotlinx.coroutines.flow.flow {
+        try {
+            val remoteRecords = supabaseClient.postgrest["emotion_records"]
+                .select {
+                    filter {
+                        eq("user_id", userId)
+                        // Only fetch records with visibility = 'friends' or 'public'
+                        // Since we are fetching a friend's records, 'private' should be excluded
+                        neq("visibility", "private")
+                    }
+                    order("timestamp", order = io.github.jan.supabase.postgrest.query.Order.DESCENDING)
+                }
+                .decodeList<EmotionRecordDto>()
+            
+            emit(remoteRecords.map { dto ->
+                EmotionRecord(
+                    id = dto.id,
+                    userId = dto.userId,
+                    timestamp = dto.timestamp,
+                    emotion = dto.emotion,
+                    confidence = dto.confidence,
+                    source = dto.source,
+                    imageUri = dto.imageUri,
+                    visibility = dto.visibility,
+                    note = dto.note
+                )
+            })
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emit(emptyList())
         }
     }
 
     override suspend fun syncPendingEmotions() {
-        val unsynced = emotionDao.getUnsyncedEmotions()
-        if (unsynced.isEmpty()) return
-
         try {
             val user = supabaseClient.auth.currentUserOrNull() ?: return
+            val unsynced = emotionDao.getUnsyncedEmotions(user.id)
+            if (unsynced.isEmpty()) return
+
             val dtos = unsynced.map { entity ->
                 EmotionRecordDto(
                     id = entity.id,
@@ -123,7 +168,9 @@ class EmotionRepositoryImpl @Inject constructor(
                     emotion = entity.emotion,
                     confidence = entity.confidence,
                     source = entity.source,
-                    imageUri = entity.imageUri
+                    imageUri = entity.imageUri,
+                    visibility = entity.visibility,
+                    note = entity.note
                 )
             }
 
@@ -152,11 +199,14 @@ class EmotionRepositoryImpl @Inject constructor(
             remoteRecords.forEach { dto ->
                 val domainRecord = EmotionRecord(
                     id = dto.id,
+                    userId = dto.userId,
                     timestamp = dto.timestamp,
                     emotion = dto.emotion,
                     confidence = dto.confidence,
                     source = dto.source,
-                    imageUri = dto.imageUri
+                    imageUri = dto.imageUri,
+                    visibility = dto.visibility,
+                    note = dto.note
                 )
                 emotionDao.insertEmotion(EmotionRecordEntity.fromDomainModel(domainRecord, synced = true))
             }

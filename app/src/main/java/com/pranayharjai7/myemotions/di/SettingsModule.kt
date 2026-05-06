@@ -22,4 +22,12 @@ object SettingsModule {
     fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
         return context.dataStore
     }
+
+    @Provides
+    @Singleton
+    fun provideUserPreferencesRepository(
+        dataStore: DataStore<Preferences>
+    ): com.pranayharjai7.myemotions.domain.repository.UserPreferencesRepository {
+        return com.pranayharjai7.myemotions.data.repository.UserPreferencesRepositoryImpl(dataStore)
+    }
 }

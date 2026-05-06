@@ -23,7 +23,7 @@ class ManualEmotionViewModel @Inject constructor(
     private val _saveSuccess = MutableStateFlow(false)
     val saveSuccess: StateFlow<Boolean> = _saveSuccess.asStateFlow()
 
-    fun logEmotion(emotionLabel: String) {
+    fun logEmotion(emotionLabel: String, visibility: String = "private", note: String? = null) {
         viewModelScope.launch {
             _isSaving.value = true
             val record = EmotionRecord(
@@ -31,7 +31,9 @@ class ManualEmotionViewModel @Inject constructor(
                 timestamp = System.currentTimeMillis(),
                 emotion = emotionLabel,
                 confidence = 1.0f,
-                source = "manual"
+                source = "manual",
+                visibility = visibility,
+                note = note
             )
             saveEmotionUseCase(record)
             _isSaving.value = false

@@ -68,6 +68,15 @@ sealed class Screen {
 
     @Serializable
     data class EmotionDetails(val recordId: String) : Screen()
+
+    @Serializable
+    data object Space : Screen()
+
+    @Serializable
+    data object QrScanner : Screen()
+
+    @Serializable
+    data class FriendProfile(val userId: String) : Screen()
 }
 
 /**
@@ -83,7 +92,7 @@ fun MyEmotionsNavHost(
     NavHost(
         navController = navController,
         startDestination = Screen.Splash,
-        modifier = Modifier.padding(innerPadding).consumeWindowInsets(innerPadding),
+        modifier = Modifier.padding(innerPadding),
         enterTransition = { 
             fadeIn(animationSpec = tween(700, easing = LinearOutSlowInEasing)) + 
             slideInHorizontally(initialOffsetX = { 300 }, animationSpec = tween(700, easing = LinearOutSlowInEasing))
@@ -208,7 +217,24 @@ fun MyEmotionsNavHost(
         }
 
         composable<Screen.Maps> {
-            com.pranayharjai7.myemotions.ui.screens.MapsScreen()
+            com.pranayharjai7.myemotions.ui.screens.space.SpaceMapScreen(
+                onNavigateToProfile = { userId -> navController.navigate(Screen.FriendProfile(userId)) }
+            )
+        }
+
+        composable<Screen.Space>(
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None },
+            popEnterTransition = { EnterTransition.None },
+            popExitTransition = { ExitTransition.None },
+            deepLinks = listOf(
+                androidx.navigation.navDeepLink<Screen.Space>(basePath = "myemotions://addfriend")
+            )
+        ) {
+            com.pranayharjai7.myemotions.ui.screens.space.SpaceScreen(
+                onNavigateToQrScanner = { navController.navigate(Screen.QrScanner) },
+                onNavigateToProfile = { userId -> navController.navigate(Screen.FriendProfile(userId)) }
+            )
         }
 
         composable<Screen.Settings> {
@@ -231,6 +257,22 @@ fun MyEmotionsNavHost(
 
         composable<Screen.RecommendationsHistory> {
             com.pranayharjai7.myemotions.ui.screens.RecommendationsHistoryScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+
+
+        composable<Screen.QrScanner> {
+            com.pranayharjai7.myemotions.ui.screens.space.QrScannerScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable<Screen.FriendProfile> {
+            val args = it.toRoute<Screen.FriendProfile>()
+            com.pranayharjai7.myemotions.ui.screens.space.FriendProfileScreen(
+                userId = args.userId,
                 onNavigateBack = { navController.popBackStack() }
             )
         }

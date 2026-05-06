@@ -41,10 +41,19 @@ fun LogMoodScreen(
         "Surprise", "Disgust", "Contempt", "Neutral"
     )
 
+    var selectedEmotion by remember { mutableStateOf<String?>(null) }
+    var showBottomSheet by remember { mutableStateOf(false) }
+    var visibility by remember { mutableStateOf("private") }
+    var note by remember { mutableStateOf("") }
+    val sheetState = rememberModalBottomSheetState()
+
     LaunchedEffect(saveSuccess) {
         if (saveSuccess) {
             snackbarHostState.showSnackbar("Mood saved")
             viewModel.resetSuccess()
+            showBottomSheet = false
+            selectedEmotion = null
+            note = ""
             onNavigateBack()
         }
     }
@@ -103,7 +112,7 @@ fun LogMoodScreen(
             
             Spacer(modifier = Modifier.height(16.dp))
 
-            if (isSaving) {
+            if (isSaving && !showBottomSheet) {
                 Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
@@ -119,9 +128,71 @@ fun LogMoodScreen(
                         ManualEmotionCard(
                             emotion = emotion,
                             label = emotion,
-                            onClick = { viewModel.logEmotion(emotion) }
+                            onClick = { 
+                                selectedEmotion = emotion
+                                showBottomSheet = true
+                            }
                         )
                     }
+                }
+            }
+        }
+        
+        if (showBottomSheet && selectedEmotion != null) {
+            ModalBottomSheet(
+                onDismissRequest = { showBottomSheet = false },
+                sheetState = sheetState
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp)
+                ) {
+                    Text("Logging: ${selectedEmotion}", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    OutlinedTextField(
+                        value = note,
+                        onValueChange = { note = it },
+                        label = { Text("Add a note (optional)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    Text("Visibility", style = MaterialTheme.typography.titleMedium)
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        FilterChip(
+                            selected = visibility == "private",
+                            onClick = { visibility = "private" },
+                            label = { Text("Private") }
+                        )
+                        FilterChip(
+                            selected = visibility == "friends",
+                            onClick = { visibility = "friends" },
+                            label = { Text("Friends") }
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.height(24.dp))
+                    
+                    Button(
+                        onClick = { 
+                            viewModel.logEmotion(selectedEmotion!!, visibility, note.takeIf { it.isNotBlank() })
+                        },
+                        modifier = Modifier.fillMaxWidth().height(56.dp),
+                        enabled = !isSaving
+                    ) {
+                        if (isSaving) {
+                            CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
+                        } else {
+                            Text("Save Emotion")
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
             }
         }

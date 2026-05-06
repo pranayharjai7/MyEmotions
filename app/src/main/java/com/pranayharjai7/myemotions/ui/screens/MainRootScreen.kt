@@ -36,7 +36,7 @@ fun MainRootScreen(
     val isSplash = currentDestination?.hasRoute<Screen.Splash>() == true
 
     val showBottomBar = when (currentDestination?.route?.split(".")?.lastOrNull()?.split("?")?.firstOrNull()) {
-        "Dashboard", "EmotionInsights", "Maps" -> true
+        "Dashboard", "EmotionInsights", "Maps", "Space" -> true
         else -> false
     }
 
@@ -54,7 +54,8 @@ fun MainRootScreen(
                     val items = listOf(
                         BottomNavItem("Home", Screen.Dashboard, Icons.Default.Home),
                         BottomNavItem("Insights", Screen.EmotionInsights, Icons.Default.Timeline),
-                        BottomNavItem("Maps", Screen.Maps, Icons.Default.LocationOn)
+                        BottomNavItem("Map", Screen.Maps, Icons.Default.LocationOn),
+                        BottomNavItem("Space", Screen.Space, Icons.Default.Person) // Using Person for now as Groups might not be imported or available in some contexts, but I'll try Person first. Actually, I'll check imports.
                     )
 
                     items.forEach { item ->

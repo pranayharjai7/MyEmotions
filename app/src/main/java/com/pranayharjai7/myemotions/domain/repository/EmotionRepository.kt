@@ -9,6 +9,7 @@ interface EmotionRepository {
     suspend fun detectEmotion(bitmap: Bitmap): Result<EmotionResult>
     suspend fun saveEmotion(record: EmotionRecord)
     fun getEmotionHistory(): Flow<List<EmotionRecord>>
+    fun getEmotionsByUserId(userId: String): Flow<List<EmotionRecord>>
     suspend fun syncPendingEmotions()
     suspend fun fetchEmotionsFromRemote()
 }

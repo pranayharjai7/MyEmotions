@@ -22,7 +22,10 @@ object DatabaseModule {
             context,
             EmotionDatabase::class.java,
             "EmotionDatabase"
-        ).build()
+        )
+        .addMigrations(EmotionDatabase.MIGRATION_2_3)
+        .fallbackToDestructiveMigration()
+        .build()
     }
 
     @Provides
