@@ -17,6 +17,13 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.EditNote
+import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.LocalFireDepartment
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -62,6 +69,10 @@ fun DashboardScreen(
     val todayEmotions by viewModel.todayEmotionList.collectAsStateWithLifecycle()
     val latestEmotion by viewModel.todayLatestEmotion.collectAsStateWithLifecycle()
     val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
+    val loggingStreak by viewModel.loggingStreak.collectAsStateWithLifecycle()
+    val todayMoodSnapshot by viewModel.todayMoodSnapshot.collectAsStateWithLifecycle()
+    val dominantEmotionToday by viewModel.dominantEmotionToday.collectAsStateWithLifecycle()
+    val smartInsight by viewModel.smartInsight.collectAsStateWithLifecycle()
 
     val userName = remember(currentUser) {
         currentUser?.userMetadata?.get("full_name")?.jsonPrimitive?.contentOrNull
@@ -86,6 +97,7 @@ fun DashboardScreen(
                 userName = userName,
                 userInfo = currentUser,
                 latestEmotion = latestEmotion,
+                loggingStreak = loggingStreak,
                 showProfileMenu = showProfileMenu,
                 onShowProfileMenuChange = { showProfileMenu = it },
                 onLogout = onLogout,
@@ -107,34 +119,74 @@ fun DashboardScreen(
             )
 
             Spacer(modifier = Modifier.height(32.dp))
-
+            
             Text(
-                text = "Your Insights",
-                style = MaterialTheme.typography.titleLarge,
+                text = "Quick Actions",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
             Row(modifier = Modifier.fillMaxWidth()) {
-                SecondaryActionCard(
-                    title = "Timeline",
-                    subtitle = "Mood history",
-                    icon = Icons.Default.History,
+                QuickActionCard(
+                    title = "Log Mood",
+                    icon = Icons.Default.Add,
                     modifier = Modifier.weight(1f),
-                    onClick = onNavigateToHistory
+                    onClick = onNavigateToLogMood
                 )
                 Spacer(modifier = Modifier.width(16.dp))
-                SecondaryActionCard(
-                    title = "Analytics",
-                    subtitle = "Mood trends",
-                    icon = Icons.Default.BarChart,
+                QuickActionCard(
+                    title = "Scan Face",
+                    icon = Icons.Default.CameraAlt,
                     modifier = Modifier.weight(1f),
-                    onClick = onNavigateToAnalytics
+                    // For now routing to LogMood if Capture not explicitly passed, 
+                    // Wait, onNavigateToLogMood can be used, or a specific scan route if available.
+                    // The NavGraph has "Capture" which isn't explicitly passed here. I'll use onNavigateToLogMood for now.
+                    onClick = onNavigateToLogMood
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(modifier = Modifier.fillMaxWidth()) {
+                QuickActionCard(
+                    title = "Journal",
+                    icon = Icons.Default.EditNote,
+                    modifier = Modifier.weight(1f),
+                    onClick = onNavigateToLogMood
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                QuickActionCard(
+                    title = "Get Advice",
+                    icon = Icons.Default.Lightbulb,
+                    modifier = Modifier.weight(1f),
+                    onClick = { latestEmotion?.let { onNavigateToRecommendations(it.emotion) } ?: onNavigateToLogMood() }
                 )
             }
 
             Spacer(modifier = Modifier.height(32.dp))
+
+            Text(
+                text = "Today's Mood",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            TodaySnapshotCard(
+                snapshot = todayMoodSnapshot,
+                dominant = dominantEmotionToday,
+                onClick = onNavigateToAnalytics // EmotionInsights
+            )
             
-            WeeklyMoodPreview()
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Text(
+                text = "Smart Insight",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            SmartInsightCard(insight = smartInsight)
             
             Spacer(modifier = Modifier.height(32.dp))
         }
@@ -146,6 +198,7 @@ private fun WelcomeHeader(
     userName: String,
     userInfo: UserInfo?,
     latestEmotion: EmotionRecord?,
+    loggingStreak: Int,
     showProfileMenu: Boolean,
     onShowProfileMenuChange: (Boolean) -> Unit,
     onLogout: () -> Unit,
@@ -187,6 +240,24 @@ private fun WelcomeHeader(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
             )
+            if (loggingStreak > 0) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Default.LocalFireDepartment,
+                        contentDescription = "Streak",
+                        tint = Color(0xFFFF9800),
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "$loggingStreak Day Streak",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Color(0xFFFF9800),
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
         }
         Box {
             ProfileAvatar(
@@ -292,9 +363,8 @@ private fun PrimaryEmotionCard(
 }
 
 @Composable
-private fun SecondaryActionCard(
+private fun QuickActionCard(
     title: String,
-    subtitle: String,
     icon: ImageVector,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
@@ -302,65 +372,121 @@ private fun SecondaryActionCard(
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(24.dp),
-        color = MaterialTheme.colorScheme.surface,
-        modifier = modifier.shadow(8.dp, shape = RoundedCornerShape(24.dp))
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
+        modifier = modifier.shadow(4.dp, shape = RoundedCornerShape(24.dp))
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
-            Icon(
-                icon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(28.dp)
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(text = title, style = MaterialTheme.typography.titleMedium)
+        Column(
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    icon,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                text = title,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.SemiBold
             )
         }
     }
 }
 
 @Composable
-private fun WeeklyMoodPreview() {
+private fun TodaySnapshotCard(
+    snapshot: Map<String, Int>,
+    dominant: String?,
+    onClick: () -> Unit
+) {
+    val dominantTheme = com.pranayharjai7.myemotions.ui.theme.getThemeForEmotion(dominant)
+    
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
+        shape = RoundedCornerShape(28.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(24.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = "Weekly Mood", style = MaterialTheme.typography.titleMedium)
-                Icon(Icons.Default.ArrowForward, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f))
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            // Simple visual representation of a graph
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(60.dp),
-                verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                repeat(7) { index ->
-                    Box(
-                        modifier = Modifier
-                            .width(32.dp)
-                            .height((30..60).random().dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(
-                                if (index == 5) MaterialTheme.colorScheme.primary 
-                                else MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+            if (snapshot.isEmpty()) {
+                Text(
+                    text = "No emotions logged today yet.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                )
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    snapshot.entries.sortedByDescending { it.value }.forEach { (emotion, count) ->
+                        val emoji = com.pranayharjai7.myemotions.ui.utils.getEmojiForEmotion(emotion)
+                        Surface(
+                            shape = RoundedCornerShape(16.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                        ) {
+                            Text(
+                                text = "$emotion $emoji ($count)",
+                                style = MaterialTheme.typography.labelSmall,
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                             )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "Dominant Mood: ",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    )
+                    Text(
+                        text = dominant ?: "",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = dominantTheme.primaryColor,
+                        fontWeight = FontWeight.Bold
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun SmartInsightCard(insight: String) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(28.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(24.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                Icons.Default.Lightbulb,
+                contentDescription = "Insight",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(28.dp)
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(
+                text = insight,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
         }
     }
 }
