@@ -128,7 +128,7 @@ fun DashboardScreen(
                     subtitle = "Mood trends",
                     icon = Icons.Default.BarChart,
                     modifier = Modifier.weight(1f),
-                    onClick = { /* Navigate to Analytics */ }
+                    onClick = onNavigateToAnalytics
                 )
             }
 

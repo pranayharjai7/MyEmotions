@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import com.pranayharjai7.myemotions.ui.utils.getEmojiForEmotion
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -78,6 +79,8 @@ fun EmotionDetailsScreen(
             }
         } else {
             val r = record!!
+            val theme = com.pranayharjai7.myemotions.ui.theme.getThemeForEmotion(r.emotion)
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -91,51 +94,86 @@ fun EmotionDetailsScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        EmotionIcon(emotion = r.emotion, modifier = Modifier.size(100.dp), tint = MaterialTheme.colorScheme.primary)
-                        Text(text = r.emotion, style = MaterialTheme.typography.displayMedium)
+                        Box(
+                            modifier = Modifier
+                                .size(120.dp)
+                                .background(theme.primaryColor.copy(alpha = 0.15f), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = getEmojiForEmotion(r.emotion), fontSize = 64.sp)
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(text = r.emotion, style = MaterialTheme.typography.displayMedium, color = theme.primaryColor)
                     }
                 }
 
                 Spacer(modifier = Modifier.height(48.dp))
 
-                DetailItem(
-                    icon = Icons.Default.Schedule,
-                    label = "Time Detected",
-                    value = SimpleDateFormat("MMM dd, yyyy - hh:mm a", Locale.getDefault()).format(Date(r.timestamp))
-                )
-                
-                Spacer(modifier = Modifier.height(16.dp))
+                Card(
+                    shape = RoundedCornerShape(28.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(24.dp)) {
+                        DetailItem(
+                            icon = Icons.Default.Schedule,
+                            label = "Time Detected",
+                            value = SimpleDateFormat("MMM dd, yyyy - hh:mm a", Locale.getDefault()).format(Date(r.timestamp)),
+                            tint = theme.primaryColor
+                        )
+                        
+                        Spacer(modifier = Modifier.height(24.dp))
 
-                DetailItem(
-                    icon = Icons.Default.TrackChanges,
-                    label = "Confidence Score",
-                    value = "${(r.confidence * 100).toInt()}%"
-                )
+                        DetailItem(
+                            icon = Icons.Default.TrackChanges,
+                            label = "Confidence Score",
+                            value = "${(r.confidence * 100).toInt()}%",
+                            tint = theme.primaryColor
+                        )
+                        LinearProgressIndicator(
+                            progress = { r.confidence },
+                            modifier = Modifier.fillMaxWidth().padding(start = 56.dp, top = 8.dp).height(4.dp),
+                            color = theme.primaryColor,
+                            trackColor = theme.primaryColor.copy(alpha = 0.2f),
+                            strokeCap = androidx.compose.ui.graphics.StrokeCap.Round
+                        )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(24.dp))
 
-                DetailItem(
-                    icon = Icons.Default.Info,
-                    label = "Source",
-                    value = r.source
-                )
+                        DetailItem(
+                            icon = Icons.Default.Info,
+                            label = "Source",
+                            value = r.source.replaceFirstChar { it.uppercase() },
+                            tint = theme.primaryColor
+                        )
+                    }
+                }
 
-                Spacer(modifier = Modifier.height(48.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
-                Text(text = "Suggested Actions", style = MaterialTheme.typography.titleLarge)
+                Text(text = "Suggested Actions", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
                 Spacer(modifier = Modifier.height(16.dp))
                 
                 val recommendations = getRecommendationsForEmotion(r.emotion).take(2)
                 recommendations.forEach { recommendation ->
                     Surface(
                         shape = RoundedCornerShape(20.dp),
-                        color = MaterialTheme.colorScheme.surface,
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
+                        shadowElevation = 2.dp,
                         modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
                     ) {
                         Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Icon(recommendation.icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                            Box(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .background(theme.primaryColor.copy(alpha = 0.15f), CircleShape),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(recommendation.icon, contentDescription = null, tint = theme.primaryColor)
+                            }
                             Spacer(modifier = Modifier.width(16.dp))
-                            Text(text = recommendation.title, style = MaterialTheme.typography.bodyLarge)
+                            Text(text = recommendation.title, style = MaterialTheme.typography.titleMedium)
                         }
                     }
                 }
@@ -145,13 +183,13 @@ fun EmotionDetailsScreen(
 }
 
 @Composable
-private fun DetailItem(icon: ImageVector, label: String, value: String) {
+private fun DetailItem(icon: ImageVector, label: String, value: String, tint: Color = MaterialTheme.colorScheme.primary) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(
-            modifier = Modifier.size(40.dp).background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f), CircleShape),
+            modifier = Modifier.size(40.dp).background(tint.copy(alpha = 0.15f), CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+            Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(20.dp))
         }
         Spacer(modifier = Modifier.width(16.dp))
         Column {

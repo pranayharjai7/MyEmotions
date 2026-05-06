@@ -40,13 +40,10 @@ sealed class Screen {
     data object EmotionCapture : Screen()
 
     @Serializable
-    data object EmotionHistory : Screen()
+    data object EmotionInsights : Screen()
 
     @Serializable
     data object LogMood : Screen()
-
-    @Serializable
-    data object Analytics : Screen()
 
     @Serializable
     data object Profile : Screen()
@@ -138,7 +135,7 @@ fun MyEmotionsNavHost(
                     }
                 },
                 onNavigateToHistory = {
-                    navController.navigate(Screen.EmotionHistory)
+                    navController.navigate(Screen.EmotionInsights)
                 },
                 onNavigateToLogMood = {
                     navController.navigate(Screen.LogMood)
@@ -147,7 +144,7 @@ fun MyEmotionsNavHost(
                     navController.navigate(Screen.MoodRecommendations(emotion))
                 },
                 onNavigateToProfile = { navController.navigate(Screen.Profile) },
-                onNavigateToAnalytics = { navController.navigate(Screen.Analytics) },
+                onNavigateToAnalytics = { navController.navigate(Screen.EmotionInsights) },
                 onNavigateToSettings = { navController.navigate(Screen.Settings) },
                 onNavigateToReminders = { navController.navigate(Screen.Reminders) },
                 onNavigateToHelp = { navController.navigate(Screen.Help) },
@@ -163,14 +160,10 @@ fun MyEmotionsNavHost(
             )
         }
 
-        composable<Screen.EmotionHistory> {
-            com.pranayharjai7.myemotions.ui.screens.history.EmotionHistoryScreen(
-                onNavigateBack = {
-                    navController.popBackStack()
-                },
-                onNavigateToDetails = { id ->
-                    navController.navigate(Screen.EmotionDetails(id))
-                }
+        composable<Screen.EmotionInsights> {
+            com.pranayharjai7.myemotions.ui.screens.insights.EmotionInsightsScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToDetails = { recordId -> navController.navigate(Screen.EmotionDetails(recordId)) }
             )
         }
 
@@ -185,9 +178,7 @@ fun MyEmotionsNavHost(
             )
         }
 
-        composable<Screen.Analytics> {
-            com.pranayharjai7.myemotions.ui.screens.analytics.AnalyticsScreen()
-        }
+        // Analytics route removed and merged into EmotionInsights
 
         composable<Screen.Profile> {
             ProfileScreen(

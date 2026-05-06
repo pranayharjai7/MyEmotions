@@ -36,7 +36,7 @@ fun MainRootScreen(
     val isSplash = currentDestination?.hasRoute<Screen.Splash>() == true
 
     val showBottomBar = when (currentDestination?.route?.split(".")?.lastOrNull()?.split("?")?.firstOrNull()) {
-        "Dashboard", "Analytics", "EmotionHistory", "Maps" -> true
+        "Dashboard", "EmotionInsights", "Maps" -> true
         else -> false
     }
 
@@ -53,8 +53,7 @@ fun MainRootScreen(
                 ) {
                     val items = listOf(
                         BottomNavItem("Home", Screen.Dashboard, Icons.Default.Home),
-                        BottomNavItem("Timeline", Screen.EmotionHistory, Icons.Default.DateRange),
-                        BottomNavItem("Analytics", Screen.Analytics, Icons.Default.Timeline),
+                        BottomNavItem("Insights", Screen.EmotionInsights, Icons.Default.Timeline),
                         BottomNavItem("Maps", Screen.Maps, Icons.Default.LocationOn)
                     )
 
