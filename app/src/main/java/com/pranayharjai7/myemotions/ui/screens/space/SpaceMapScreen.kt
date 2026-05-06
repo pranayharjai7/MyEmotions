@@ -9,6 +9,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import coil.compose.AsyncImage
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -197,17 +198,28 @@ fun SpaceMapScreen(
                         .padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(80.dp)
-                            .background(theme.primaryColor.copy(alpha = 0.2f), CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = (friend.profile.display_name ?: friend.profile.username ?: "?").firstOrNull()?.toString() ?: "?",
-                            style = MaterialTheme.typography.displaySmall,
-                            color = theme.primaryColor
+                    if (!friend.profile.avatar_url.isNullOrBlank()) {
+                        AsyncImage(
+                            model = friend.profile.avatar_url,
+                            contentDescription = "Avatar",
+                            modifier = Modifier
+                                .size(80.dp)
+                                .clip(CircleShape)
+                                .background(theme.primaryColor.copy(alpha = 0.2f))
                         )
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .size(80.dp)
+                                .background(theme.primaryColor.copy(alpha = 0.2f), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = (friend.profile.display_name ?: friend.profile.username ?: "?").firstOrNull()?.toString() ?: "?",
+                                style = MaterialTheme.typography.displaySmall,
+                                color = theme.primaryColor
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))

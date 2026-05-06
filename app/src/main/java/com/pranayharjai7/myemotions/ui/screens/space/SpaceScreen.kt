@@ -2,6 +2,7 @@ package com.pranayharjai7.myemotions.ui.screens.space
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
+import coil.compose.AsyncImage
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -321,19 +322,29 @@ fun FeedItemCard(item: FeedItem, onReact: (String) -> Unit, onRemoveReaction: ()
             .border(1.dp, theme.primaryColor.copy(alpha = 0.2f), RoundedCornerShape(32.dp))
     ) {
         Column(modifier = Modifier.padding(24.dp)) {
-            // Header: Avatar & Name
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .background(theme.primaryColor.copy(alpha = 0.2f), CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = (item.display_name ?: item.username ?: "?").firstOrNull()?.toString() ?: "?",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = theme.primaryColor
+                if (!item.avatar_url.isNullOrBlank()) {
+                    AsyncImage(
+                        model = item.avatar_url,
+                        contentDescription = "Avatar",
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(CircleShape)
+                            .background(theme.primaryColor.copy(alpha = 0.2f))
                     )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .background(theme.primaryColor.copy(alpha = 0.2f), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = (item.display_name ?: item.username ?: "?").firstOrNull()?.toString() ?: "?",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = theme.primaryColor
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f)) {
@@ -473,18 +484,29 @@ fun ProfileCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(52.dp)
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = (profile.display_name ?: profile.username ?: "?").firstOrNull()?.toString() ?: "?",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold
+            if (!profile.avatar_url.isNullOrBlank()) {
+                AsyncImage(
+                    model = profile.avatar_url,
+                    contentDescription = "Avatar",
+                    modifier = Modifier
+                        .size(52.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
                 )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .size(52.dp)
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = (profile.display_name ?: profile.username ?: "?").firstOrNull()?.toString() ?: "?",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
