@@ -81,7 +81,7 @@ private fun MoodDistributionChart() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp),
+            .height(240.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Bottom
     ) {

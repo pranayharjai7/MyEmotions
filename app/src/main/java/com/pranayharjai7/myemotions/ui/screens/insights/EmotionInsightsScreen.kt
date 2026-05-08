@@ -264,7 +264,7 @@ fun MoodDistributionCard(
             androidx.compose.foundation.lazy.LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(180.dp),
+                    .height(220.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.Bottom,
                 contentPadding = PaddingValues(horizontal = 8.dp)
