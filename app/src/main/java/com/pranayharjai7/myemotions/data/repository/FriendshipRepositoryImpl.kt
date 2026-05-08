@@ -147,4 +147,21 @@ class FriendshipRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    override suspend fun unblockUser(friendId: String): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val user = supabaseClient.auth.currentUserOrNull() ?: throw Exception("Not logged in")
+            supabaseClient.postgrest["friendships"].delete {
+                filter {
+                    eq("user_id", user.id)
+                    eq("friend_id", friendId)
+                    eq("status", "blocked")
+                }
+            }
+            refreshFriendships()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

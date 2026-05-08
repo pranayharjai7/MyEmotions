@@ -20,6 +20,8 @@ import com.pranayharjai7.myemotions.ui.screens.AuthViewModel
 import com.pranayharjai7.myemotions.ui.screens.DashboardScreen
 import com.pranayharjai7.myemotions.ui.screens.ProfileScreen
 import com.pranayharjai7.myemotions.ui.screens.SplashScreen
+import com.pranayharjai7.myemotions.ui.screens.space.ManageFriendsScreen
+import com.pranayharjai7.myemotions.ui.screens.space.SpaceScreen
 import kotlinx.serialization.Serializable
 
 /**
@@ -74,6 +76,9 @@ sealed class Screen {
 
     @Serializable
     data object QrScanner : Screen()
+    
+    @Serializable
+    data object ManageFriends : Screen()
 
     @Serializable
     data class FriendProfile(val userId: String) : Screen()
@@ -157,7 +162,8 @@ fun MyEmotionsNavHost(
                 onNavigateToSettings = { navController.navigate(Screen.Settings) },
                 onNavigateToReminders = { navController.navigate(Screen.Reminders) },
                 onNavigateToHelp = { navController.navigate(Screen.Help) },
-                onNavigateToRecommendationsHistory = { navController.navigate(Screen.RecommendationsHistory) }
+                onNavigateToRecommendationsHistory = { navController.navigate(Screen.RecommendationsHistory) },
+                onNavigateToManageFriends = { navController.navigate(Screen.ManageFriends) }
             )
         }
 
@@ -231,8 +237,7 @@ fun MyEmotionsNavHost(
                 androidx.navigation.navDeepLink<Screen.Space>(basePath = "myemotions://addfriend")
             )
         ) {
-            com.pranayharjai7.myemotions.ui.screens.space.SpaceScreen(
-                onNavigateToQrScanner = { navController.navigate(Screen.QrScanner) },
+            SpaceScreen(
                 onNavigateToProfile = { userId -> navController.navigate(Screen.FriendProfile(userId)) }
             )
         }
@@ -274,6 +279,14 @@ fun MyEmotionsNavHost(
             com.pranayharjai7.myemotions.ui.screens.space.FriendProfileScreen(
                 userId = args.userId,
                 onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable<Screen.ManageFriends> {
+            ManageFriendsScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToQrScanner = { navController.navigate(Screen.QrScanner) },
+                onNavigateToProfile = { userId -> navController.navigate(Screen.FriendProfile(userId)) }
             )
         }
     }

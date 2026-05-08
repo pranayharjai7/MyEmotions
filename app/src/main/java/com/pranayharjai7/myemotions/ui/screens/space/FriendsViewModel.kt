@@ -87,4 +87,16 @@ class FriendsViewModel @Inject constructor(
             friendshipRepository.removeFriend(friendshipId)
         }
     }
+
+    fun blockUser(friendId: String) {
+        viewModelScope.launch {
+            friendshipRepository.blockUser(friendId)
+        }
+    }
+
+    fun unblockUser(friendId: String) {
+        viewModelScope.launch {
+            friendshipRepository.unblockUser(friendId)
+        }
+    }
 }

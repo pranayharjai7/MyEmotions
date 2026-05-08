@@ -35,9 +35,7 @@ fun ProfileMenu(
     userInfo: UserInfo?,
     onDismiss: () -> Unit,
     onNavigateToProfile: () -> Unit,
-    onNavigateToAnalytics: () -> Unit,
-    onNavigateToTimeline: () -> Unit,
-    onNavigateToRecommendationsHistory: () -> Unit,
+    onNavigateToManageFriends: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onNavigateToReminders: () -> Unit,
     onNavigateToHelp: () -> Unit,
@@ -130,9 +128,7 @@ fun ProfileMenu(
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
 
-                MenuListItem(icon = Icons.Default.BarChart, label = "Emotion Insights", onClick = { onNavigateToAnalytics(); onDismiss() })
-                MenuListItem(icon = Icons.Default.Timeline, label = "Emotion Journal", onClick = { onNavigateToTimeline(); onDismiss() })
-                MenuListItem(icon = Icons.Default.History, label = "Recommendations History", onClick = { onNavigateToRecommendationsHistory(); onDismiss() })
+                MenuListItem(icon = Icons.Default.Group, label = "Manage Friends", onClick = { onNavigateToManageFriends(); onDismiss() })
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
 

@@ -13,5 +13,6 @@ interface FriendshipRepository {
     suspend fun rejectFriendRequest(friendshipId: String): Result<Unit>
     suspend fun removeFriend(friendshipId: String): Result<Unit>
     suspend fun blockUser(friendId: String): Result<Unit>
+    suspend fun unblockUser(friendId: String): Result<Unit>
     suspend fun refreshFriendships()
 }

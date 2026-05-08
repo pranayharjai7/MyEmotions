@@ -64,6 +64,7 @@ fun DashboardScreen(
     onNavigateToReminders: () -> Unit = {},
     onNavigateToHelp: () -> Unit = {},
     onNavigateToRecommendationsHistory: () -> Unit = {},
+    onNavigateToManageFriends: () -> Unit = {},
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
     val todayEmotions by viewModel.todayEmotionList.collectAsStateWithLifecycle()
@@ -107,7 +108,8 @@ fun DashboardScreen(
                 onNavigateToRecommendationsHistory = onNavigateToRecommendationsHistory,
                 onNavigateToSettings = onNavigateToSettings,
                 onNavigateToReminders = onNavigateToReminders,
-                onNavigateToHelp = onNavigateToHelp
+                onNavigateToHelp = onNavigateToHelp,
+                onNavigateToManageFriends = onNavigateToManageFriends
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -208,7 +210,8 @@ private fun WelcomeHeader(
     onNavigateToRecommendationsHistory: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onNavigateToReminders: () -> Unit,
-    onNavigateToHelp: () -> Unit
+    onNavigateToHelp: () -> Unit,
+    onNavigateToManageFriends: () -> Unit
 ) {
     val greeting = when (LocalTime.now().hour) {
         in 0..11 -> "Good morning,"
@@ -268,18 +271,16 @@ private fun WelcomeHeader(
             )
             
             if (showProfileMenu) {
-                ProfileMenu(
-                    userInfo = userInfo,
-                    onDismiss = { onShowProfileMenuChange(false) },
-                    onNavigateToProfile = onNavigateToProfile,
-                    onNavigateToAnalytics = onNavigateToAnalytics,
-                    onNavigateToTimeline = onNavigateToHistory,
-                    onNavigateToRecommendationsHistory = onNavigateToRecommendationsHistory,
-                    onNavigateToSettings = onNavigateToSettings,
-                    onNavigateToReminders = onNavigateToReminders,
-                    onNavigateToHelp = onNavigateToHelp,
-                    onLogout = onLogout
-                )
+                    ProfileMenu(
+                        userInfo = userInfo,
+                        onDismiss = { onShowProfileMenuChange(false) },
+                        onNavigateToProfile = onNavigateToProfile,
+                        onNavigateToSettings = onNavigateToSettings,
+                        onNavigateToReminders = onNavigateToReminders,
+                        onNavigateToHelp = onNavigateToHelp,
+                        onNavigateToManageFriends = onNavigateToManageFriends,
+                        onLogout = onLogout
+                    )
             }
         }
     }
